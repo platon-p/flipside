@@ -1,4 +1,4 @@
-package data
+package repository
 
 import "github.com/platon-p/flashside/authservice/model"
 
