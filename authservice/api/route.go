@@ -2,17 +2,29 @@ package api
 
 import "github.com/gin-gonic/gin"
 
-func AddRoutes(group *gin.RouterGroup, authRouter AuthRouter, checkRouter CheckRouter) {
+type Router struct {
+	AuthRouter  *AuthRouter
+	CheckRouter *CheckRouter
+}
+
+func NewRouter(authRouter *AuthRouter, checkRouter *CheckRouter) *Router {
+    return &Router{
+        AuthRouter: authRouter,
+        CheckRouter: checkRouter,
+    }
+}
+
+func (r *Router) Setup(group *gin.RouterGroup) {
 	api := group.Group("/api")
 
 	auth := api.Group("/auth")
-	auth.POST("/register", authRouter.Register)
-	auth.POST("/login-by-email", authRouter.LoginByEmail)
-	auth.POST("/login-by-token", authRouter.LoginByToken)
+	auth.POST("/register", r.AuthRouter.Register)
+	auth.POST("/login-by-email", r.AuthRouter.LoginByEmail)
+	auth.POST("/login-by-token", r.AuthRouter.LoginByToken)
 
 	check := api.Group("/check")
-	check.GET("/email/:email", checkRouter.CheckEmail)
-	check.GET("/nickname/:nickname", checkRouter.CheckNickname)
+	check.GET("/email/:email", r.CheckRouter.CheckEmail)
+	check.GET("/nickname/:nickname", r.CheckRouter.CheckNickname)
 }
 
 type AuthRouter struct{}
