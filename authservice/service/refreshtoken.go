@@ -11,7 +11,7 @@ import (
 
 var (
 	InvalidRefreshToken = errors.New("Invalid refresh token")
-	ExpiredToken        = errors.New("Expired refresh token")
+	ExpiredRefreshToken = errors.New("Expired refresh token")
 )
 
 type RefreshTokenService struct {
@@ -40,7 +40,7 @@ func (s *RefreshTokenService) CheckToken(refreshToken string) (*model.User, erro
 		return nil, InvalidRefreshToken
 	}
 	if token.ExpiresAt.Before(time.Now()) {
-		return nil, ExpiredToken
+		return nil, ExpiredRefreshToken
 	}
 	return token.User, nil
 }
