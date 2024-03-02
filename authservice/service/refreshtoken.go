@@ -20,22 +20,31 @@ type RefreshTokenService struct {
 }
 
 // Deletes old and returns new
-func (s *RefreshTokenService) CreateToken(user *model.User) *model.RefreshToken {
-	current := s.Repository.FindByUser(user)
+func (s *RefreshTokenService) CreateToken(user *model.User) (*model.RefreshToken, error) {
+	current, err := s.Repository.FindByUser(user.Id)
+    if err != nil {
+        return nil, err
+    }
 	if current != nil {
-		s.Repository.Delete(current.Token)
+        s.Repository.Delete(current.Token)
 	}
-	tokenStr := s.generateToken()
-	if tokenStr == nil {
-		return nil
+	tokenStr, err := s.generateToken()
+	if err != nil {
+		return nil, err
 	}
 	exp := time.Now().Add(s.ExpiresIn)
-	token := s.Repository.Create(user, *tokenStr, exp)
-	return token
+	token, err := s.Repository.Create(user.Id, *tokenStr, exp)
+    if err != nil {
+        return nil, err
+    }
+	return token, nil
 }
 
 func (s *RefreshTokenService) CheckToken(refreshToken string) (*model.User, error) {
-	token := s.Repository.FindByToken(refreshToken)
+	token, err := s.Repository.FindByToken(refreshToken)
+    if err != nil {
+        return nil, err
+    }
 	if token == nil {
 		return nil, InvalidRefreshToken
 	}
@@ -45,11 +54,11 @@ func (s *RefreshTokenService) CheckToken(refreshToken string) (*model.User, erro
 	return token.User, nil
 }
 
-func (s *RefreshTokenService) generateToken() *string {
+func (s *RefreshTokenService) generateToken() (*string, error) {
 	token, err := uuid.NewV7()
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	tokenStr := token.String()
-	return &tokenStr
+	return &tokenStr, nil
 }

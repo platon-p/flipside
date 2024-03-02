@@ -46,9 +46,9 @@ func (s *AuthService) Register(name, nickname, email, password string) (*TokenPa
 
 func (s *AuthService) LoginByEmail(email, password string) (*TokenPair, error) {
 	user, err := s.UserRepository.FindByEmail(email)
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 	if user == nil {
 		return nil, BadCredentialsError
 	}
@@ -72,8 +72,10 @@ func (s *AuthService) createTokenPair(user *model.User) (*TokenPair, error) {
 	if err != nil {
 		return nil, err
 	}
-	refreshToken := s.RefreshTokenService.CreateToken(user)
-
+	refreshToken, err := s.RefreshTokenService.CreateToken(user)
+	if err != nil {
+		return nil, err
+	}
 	return &TokenPair{
 		AccessToken:  *accessToken,
 		RefreshToken: refreshToken.Token,
