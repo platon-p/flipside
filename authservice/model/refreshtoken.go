@@ -4,6 +4,6 @@ import "time"
 
 type RefreshToken struct {
 	Token     string
-	ExpiresAt time.Time
 	User      *User
+	ExpiresAt time.Time
 }

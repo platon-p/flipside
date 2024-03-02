@@ -1,9 +1,14 @@
 package repository
 
-import "github.com/platon-p/flashside/authservice/model"
+import (
+	"time"
+
+	"github.com/platon-p/flashside/authservice/model"
+)
 
 type RefreshTokenRepository interface {
-    Create(user *model.User, token string) *model.RefreshToken
-    Find(token string) *model.RefreshToken
+    Create(user *model.User, token string, expiresIn time.Time) *model.RefreshToken
+    FindByToken(token string) *model.RefreshToken
+    FindByUser(user *model.User) *model.RefreshToken
     Delete(token string) error
 }
