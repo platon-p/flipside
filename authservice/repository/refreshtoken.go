@@ -20,7 +20,13 @@ type RefreshTokenRepository interface {
 }
 
 type RefreshTokenRepositoryPostgres struct {
-    db sqlx.DB
+    db *sqlx.DB
+}
+
+func NewRefreshTokenRepositoryPostgres(db *sqlx.DB) *RefreshTokenRepositoryPostgres {
+    return &RefreshTokenRepositoryPostgres{
+        db: db,
+    }
 }
 
 func (r *RefreshTokenRepositoryPostgres) Create(userId int, token string, expiresAt time.Time) (*model.RefreshToken, error) {

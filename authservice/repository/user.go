@@ -19,7 +19,13 @@ type UserRepository interface {
 }
 
 type UserRepositoryImpl struct {
-	db sqlx.DB
+	db *sqlx.DB
+}
+
+func NewUserRepositoryImpl(db *sqlx.DB) *UserRepositoryImpl {
+    return &UserRepositoryImpl{
+        db: db,
+    }
 }
 
 func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
