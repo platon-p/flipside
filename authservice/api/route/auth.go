@@ -6,8 +6,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/platon-p/flashside/authservice/api/controller"
-	"github.com/platon-p/flashside/authservice/api/transfer"
 	"github.com/platon-p/flashside/authservice/service"
+	"github.com/platon-p/flashside/authservice/api/transfer"
 )
 
 type AuthRouter struct{
@@ -31,13 +31,13 @@ func (r *AuthRouter) Register(ctx *gin.Context) {
     case nil:
         ctx.JSON(http.StatusOK, res)
     case service.NicknameExistsError, service.EmailExistsError, service.EmailIncorrectFormatError, service.NicknameIncorrectFormatError:
-        ctx.JSON(http.StatusBadRequest, transfer.ErrorResponse{
+        ctx.JSON(http.StatusBadRequest, transfer.MessageResponse{
         	StatusCode: http.StatusBadRequest,
         	Message:    err.Error(),
         })
     default:
         fmt.Println("Internal error ", err)
-        ctx.JSON(http.StatusInternalServerError, transfer.ErrorResponse{
+        ctx.JSON(http.StatusInternalServerError, transfer.MessageResponse{
             StatusCode: http.StatusInternalServerError,
             Message: "Internal server error",
         })
@@ -54,13 +54,13 @@ func (r *AuthRouter) LoginByEmail(ctx *gin.Context) {
     case nil:
         ctx.JSON(http.StatusOK, res)
     case service.BadCredentialsError:
-        ctx.JSON(http.StatusBadRequest, transfer.ErrorResponse{
+        ctx.JSON(http.StatusUnauthorized, transfer.MessageResponse{
         	StatusCode: http.StatusBadRequest,
         	Message:    err.Error(),
         })
     default:
         fmt.Println("Internal error ", err)
-        ctx.JSON(http.StatusInternalServerError, transfer.ErrorResponse{
+        ctx.JSON(http.StatusInternalServerError, transfer.MessageResponse{
             StatusCode: http.StatusInternalServerError,
             Message: "Internal server error",
         })
@@ -77,13 +77,13 @@ func (r *AuthRouter) LoginByToken(ctx *gin.Context) {
     case nil:
         ctx.JSON(http.StatusOK, res)
     case service.InvalidRefreshToken, service.ExpiredRefreshToken:
-        ctx.JSON(http.StatusBadRequest, transfer.ErrorResponse{
+        ctx.JSON(http.StatusUnauthorized, transfer.MessageResponse{
         	StatusCode: http.StatusBadRequest,
         	Message:    err.Error(),
         })
     default:
         fmt.Println("Internal error ", err)
-        ctx.JSON(http.StatusInternalServerError, transfer.ErrorResponse{
+        ctx.JSON(http.StatusInternalServerError, transfer.MessageResponse{
             StatusCode: http.StatusInternalServerError,
             Message: "Internal server error",
         })
