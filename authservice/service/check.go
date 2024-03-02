@@ -19,7 +19,10 @@ type CheckService struct {
 }
 
 func (s *CheckService) CheckEmail(email string) error {
-    found := s.userRepository.FindByEmail(email)
+    found, err := s.userRepository.FindByEmail(email)
+    if err != nil {
+        return err
+    }
     if found == nil {
         return nil
     }
@@ -27,7 +30,10 @@ func (s *CheckService) CheckEmail(email string) error {
 }
 
 func (s *CheckService) CheckNickname(nickname string) error {
-    found := s.userRepository.FindByNickname(nickname)
+    found, err := s.userRepository.FindByNickname(nickname)
+    if err != nil {
+        return nil
+    }
     if found == nil {
         return nil
     }

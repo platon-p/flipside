@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/platon-p/flashside/authservice/api"
+	"github.com/platon-p/flashside/authservice/api/route"
 )
 
 type Core struct {

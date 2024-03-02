@@ -45,7 +45,10 @@ func (s *AuthService) Register(name, nickname, email, password string) (*TokenPa
 }
 
 func (s *AuthService) LoginByEmail(email, password string) (*TokenPair, error) {
-	user := s.UserRepository.FindByEmail(email)
+	user, err := s.UserRepository.FindByEmail(email)
+    if err != nil {
+        return nil, err
+    }
 	if user == nil {
 		return nil, BadCredentialsError
 	}

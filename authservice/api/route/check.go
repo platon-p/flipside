@@ -1,12 +1,13 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
-	"runtime/trace"
 
 	"github.com/gin-gonic/gin"
 	"github.com/platon-p/flashside/authservice/api/controller"
 	"github.com/platon-p/flashside/authservice/api/transfer"
+	"github.com/platon-p/flashside/authservice/service"
 )
 
 type CheckRouter struct {
@@ -22,15 +23,22 @@ func (r *CheckRouter) Setup(group *gin.RouterGroup) {
 func (r *CheckRouter) CheckEmail(ctx *gin.Context) {
 	email := ctx.Param("email")
 	err := r.checkController.CheckEmail(email)
-    if err != nil {
+    switch err {
+    case nil:
 		ctx.JSON(http.StatusOK, transfer.MessageResponse{
             StatusCode: http.StatusOK,
             Message: "Ok",
         })
-	} else {
+    case service.EmailExistsError:
         ctx.JSON(http.StatusBadRequest, transfer.MessageResponse{
             StatusCode: http.StatusBadRequest,
             Message: err.Error(),
+        })
+    default:
+        fmt.Println("Internal error ", err)
+        ctx.JSON(http.StatusInternalServerError, transfer.MessageResponse{
+            StatusCode: http.StatusInternalServerError,
+            Message: "Internal server error",
         })
     }
 }
@@ -38,15 +46,22 @@ func (r *CheckRouter) CheckEmail(ctx *gin.Context) {
 func (r *CheckRouter) CheckNickname(ctx *gin.Context) {
 	nickname := ctx.Param("nickname")
 	err := r.checkController.CheckNickname(nickname)
-    if err != nil {
+    switch err {
+    case nil:
 		ctx.JSON(http.StatusOK, transfer.MessageResponse{
             StatusCode: http.StatusOK,
             Message: "Ok",
         })
-	} else {
+    case service.NicknameExistsError:
         ctx.JSON(http.StatusBadRequest, transfer.MessageResponse{
             StatusCode: http.StatusBadRequest,
             Message: err.Error(),
+        })
+    default:
+        fmt.Println("Internal error ", err)
+        ctx.JSON(http.StatusInternalServerError, transfer.MessageResponse{
+            StatusCode: http.StatusInternalServerError,
+            Message: "Internal server error",
         })
     }
 }
