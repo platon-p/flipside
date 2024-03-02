@@ -19,6 +19,13 @@ type RefreshTokenService struct {
 	ExpiresIn  time.Duration
 }
 
+func NewRefreshTokenService(repository repository.RefreshTokenRepository, expiresIn time.Duration) *RefreshTokenService {
+    return &RefreshTokenService{
+    	Repository: repository,
+    	ExpiresIn:  expiresIn,
+    }
+}
+
 // Deletes old and returns new
 func (s *RefreshTokenService) CreateToken(user *model.User) (*model.RefreshToken, error) {
 	current, err := s.Repository.FindByUser(user.Id)

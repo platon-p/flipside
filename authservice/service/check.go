@@ -18,6 +18,12 @@ type CheckService struct {
 	userRepository repository.UserRepository
 }
 
+func NewCheckService(userRepository repository.UserRepository) *CheckService {
+    return &CheckService{
+    	userRepository: userRepository,
+    }
+}
+
 func (s *CheckService) CheckEmail(email string) error {
     found, err := s.userRepository.FindByEmail(email)
     if err != nil {

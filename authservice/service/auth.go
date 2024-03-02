@@ -14,10 +14,24 @@ var (
 )
 
 type AuthService struct {
-	JwtUtility          *utils.JwtUtility
-	PasswordUtility     *utils.PasswordUtility
-	UserRepository      repository.UserRepository
-	RefreshTokenService RefreshTokenService
+	jwtUtility          *utils.JwtUtility
+	passwordUtility     *utils.PasswordUtility
+	userRepository      repository.UserRepository
+	refreshTokenService *RefreshTokenService
+}
+
+func NewAuthService(
+	jwtUtility *utils.JwtUtility,
+	passwordUtility *utils.PasswordUtility,
+	repository repository.UserRepository,
+	refreshTokenService *RefreshTokenService,
+) *AuthService {
+	return &AuthService{
+		jwtUtility:          jwtUtility,
+		passwordUtility:     passwordUtility,
+		userRepository:      repository,
+		refreshTokenService: refreshTokenService,
+	}
 }
 
 type TokenPair struct {
@@ -27,7 +41,7 @@ type TokenPair struct {
 }
 
 func (s *AuthService) Register(name, nickname, email, password string) (*TokenPair, error) {
-	passwordHash, err := s.PasswordUtility.GetPasswordHash(password)
+	passwordHash, err := s.passwordUtility.GetPasswordHash(password)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +51,7 @@ func (s *AuthService) Register(name, nickname, email, password string) (*TokenPa
 		Email:    email,
 		Password: *passwordHash,
 	}
-	res, err := s.UserRepository.Create(&user)
+	res, err := s.userRepository.Create(&user)
 	if err != nil {
 		return nil, err
 	}
@@ -45,14 +59,14 @@ func (s *AuthService) Register(name, nickname, email, password string) (*TokenPa
 }
 
 func (s *AuthService) LoginByEmail(email, password string) (*TokenPair, error) {
-	user, err := s.UserRepository.FindByEmail(email)
+	user, err := s.userRepository.FindByEmail(email)
 	if err != nil {
 		return nil, err
 	}
 	if user == nil {
 		return nil, BadCredentialsError
 	}
-	passwordCorrect := s.PasswordUtility.CheckPasswordHash(user.Password, password)
+	passwordCorrect := s.passwordUtility.CheckPasswordHash(user.Password, password)
 	if !passwordCorrect {
 		return nil, BadCredentialsError
 	}
@@ -60,7 +74,7 @@ func (s *AuthService) LoginByEmail(email, password string) (*TokenPair, error) {
 }
 
 func (s *AuthService) LoginByToken(refreshToken string) (*TokenPair, error) {
-	user, err := s.RefreshTokenService.CheckToken(refreshToken)
+	user, err := s.refreshTokenService.CheckToken(refreshToken)
 	if err != nil {
 		return nil, err
 	}
@@ -68,11 +82,11 @@ func (s *AuthService) LoginByToken(refreshToken string) (*TokenPair, error) {
 }
 
 func (s *AuthService) createTokenPair(user *model.User) (*TokenPair, error) {
-	accessToken, err := s.JwtUtility.CreateAccessToken(*user)
+	accessToken, err := s.jwtUtility.CreateAccessToken(*user)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken, err := s.RefreshTokenService.CreateToken(user)
+	refreshToken, err := s.refreshTokenService.CreateToken(user)
 	if err != nil {
 		return nil, err
 	}
