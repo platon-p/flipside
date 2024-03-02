@@ -36,7 +36,8 @@ func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 
 func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 	var found model.User
-	err := r.db.QueryRowx("SELECT * FROM users WHERE email = ?", email).Scan(&found)
+    query := fmt.Sprintf("SELECT * FROM %v WHERE email = ?", usersTable)
+	err := r.db.QueryRowx(query, email).Scan(&found)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +46,8 @@ func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 
 func (r *UserRepositoryImpl) FindByNickname(nickname string) (*model.User, error) {
 	var found model.User
-	err := r.db.QueryRowx("SELECT * FROM users WHERE nickname = ?", nickname).Scan(&found)
+    query := fmt.Sprintf("SELECT * FROM %v WHERE nickname = ?", usersTable)
+	err := r.db.QueryRowx(query, nickname).Scan(&found)
 	if err != nil {
 		return nil, err
 	}
