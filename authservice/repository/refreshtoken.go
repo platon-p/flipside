@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -31,7 +32,7 @@ func NewRefreshTokenRepositoryPostgres(db *sql.DB) *RefreshTokenRepositoryPostgr
 
 func (r *RefreshTokenRepositoryPostgres) Create(userId int, token string, expiresAt time.Time) (*model.RefreshToken, error) {
     var newEntity model.RefreshToken
-    query := fmt.Sprintf("INSERT INTO %v(token, user_id, expires_at) VALUES ($1, $2, $3)", refreshTokenTable)
+    query := fmt.Sprintf("INSERT INTO %v(token, user_id, expires_at) VALUES ($1, $2, $3);", refreshTokenTable)
     err := r.db.QueryRow(query, token, userId, expiresAt).Scan(&newEntity)
     if err != nil {
         return nil, err
@@ -41,8 +42,11 @@ func (r *RefreshTokenRepositoryPostgres) Create(userId int, token string, expire
 
 func (r *RefreshTokenRepositoryPostgres) FindByToken(token string) (*model.RefreshToken, error) {
 	var found model.RefreshToken
-    query := fmt.Sprintf("SELECT * FROM %v WHERE token = ?", refreshTokenTable)
+    query := fmt.Sprintf("SELECT * FROM %v WHERE token = $1;", refreshTokenTable)
 	err := r.db.QueryRow(query, token).Scan(&found)
+    if errors.Is(err, sql.ErrNoRows) {
+        return nil, nil
+    }
 	if err != nil {
 		return nil, err
 	}
@@ -51,8 +55,11 @@ func (r *RefreshTokenRepositoryPostgres) FindByToken(token string) (*model.Refre
 
 func (r *RefreshTokenRepositoryPostgres) FindByUser(userId int) (*model.RefreshToken, error) {
 	var found model.RefreshToken
-    query := fmt.Sprintf("SELECT * FROM %v WHERE user_id = ?", refreshTokenTable)
+    query := fmt.Sprintf("SELECT * FROM %v WHERE user_id = $1;", refreshTokenTable)
 	err := r.db.QueryRow(query, userId).Scan(&found)
+    if errors.Is(err, sql.ErrNoRows) {
+        return nil, nil
+    }
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +67,7 @@ func (r *RefreshTokenRepositoryPostgres) FindByUser(userId int) (*model.RefreshT
 }
 
 func (r *RefreshTokenRepositoryPostgres) Delete(token string) error {
-    query := fmt.Sprintf("DELETE FROM %v WHERE token = ?", refreshTokenTable)
+    query := fmt.Sprintf("DELETE FROM %v WHERE token = $1;", refreshTokenTable)
     _, err := r.db.Exec(query, token)
     return err
 }

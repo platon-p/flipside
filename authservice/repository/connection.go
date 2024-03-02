@@ -6,8 +6,8 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func NewPostgresConnection(datasourceURI string) (*sql.DB, error) {
-	db, err := sql.Open("postgres", datasourceURI)
+func NewPostgresConnection(dataSourceURI string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", dataSourceURI)
 	if err != nil {
 		return nil, err
 	}

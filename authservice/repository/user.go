@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -30,7 +31,7 @@ func NewUserRepositoryImpl(db *sql.DB) *UserRepositoryImpl {
 
 func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 	var newEntity model.User
-	query := fmt.Sprintf("INSERT INTO %v(created_at, name, nickname, email, password) VALUES ($1, $2, $3, $4, $5)", usersTable)
+	query := fmt.Sprintf("INSERT INTO %v(created_at, name, nickname, email, password) VALUES ($1, $2, $3, $4, $5);", usersTable)
 	err := r.db.
 		QueryRow(query, time.Now(), user.Name, user.Nickname, user.Email, user.Password).
 		Scan(&newEntity)
@@ -42,8 +43,11 @@ func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 
 func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 	var found model.User
-    query := fmt.Sprintf("SELECT * FROM %v WHERE email = ?", usersTable)
+    query := fmt.Sprintf("SELECT * FROM %v WHERE email = $1;", usersTable)
 	err := r.db.QueryRow(query, email).Scan(&found)
+    if errors.Is(err, sql.ErrNoRows) {
+        return nil, nil
+    }
 	if err != nil {
 		return nil, err
 	}
@@ -52,8 +56,11 @@ func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 
 func (r *UserRepositoryImpl) FindByNickname(nickname string) (*model.User, error) {
 	var found model.User
-    query := fmt.Sprintf("SELECT * FROM %v WHERE nickname = ?", usersTable)
+    query := fmt.Sprintf("SELECT * FROM %v WHERE nickname = $1;", usersTable)
 	err := r.db.QueryRow(query, nickname).Scan(&found)
+    if errors.Is(err, sql.ErrNoRows) {
+        return nil, nil
+    }
 	if err != nil {
 		return nil, err
 	}
