@@ -24,7 +24,7 @@ type UserRepositoryImpl struct {
 
 func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 	var newEntity model.User
-	query := fmt.Sprintf("INSERT INTO %s(created_at, name, nickname, email, password) VALUES ($1, $2, $3, $4, $5)", usersTable)
+	query := fmt.Sprintf("INSERT INTO %v(created_at, name, nickname, email, password) VALUES ($1, $2, $3, $4, $5)", usersTable)
 	err := r.db.
 		QueryRowx(query, time.Now(), user.Name, user.Nickname, user.Email, user.Password).
 		StructScan(&newEntity)
