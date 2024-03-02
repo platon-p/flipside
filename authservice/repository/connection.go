@@ -1,12 +1,13 @@
 package repository
 
 import (
-	"github.com/jmoiron/sqlx"
+	"database/sql"
+
 	_ "github.com/lib/pq"
 )
 
-func NewPostgresConnection(datasourceURI string) (*sqlx.DB, error) {
-	db, err := sqlx.Connect("postgres", datasourceURI)
+func NewPostgresConnection(datasourceURI string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", datasourceURI)
 	if err != nil {
 		return nil, err
 	}

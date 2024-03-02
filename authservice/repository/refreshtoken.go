@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/platon-p/flashside/authservice/model"
 )
 
@@ -20,10 +20,10 @@ type RefreshTokenRepository interface {
 }
 
 type RefreshTokenRepositoryPostgres struct {
-    db *sqlx.DB
+    db *sql.DB
 }
 
-func NewRefreshTokenRepositoryPostgres(db *sqlx.DB) *RefreshTokenRepositoryPostgres {
+func NewRefreshTokenRepositoryPostgres(db *sql.DB) *RefreshTokenRepositoryPostgres {
     return &RefreshTokenRepositoryPostgres{
         db: db,
     }
@@ -32,7 +32,7 @@ func NewRefreshTokenRepositoryPostgres(db *sqlx.DB) *RefreshTokenRepositoryPostg
 func (r *RefreshTokenRepositoryPostgres) Create(userId int, token string, expiresAt time.Time) (*model.RefreshToken, error) {
     var newEntity model.RefreshToken
     query := fmt.Sprintf("INSERT INTO %v(token, user_id, expires_at) VALUES ($1, $2, $3)", refreshTokenTable)
-    err := r.db.QueryRowx(query, token, userId, expiresAt).StructScan(&newEntity)
+    err := r.db.QueryRow(query, token, userId, expiresAt).Scan(&newEntity)
     if err != nil {
         return nil, err
     }
@@ -42,7 +42,7 @@ func (r *RefreshTokenRepositoryPostgres) Create(userId int, token string, expire
 func (r *RefreshTokenRepositoryPostgres) FindByToken(token string) (*model.RefreshToken, error) {
 	var found model.RefreshToken
     query := fmt.Sprintf("SELECT * FROM %v WHERE token = ?", refreshTokenTable)
-	err := r.db.QueryRowx(query, token).Scan(&found)
+	err := r.db.QueryRow(query, token).Scan(&found)
 	if err != nil {
 		return nil, err
 	}
@@ -52,7 +52,7 @@ func (r *RefreshTokenRepositoryPostgres) FindByToken(token string) (*model.Refre
 func (r *RefreshTokenRepositoryPostgres) FindByUser(userId int) (*model.RefreshToken, error) {
 	var found model.RefreshToken
     query := fmt.Sprintf("SELECT * FROM %v WHERE user_id = ?", refreshTokenTable)
-	err := r.db.QueryRowx(query, userId).Scan(&found)
+	err := r.db.QueryRow(query, userId).Scan(&found)
 	if err != nil {
 		return nil, err
 	}

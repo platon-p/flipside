@@ -1,10 +1,10 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
-	"github.com/jmoiron/sqlx"
 	"github.com/platon-p/flashside/authservice/model"
 )
 
@@ -19,10 +19,10 @@ type UserRepository interface {
 }
 
 type UserRepositoryImpl struct {
-	db *sqlx.DB
+	db *sql.DB
 }
 
-func NewUserRepositoryImpl(db *sqlx.DB) *UserRepositoryImpl {
+func NewUserRepositoryImpl(db *sql.DB) *UserRepositoryImpl {
     return &UserRepositoryImpl{
         db: db,
     }
@@ -32,8 +32,8 @@ func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 	var newEntity model.User
 	query := fmt.Sprintf("INSERT INTO %v(created_at, name, nickname, email, password) VALUES ($1, $2, $3, $4, $5)", usersTable)
 	err := r.db.
-		QueryRowx(query, time.Now(), user.Name, user.Nickname, user.Email, user.Password).
-		StructScan(&newEntity)
+		QueryRow(query, time.Now(), user.Name, user.Nickname, user.Email, user.Password).
+		Scan(&newEntity)
     if err != nil {
         return nil, err
     }
@@ -43,7 +43,7 @@ func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 	var found model.User
     query := fmt.Sprintf("SELECT * FROM %v WHERE email = ?", usersTable)
-	err := r.db.QueryRowx(query, email).Scan(&found)
+	err := r.db.QueryRow(query, email).Scan(&found)
 	if err != nil {
 		return nil, err
 	}
@@ -53,7 +53,7 @@ func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 func (r *UserRepositoryImpl) FindByNickname(nickname string) (*model.User, error) {
 	var found model.User
     query := fmt.Sprintf("SELECT * FROM %v WHERE nickname = ?", usersTable)
-	err := r.db.QueryRowx(query, nickname).Scan(&found)
+	err := r.db.QueryRow(query, nickname).Scan(&found)
 	if err != nil {
 		return nil, err
 	}
