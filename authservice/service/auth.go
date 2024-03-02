@@ -9,7 +9,7 @@ import (
 )
 
 var (
-    BadCredentials = errors.New("Bad credentials")
+    BadCredentialsError = errors.New("Bad credentials")
 )
 
 type AuthService struct {
@@ -40,11 +40,35 @@ func (s *AuthService) Register(name, nickname, email, password string) (*TokenPa
 	if err != nil {
 		return nil, err
 	}
-	accessToken, err := s.JwtUtility.CreateAccessToken(*res)
+    return s.createTokenPair(res)
+}
+
+func (s *AuthService) LoginByEmail(email, password string) (*TokenPair, error) {
+    user := s.UserRepository.FindByEmail(email)
+    if user == nil {
+        return nil, BadCredentialsError
+    }
+    passwordCorrect := s.PasswordUtility.CheckPasswordHash(user.Password, password)
+    if !passwordCorrect {
+        return nil, BadCredentialsError
+    }
+    return s.createTokenPair(user)
+}
+
+func (s *AuthService) LoginByToken(refreshToken string) (*TokenPair, error) {
+    user, err := s.RefreshTokenService.CheckToken(refreshToken)
+    if err != nil {
+        return nil, err
+    }
+    return s.createTokenPair(user)
+}
+
+func (s *AuthService) createTokenPair(user *model.User) (*TokenPair, error) {
+	accessToken, err := s.JwtUtility.CreateAccessToken(*user)
 	if err != nil {
 		return nil, err
 	}
-	refreshToken := s.RefreshTokenService.CreateToken(res)
+	refreshToken := s.RefreshTokenService.CreateToken(user)
 
     return &TokenPair{
     	AccessToken:  *accessToken,
@@ -52,13 +76,3 @@ func (s *AuthService) Register(name, nickname, email, password string) (*TokenPa
     	RefreshToken: refreshToken,
     }, nil
 }
-
-func (s *AuthService) LoginByEmail(email, password string) (*TokenPair, error) {
-    user := s.UserRepository.FindByEmail(email)
-    if user == nil {
-        return nil, BadCredentials
-    }
-
-}
-
-func (s *AuthService) LoginByToken(refreshToken string) (*TokenPair, error)
