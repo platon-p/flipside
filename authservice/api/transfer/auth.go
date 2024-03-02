@@ -28,10 +28,10 @@ type TokenPairResponse struct {
 	ExpiresAt    time.Time `json:"expires_at"`
 }
 
-func NewTokenResponse(tokens service.TokenPair) TokenPairResponse {
-    return TokenPairResponse{
-    	AccessToken:  tokens.AccessToken,
-    	RefreshToken: tokens.RefreshToken,
-    	ExpiresAt:    tokens.ExpiresAt,
-    }
+func NewTokenPairResponse(tokens service.TokenPair) TokenPairResponse {
+	return TokenPairResponse{
+		AccessToken:  tokens.AccessToken,
+		RefreshToken: tokens.RefreshToken,
+		ExpiresAt:    tokens.ExpiresAt,
+	}
 }

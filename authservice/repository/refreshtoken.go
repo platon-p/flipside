@@ -7,7 +7,7 @@ import (
 )
 
 type RefreshTokenRepository interface {
-    Create(user *model.User, token string, expiresIn time.Time) *model.RefreshToken
+    Create(user *model.User, token string, expiresAt time.Time) *model.RefreshToken
     FindByToken(token string) *model.RefreshToken
     FindByUser(user *model.User) *model.RefreshToken
     Delete(token string) error
