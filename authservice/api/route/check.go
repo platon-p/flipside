@@ -14,6 +14,12 @@ type CheckRouter struct {
 	checkController *controller.CheckController
 }
 
+func NewCheckRouter(checkController *controller.CheckController) *CheckRouter {
+    return &CheckRouter{
+        checkController: checkController,
+    }
+}
+
 func (r *CheckRouter) Setup(group *gin.RouterGroup) {
 	check := group.Group("/check")
 	check.GET("/email/:email", r.CheckEmail)

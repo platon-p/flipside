@@ -10,6 +10,13 @@ type AuthController struct {
     checkService *service.CheckService
 }
 
+func NewAuthController(authService *service.AuthService, checkService *service.CheckService) *AuthController {
+    return &AuthController{
+    	authService:  authService,
+    	checkService: checkService,
+    }
+}
+
 func (c *AuthController) Register(request transfer.RegisterRequest) (*transfer.TokenPairResponse, error) {
     if err := c.checkService.CheckEmail(request.Email); err != nil {
         return nil, err
