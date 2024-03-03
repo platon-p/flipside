@@ -7,19 +7,19 @@ import (
 )
 
 type RegisterRequest struct {
-	Email    string `json:"email"`
-	Name     string `json:"name"`
-	Nickname string `json:"nickname"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required"`
+	Name     string `json:"name" binding:"required"`
+	Nickname string `json:"nickname" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type LoginByEmailRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 type LoginByTokenRequest struct {
-	RefreshToken string `json:"refresh_token"`
+    RefreshToken string `json:"refresh_token" binding:"required"`
 }
 
 type TokenPairResponse struct {

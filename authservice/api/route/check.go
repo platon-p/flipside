@@ -41,7 +41,7 @@ func (r *CheckRouter) CheckEmail(ctx *gin.Context) {
 			Message:    err.Error(),
 		})
 	default:
-		fmt.Println("Internal error ", err)
+		fmt.Println("Internal error", err)
 		ctx.JSON(http.StatusInternalServerError, transfer.MessageResponse{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "Internal server error",
@@ -64,7 +64,7 @@ func (r *CheckRouter) CheckNickname(ctx *gin.Context) {
 			Message:    err.Error(),
 		})
 	default:
-		fmt.Println("Internal error ", err)
+		fmt.Println("Internal error", err)
 		ctx.JSON(http.StatusInternalServerError, transfer.MessageResponse{
 			StatusCode: http.StatusInternalServerError,
 			Message:    "Internal server error",
