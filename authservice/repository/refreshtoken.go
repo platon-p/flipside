@@ -47,9 +47,12 @@ func (r *RefreshTokenRepositoryPostgres) FindByToken(token string) (*model.Refre
         t.expires_at
         FROM %v u 
         JOIN %v t ON u.id = t.user_id 
-        WHERE t.token = $1`, usersTable, refreshTokenTable)
+        WHERE t.token = $1;`, usersTable, refreshTokenTable)
 	var newEntity model.RefreshToken
 	err := r.db.QueryRowx(qSelect, token).StructScan(&newEntity)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +67,7 @@ func (r *RefreshTokenRepositoryPostgres) FindByUser(userId int) (*model.RefreshT
         t.expires_at
         FROM %v u 
         JOIN %v t ON u.id = t.user_id 
-        WHERE t.user_id = $1`, usersTable, refreshTokenTable)
+        WHERE t.user_id = $1;`, usersTable, refreshTokenTable)
 	err := r.db.QueryRowx(query, userId).StructScan(&found)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
