@@ -5,9 +5,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/platon-p/flashside/authservice/api/controller"
-	"github.com/platon-p/flashside/authservice/api/transfer"
-	"github.com/platon-p/flashside/authservice/service"
+	"github.com/platon-p/flipside/authservice/api/controller"
+	"github.com/platon-p/flipside/authservice/api/transfer"
+	"github.com/platon-p/flipside/authservice/service"
 )
 
 type AuthRouter struct {
@@ -15,9 +15,9 @@ type AuthRouter struct {
 }
 
 func NewAuthRouter(controller *controller.AuthController) *AuthRouter {
-    return &AuthRouter{
-        controller: controller,
-    }
+	return &AuthRouter{
+		controller: controller,
+	}
 }
 
 func (r *AuthRouter) Setup(group *gin.RouterGroup) {

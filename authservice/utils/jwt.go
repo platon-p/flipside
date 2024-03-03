@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/platon-p/flashside/authservice/model"
+	"github.com/platon-p/flipside/authservice/model"
 )
 
 type JwtUtility struct {
@@ -29,8 +29,8 @@ func (u *JwtUtility) CreateAccessToken(user model.User) (*string, error) {
 	}
 	token := jwt.NewWithClaims(u.SignAlg, claims)
 	tokenStr, err := token.SignedString(u.SignKey)
-    if err != nil {
-        return nil, err
-    }
-    return &tokenStr, nil
+	if err != nil {
+		return nil, err
+	}
+	return &tokenStr, nil
 }
