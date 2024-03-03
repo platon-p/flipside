@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"github.com/platon-p/flashside/authservice/model"
-	"github.com/platon-p/flashside/authservice/repository"
-	"github.com/platon-p/flashside/authservice/utils"
+	"github.com/platon-p/flipside/authservice/model"
+	"github.com/platon-p/flipside/authservice/repository"
+	"github.com/platon-p/flipside/authservice/utils"
 )
 
 var (

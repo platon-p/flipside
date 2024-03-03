@@ -17,5 +17,7 @@ services:
       - DATASOURCE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}?sslmode=disable
     ports:
       - "8080:8080"
+    depends_on:
+      - db
 volumes:
   db-data:

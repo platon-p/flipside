@@ -3,7 +3,7 @@ package transfer
 import (
 	"time"
 
-	"github.com/platon-p/flashside/authservice/service"
+	"github.com/platon-p/flipside/authservice/service"
 )
 
 type RegisterRequest struct {

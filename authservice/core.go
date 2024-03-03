@@ -5,11 +5,11 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/platon-p/flashside/authservice/api/controller"
-	"github.com/platon-p/flashside/authservice/api/route"
-	"github.com/platon-p/flashside/authservice/repository"
-	"github.com/platon-p/flashside/authservice/service"
-	"github.com/platon-p/flashside/authservice/utils"
+	"github.com/platon-p/flipside/authservice/api/controller"
+	"github.com/platon-p/flipside/authservice/api/route"
+	"github.com/platon-p/flipside/authservice/repository"
+	"github.com/platon-p/flipside/authservice/service"
+	"github.com/platon-p/flipside/authservice/utils"
 )
 
 type Core struct {
@@ -33,32 +33,32 @@ type ConfigEnv struct {
 func LoadConfig() CoreConfig {
 	var cfg ConfigEnv
 	cleanenv.ReadEnv(&cfg)
-    jwtExpiresIn, err := time.ParseDuration(cfg.JwtExpiresIn)
-    if err != nil {
-        panic(err)
-    }
-    refreshTokenExpiresIn, err := time.ParseDuration(cfg.RefreshTokenExpiresIn)
-    if err != nil {
-        panic(err)
-    }
-    config := CoreConfig{
-    	dataSource:            cfg.DataSource,
-    	jwtSignKey:            cfg.JwtSignKey,
-    	jwtExpiresIn:          jwtExpiresIn,
-    	refreshTokenExpiresIn: refreshTokenExpiresIn,
-    }
-    return config
+	jwtExpiresIn, err := time.ParseDuration(cfg.JwtExpiresIn)
+	if err != nil {
+		panic(err)
+	}
+	refreshTokenExpiresIn, err := time.ParseDuration(cfg.RefreshTokenExpiresIn)
+	if err != nil {
+		panic(err)
+	}
+	config := CoreConfig{
+		dataSource:            cfg.DataSource,
+		jwtSignKey:            cfg.JwtSignKey,
+		jwtExpiresIn:          jwtExpiresIn,
+		refreshTokenExpiresIn: refreshTokenExpiresIn,
+	}
+	return config
 }
 
 func NewCore() *Core {
-    config := LoadConfig()
+	config := LoadConfig()
 	jwtUtility := utils.NewJwtUtility(config.jwtSignKey, config.jwtExpiresIn)
 	passwordUtility := utils.NewPasswordUtility()
 
 	conn, err := repository.NewPostgresConnection(config.dataSource)
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 	userRepository := repository.NewUserRepositoryImpl(conn)
 	refreshTokenRepository := repository.NewRefreshTokenRepositoryPostgres(conn)
 

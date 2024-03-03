@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/platon-p/flashside/authservice/model"
+	"github.com/platon-p/flipside/authservice/model"
 )
 
 var (
@@ -24,9 +24,9 @@ type UserRepositoryImpl struct {
 }
 
 func NewUserRepositoryImpl(db *sql.DB) *UserRepositoryImpl {
-    return &UserRepositoryImpl{
-        db: db,
-    }
+	return &UserRepositoryImpl{
+		db: db,
+	}
 }
 
 func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
@@ -35,19 +35,19 @@ func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 	err := r.db.
 		QueryRow(query, time.Now(), user.Name, user.Nickname, user.Email, user.Password).
 		Scan(&newEntity)
-    if err != nil {
-        return nil, err
-    }
-    return &newEntity, nil
+	if err != nil {
+		return nil, err
+	}
+	return &newEntity, nil
 }
 
 func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 	var found model.User
-    query := fmt.Sprintf("SELECT * FROM %v WHERE email = $1;", usersTable)
+	query := fmt.Sprintf("SELECT * FROM %v WHERE email = $1;", usersTable)
 	err := r.db.QueryRow(query, email).Scan(&found)
-    if errors.Is(err, sql.ErrNoRows) {
-        return nil, nil
-    }
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -56,11 +56,11 @@ func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 
 func (r *UserRepositoryImpl) FindByNickname(nickname string) (*model.User, error) {
 	var found model.User
-    query := fmt.Sprintf("SELECT * FROM %v WHERE nickname = $1;", usersTable)
+	query := fmt.Sprintf("SELECT * FROM %v WHERE nickname = $1;", usersTable)
 	err := r.db.QueryRow(query, nickname).Scan(&found)
-    if errors.Is(err, sql.ErrNoRows) {
-        return nil, nil
-    }
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, nil
+	}
 	if err != nil {
 		return nil, err
 	}
