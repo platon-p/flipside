@@ -13,7 +13,7 @@ type JwtUtility struct {
 	ExpiresIn time.Duration
 }
 
-func NewJwtUtility(hs256Key string, expiresIn time.Duration) *JwtUtility {
+func NewJwtUtility(hs256Key []byte, expiresIn time.Duration) *JwtUtility {
 	return &JwtUtility{
 		SignAlg:   jwt.SigningMethodHS256,
 		SignKey:   hs256Key,

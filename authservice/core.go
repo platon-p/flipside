@@ -18,7 +18,7 @@ type Core struct {
 
 type CoreConfig struct {
 	dataSource            string
-	jwtSignKey            string
+	jwtSignKey            []byte
 	jwtExpiresIn          time.Duration
 	refreshTokenExpiresIn time.Duration
 }
@@ -43,7 +43,7 @@ func LoadConfig() CoreConfig {
 	}
 	config := CoreConfig{
 		dataSource:            cfg.DataSource,
-		jwtSignKey:            cfg.JwtSignKey,
+		jwtSignKey:            []byte(cfg.JwtSignKey),
 		jwtExpiresIn:          jwtExpiresIn,
 		refreshTokenExpiresIn: refreshTokenExpiresIn,
 	}
