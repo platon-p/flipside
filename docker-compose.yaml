@@ -1,0 +1,21 @@
+version: "3.5"
+services:
+  db:
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    env_file: './.env'
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - db-data:/var/lib/postgresql/data
+  authservice:
+    build:
+      context: ./authservice
+      dockerfile: Dockerfile
+    env_file: './.env'
+    environment:
+      - DATASOURCE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}?sslmode=disable
+    ports:
+      - "8080:8080"
+volumes:
+  db-data:
