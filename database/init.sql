@@ -10,7 +10,7 @@ CREATE TABLE users
 
 CREATE TABLE refresh_tokens
 (
-    token      UUID PRIMARY KEY DEFAULT gen_random_uuid(), -- Generate UUID v7 for token
+    token      VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(), -- Generate UUID v7 for token
     user_id    INT       NOT NULL,
     expires_at TIMESTAMP NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id)
