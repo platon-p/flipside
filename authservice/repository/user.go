@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/platon-p/flipside/authservice/model"
 )
 
@@ -20,10 +21,10 @@ type UserRepository interface {
 }
 
 type UserRepositoryImpl struct {
-	db *sql.DB
+	db *sqlx.DB
 }
 
-func NewUserRepositoryImpl(db *sql.DB) *UserRepositoryImpl {
+func NewUserRepositoryImpl(db *sqlx.DB) *UserRepositoryImpl {
 	return &UserRepositoryImpl{
 		db: db,
 	}
@@ -31,10 +32,13 @@ func NewUserRepositoryImpl(db *sql.DB) *UserRepositoryImpl {
 
 func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 	var newEntity model.User
-	query := fmt.Sprintf("INSERT INTO %v(created_at, name, nickname, email, password) VALUES ($1, $2, $3, $4, $5);", usersTable)
+	query := fmt.Sprintf(
+		`INSERT INTO %v(created_at, name, nickname, email, password) 
+        VALUES ($1, $2, $3, $4, $5) 
+        RETURNING *;`, usersTable)
 	err := r.db.
-		QueryRow(query, time.Now(), user.Name, user.Nickname, user.Email, user.Password).
-		Scan(&newEntity)
+		QueryRowx(query, time.Now(), user.Name, user.Nickname, user.Email, user.Password).
+		StructScan(&newEntity)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +48,7 @@ func (r *UserRepositoryImpl) Create(user *model.User) (*model.User, error) {
 func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 	var found model.User
 	query := fmt.Sprintf("SELECT * FROM %v WHERE email = $1;", usersTable)
-	err := r.db.QueryRow(query, email).Scan(&found)
+	err := r.db.QueryRowx(query, email).StructScan(&found)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
@@ -57,7 +61,7 @@ func (r *UserRepositoryImpl) FindByEmail(email string) (*model.User, error) {
 func (r *UserRepositoryImpl) FindByNickname(nickname string) (*model.User, error) {
 	var found model.User
 	query := fmt.Sprintf("SELECT * FROM %v WHERE nickname = $1;", usersTable)
-	err := r.db.QueryRow(query, nickname).Scan(&found)
+	err := r.db.QueryRowx(query, nickname).StructScan(&found)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, nil
 	}
