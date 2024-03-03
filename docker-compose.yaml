@@ -14,10 +14,15 @@ services:
       dockerfile: Dockerfile
     env_file: './.env'
     environment:
+      - PORT=80
       - DATASOURCE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}?sslmode=disable
-    ports:
-      - "${PORT}:8080"
     depends_on:
       - db
+  nginx:
+    image: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
 volumes:
   db-data:
