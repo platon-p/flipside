@@ -5,5 +5,4 @@ type CardSet struct {
 	Title   string
 	Slug    string
 	OwnerId int
-	Cards   []Card
 }

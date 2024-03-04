@@ -5,7 +5,7 @@ import "github.com/platon-p/flipside/cardservice/model"
 type CardSetService struct {
 }
 
-func (s *CardSetService) CreateCardSet(ownerId int, cardSet *model.CardSet) error {
+func (s *CardSetService) CreateCardSet(cardSet *model.CardSet) error {
 	panic("not implemented")
 }
 
