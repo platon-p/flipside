@@ -14,8 +14,8 @@ var (
 type CardSetRepository interface {
 	CreateCardSet(cardSet *model.CardSet) (*model.CardSet, error)
 	GetCardSet(slug string) (*model.CardSet, error)
-	UpdateCardSet(slug string, cardSet *model.CardSet) (*model.CardSet, error)
-	DeleteCardSet(slug string) error
+	UpdateCardSet(id int, cardSet *model.CardSet) (*model.CardSet, error)
+	DeleteCardSet(id int ) error
 }
 
 type CardSetRepositoryImpl struct {
@@ -53,24 +53,24 @@ func (r *CardSetRepositoryImpl) GetCardSet(slug string) (*model.CardSet, error) 
 	return &found, nil
 }
 
-func (r *CardSetRepositoryImpl) UpdateCardSet(slug string, card *model.CardSet) (*model.CardSet, error) {
+func (r *CardSetRepositoryImpl) UpdateCardSet(id int, card *model.CardSet) (*model.CardSet, error) {
 	var updated model.CardSet
 	query := fmt.Sprintf(
 		`UPDATE %v 
         SET title = $1, slug = $2, owner_id = $3 
-        WHERE slug = $2
+        WHERE id = $4
         RETURNING *`,
 		cardSetsTable,
 	)
-    err := r.db.QueryRowx(query, card.Title, card.Slug, card.OwnerId).StructScan(&updated)
+    err := r.db.QueryRowx(query, card.Title, card.Slug, card.OwnerId, id).StructScan(&updated)
     if err != nil {
         return nil, err
     }
     return &updated, nil
 }
 
-func (r *CardSetRepositoryImpl) DeleteCardSet(slug string) error {
-    query := fmt.Sprintf(`DELETE FROM %v WHERE slug = $1`, cardSetsTable)
-    _, err := r.db.Exec(query, slug)
+func (r *CardSetRepositoryImpl) DeleteCardSet(id int) error {
+    query := fmt.Sprintf(`DELETE FROM %v WHERE id = $1`, cardSetsTable)
+    _, err := r.db.Exec(query, id)
     return err
 }
