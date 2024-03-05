@@ -6,7 +6,13 @@ import (
 )
 
 type CardRouter struct {
-    controller *controller.CardController
+	controller *controller.CardController
+}
+
+func NewCardRouter(controller *controller.CardController) *CardRouter {
+	return &CardRouter{
+		controller: controller,
+	}
 }
 
 func (r *CardRouter) Setup(group *gin.RouterGroup) {

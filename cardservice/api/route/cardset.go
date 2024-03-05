@@ -17,6 +17,13 @@ type CardSetRouter struct {
 	authMiddleware *middleware.AuthMiddleware
 }
 
+func NewCardSetRouter(controller *controller.CardSetController, authMiddleware *middleware.AuthMiddleware) *CardSetRouter {
+	return &CardSetRouter{
+		controller:     controller,
+		authMiddleware: authMiddleware,
+	}
+}
+
 func (r *CardSetRouter) Setup(group *gin.RouterGroup) {
 	cardset := group.Group("/cardset")
 
