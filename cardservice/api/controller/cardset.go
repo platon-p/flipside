@@ -9,6 +9,12 @@ type CardSetController struct {
 	cardSetService *service.CardSetService
 }
 
+func NewCardSetController(cardSetService *service.CardSetService) *CardSetController {
+	return &CardSetController{
+		cardSetService: cardSetService,
+	}
+}
+
 func (r *CardSetController) CreateCardSet(userId int, request *transfer.CardSetRequest) (*transfer.CardSetResponse, error) {
 	cardSet := request.ToModel(userId)
 	newEntity, err := r.cardSetService.CreateCardSet(cardSet)

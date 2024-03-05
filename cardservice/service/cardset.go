@@ -9,6 +9,12 @@ type CardSetService struct {
 	cardSetRepository repository.CardSetRepository
 }
 
+func NewCardSetService(cardSetRepository repository.CardSetRepository) *CardSetService {
+    return &CardSetService{
+        cardSetRepository: cardSetRepository,
+    }
+}
+
 func (s *CardSetService) CreateCardSet(cardSet *model.CardSet) (*model.CardSet, error) {
 	return s.cardSetRepository.CreateCardSet(cardSet)
 }
