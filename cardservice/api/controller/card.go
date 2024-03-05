@@ -4,6 +4,10 @@ import "github.com/platon-p/flipside/cardservice/api/transfer"
 
 type CardController struct {}
 
+func NewCardController() *CardController {
+    return &CardController{}
+}
+
 func (c *CardController) CreateCards(
     userId int,
     slug string,
