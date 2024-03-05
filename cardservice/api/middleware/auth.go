@@ -14,6 +14,12 @@ type AuthMiddleware struct {
 	SignKey interface{}
 }
 
+func NewAuthMiddleware(SignKey interface{}) *AuthMiddleware {
+    return &AuthMiddleware{
+    	SignKey: SignKey,
+    }
+}
+
 func (m *AuthMiddleware) ValidateToken(token string) (*int, error) {
 	var claims jwt.MapClaims
 	jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
