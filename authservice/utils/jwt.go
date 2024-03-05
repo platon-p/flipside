@@ -22,7 +22,7 @@ func NewJwtUtility(hs256Key []byte, expiresIn time.Duration) *JwtUtility {
 }
 
 func (u *JwtUtility) CreateAccessToken(user model.User) (*string, error) {
-	exp := time.Now().Add(u.ExpiresIn)
+	exp := jwt.NewNumericDate(time.Now().Add(u.ExpiresIn))
 	claims := jwt.MapClaims{
 		"id":       user.Id,
 		"nickname": user.Nickname,
