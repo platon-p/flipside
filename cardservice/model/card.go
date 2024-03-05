@@ -5,5 +5,5 @@ type Card struct {
 	Question  string
 	Answer    string
 	Position  int
-	CardSetId int
+    CardSetId int `db:"card_set_id"`
 }

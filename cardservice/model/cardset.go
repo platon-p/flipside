@@ -4,5 +4,5 @@ type CardSet struct {
 	Id      int
 	Title   string
 	Slug    string
-	OwnerId int
+    OwnerId int `db:"owner_id"`
 }
