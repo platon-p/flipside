@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/Button"
 import { Input } from "../components/Input"
+import { useAuth } from "../service/AuthService"
 
 export function Register() {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const {isAuth} = useAuth();
 
     function goToLogin() {
         navigate('/login')
@@ -11,6 +13,10 @@ export function Register() {
 
     function goToMain() {
         navigate('/')
+    }
+
+    if (isAuth) {
+        goToMain();
     }
 
     return <div style={{

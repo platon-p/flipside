@@ -1,26 +1,27 @@
 import { useNavigate } from "react-router-dom"
 import { CardSetItem } from "../components/CardSetItem";
 import { CardSetRepository } from "../repository/CardSetRepository";
-import { AuthService } from "../service/AuthService";
+import { useAuth } from "../service/AuthService";
 
 export function Main() {
-    const auth = AuthService.isAuth();
-    if (auth) {
+    const { isAuth } = useAuth();
+    if (isAuth) {
         return <UserPage />
     }
     return <NewbiePage />
 }
 
 function UserPage() {
-    const myId = AuthService.getMyId()!;
+    const { userId, logout } = useAuth();
     const navigate = useNavigate();
-    const cards = CardSetRepository.getCardSetsByOwner(myId);
-    
+    const cards = CardSetRepository.getCardSetsByOwner(userId!);
+
     function navigateToCardSet(slug: string) {
         navigate(`/set/${slug}`)
     }
     return <>
         <p>Hello</p>
+        <p onClick={() => { logout() }}>logout</p>
         <div style={{
             display: 'flex',
             flexDirection: 'column',
@@ -44,7 +45,6 @@ function NewbiePage() {
     function goToRegister() {
         navigate('/register')
     }
-
 
     return <>
         <h1>Index</h1 >

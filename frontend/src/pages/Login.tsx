@@ -1,10 +1,11 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/Button"
 import { Input } from "../components/Input"
-import { AuthService } from "../service/AuthService";
+import { AuthService, useAuth } from "../service/AuthService";
 import { useState } from "react";
 
 export function Login() {
+  const {isAuth} = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,6 +21,10 @@ export function Login() {
   async function submit() {
     const res = await AuthService.loginByEmail(email, password);
     console.log(res);
+  }
+
+  if (isAuth) {
+    goToMain();
   }
 
   return <>
