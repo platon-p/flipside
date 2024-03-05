@@ -15,7 +15,7 @@ type CardSetRepository interface {
 	CreateCardSet(cardSet *model.CardSet) (*model.CardSet, error)
 	GetCardSet(slug string) (*model.CardSet, error)
 	UpdateCardSet(id int, cardSet *model.CardSet) (*model.CardSet, error)
-	DeleteCardSet(id int ) error
+	DeleteCardSet(ownerId int, cardSetId int) error
 }
 
 type CardSetRepositoryImpl struct {
@@ -62,15 +62,15 @@ func (r *CardSetRepositoryImpl) UpdateCardSet(id int, card *model.CardSet) (*mod
         RETURNING *`,
 		cardSetsTable,
 	)
-    err := r.db.QueryRowx(query, card.Title, card.Slug, card.OwnerId, id).StructScan(&updated)
-    if err != nil {
-        return nil, err
-    }
-    return &updated, nil
+	err := r.db.QueryRowx(query, card.Title, card.Slug, card.OwnerId, id).StructScan(&updated)
+	if err != nil {
+		return nil, err
+	}
+	return &updated, nil
 }
 
-func (r *CardSetRepositoryImpl) DeleteCardSet(id int) error {
-    query := fmt.Sprintf(`DELETE FROM %v WHERE id = $1`, cardSetsTable)
-    _, err := r.db.Exec(query, id)
-    return err
+func (r *CardSetRepositoryImpl) DeleteCardSet(ownerId int, id int) error {
+	query := fmt.Sprintf(`DELETE FROM %v WHERE id = $1 AND owner_id = $2`, cardSetsTable)
+	_, err := r.db.Exec(query, id, ownerId)
+	return err
 }

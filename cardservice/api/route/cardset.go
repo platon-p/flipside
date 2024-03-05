@@ -3,6 +3,7 @@ package route
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/platon-p/flipside/cardservice/api/controller"
@@ -24,7 +25,7 @@ func (r *CardSetRouter) Setup(group *gin.RouterGroup) {
 		Use(r.authMiddleware.Handler()).
 		POST("/", r.CreateCardSet).
 		PUT("/", r.UpdateCardSet).
-		DELETE("/:slug", r.DeleteCardSet)
+		DELETE("/:id", r.DeleteCardSet)
 }
 
 func (r *CardSetRouter) CreateCardSet(ctx *gin.Context) {
@@ -71,13 +72,17 @@ func (r *CardSetRouter) UpdateCardSet(ctx *gin.Context) {
 
 }
 func (r *CardSetRouter) DeleteCardSet(ctx *gin.Context) {
-	slug := ctx.Param("slug")
-	userId := ctx.GetInt("userId")
-	err := r.controller.DeleteCardSet(userId, slug)
+	idStr := ctx.Param("id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
+		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
+		return
+	}
+	userId := ctx.GetInt("userId")
+	if err := r.controller.DeleteCardSet(userId, id); err != nil {
 		fmt.Println("DeleteCardSet:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
 	} else {
-		ctx.JSON(http.StatusNoContent, nil)
+		helper.ErrorMessage(ctx, http.StatusOK, "Success")
 	}
 }

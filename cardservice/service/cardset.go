@@ -21,6 +21,6 @@ func (s *CardSetService) UpdateCardSet(cardSet *model.CardSet) (*model.CardSet, 
 	return s.cardSetRepository.UpdateCardSet(cardSet.Id, cardSet)
 }
 
-func (s *CardSetService) DeleteCardSet(cardSetId int) error {
-	return s.cardSetRepository.DeleteCardSet(cardSetId)
+func (s *CardSetService) DeleteCardSet(ownerId int, cardSetId int) error {
+	return s.cardSetRepository.DeleteCardSet(ownerId, cardSetId)
 }
