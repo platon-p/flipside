@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom"
 import { CardSetItem } from "../components/CardSetItem";
+import { CardSetRepository } from "../repository/CardSetRepository";
 
 export function Main() {
     const auth = true;
@@ -9,11 +10,10 @@ export function Main() {
 }
 
 function UserPage() {
+    const myId = 1;
     const navigate = useNavigate();
-    const cards = [
-        { title: "1. CardSet title", slug: "set1" },
-        { title: "2. CardSet title", slug: "set2" }
-    ]
+    const cards = CardSetRepository.getCardSetsByOwner(myId);
+    
     function navigateToCardSet(slug: string) {
         navigate(`/set/${slug}`)
     }
@@ -25,7 +25,7 @@ function UserPage() {
             gap: '1em'
         }}>
             {cards.map((v, i) => {
-                return <div onClick={_ => navigateToCardSet(v.slug)}>
+                return <div key={i} onClick={() => navigateToCardSet(v.slug)}>
                     <CardSetItem title={v.title} slug={v.slug} key={i} />
                 </div>
             })}

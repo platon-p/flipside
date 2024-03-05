@@ -1,28 +1,23 @@
 import { useParams } from "react-router-dom"
+import { CardRepository } from "../repository/CardRepository";
+import { CardSetRepository } from "../repository/CardSetRepository";
 
 export function CardSet() {
     const { slug } = useParams();
-    const cards = [
-        {
-            question: '1. Card question',
-            answer: '1. Card answer',
-            position: 1
-        },
-        {
-            question: '2. Card question',
-            answer: '2. Card answer',
-            position: 2
-        }
-    ]
+    const cardSet = CardSetRepository.getCardSetBySlug(slug!);
+    const cards = CardRepository.getCards(slug!);
+
     function moveUp(position: number) {
     }
 
     function moveDown(position: number) {
     }
-    
+    if (!cardSet) {
+        return <h2>CardSet not found</h2>
+    }
     return <div>
-        <h2>CardTitle</h2>
-        <p>/{slug}</p>
+        <h2>{cardSet.title}</h2>
+        <p>/{cardSet.slug}</p>
 
         <h4>Cards</h4>
         <div style={{
@@ -56,7 +51,10 @@ export function CardSet() {
                             margin: 0,
                             backgroundColor: '#ddd'
                         }}>{v.question}</p>
-                        <p style={{ margin: 0 }}>{v.answer}</p>
+                        <p style={{
+                            margin: 0,
+                            backgroundColor: '#eee'
+                        }}>{v.answer}</p>
                     </div>
                 </div>
             })}
