@@ -12,7 +12,7 @@ func (r *CardRouter) Setup(group *gin.RouterGroup) {
 	cards.DELETE("/", r.DeleteCards) // ?positions=...
 }
 
-func (r *CardSetRouter) CreateCards(ctx *gin.Context)
-func (r *CardSetRouter) GetCards(ctx *gin.Context)
-func (r *CardSetRouter) UpdateCards(ctx *gin.Context)
-func (r *CardSetRouter) DeleteCards(ctx *gin.Context)
+func (r *CardRouter) CreateCards(ctx *gin.Context)
+func (r *CardRouter) GetCards(ctx *gin.Context)
+func (r *CardRouter) UpdateCards(ctx *gin.Context)
+func (r *CardRouter) DeleteCards(ctx *gin.Context)
