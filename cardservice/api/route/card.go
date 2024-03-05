@@ -1,8 +1,13 @@
 package route
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/platon-p/flipside/cardservice/api/controller"
+)
 
-type CardRouter struct {}
+type CardRouter struct {
+    controller *controller.CardController
+}
 
 func (r *CardRouter) Setup(group *gin.RouterGroup) {
 	cards := group.Group("/cardset/:slug/cards")

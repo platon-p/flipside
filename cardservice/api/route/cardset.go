@@ -1,8 +1,13 @@
 package route
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/platon-p/flipside/cardservice/api/controller"
+	"github.com/platon-p/flipside/cardservice/api/transfer"
+)
 
 type CardSetRouter struct {
+    controller *controller.CardSetController
 }
 
 func (r *CardSetRouter) Setup(group *gin.RouterGroup) {
