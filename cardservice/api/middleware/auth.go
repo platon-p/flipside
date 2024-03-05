@@ -22,10 +22,13 @@ func NewAuthMiddleware(SignKey interface{}) *AuthMiddleware {
 
 func (m *AuthMiddleware) ValidateToken(token string) (*int, error) {
 	var claims jwt.MapClaims
-	jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
+    _, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
 		return m.SignKey, nil
-	})
-	userId, ok := claims["userId"].(int)
+	}, jwt.WithExpirationRequired())
+    if err != nil {
+        return nil, err
+    }
+	userId, ok := claims["id"].(int)
 	if !ok {
 		return nil, fmt.Errorf("invalid token")
 	}
