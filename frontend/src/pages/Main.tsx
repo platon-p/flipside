@@ -1,16 +1,18 @@
 import { useNavigate } from "react-router-dom"
 import { CardSetItem } from "../components/CardSetItem";
 import { CardSetRepository } from "../repository/CardSetRepository";
+import { AuthService } from "../service/AuthService";
 
 export function Main() {
-    const auth = true;
-    return <>
-        {auth ? <UserPage /> : <NewbiePage />}
-    </>
+    const auth = AuthService.isAuth();
+    if (auth) {
+        return <UserPage />
+    }
+    return <NewbiePage />
 }
 
 function UserPage() {
-    const myId = 1;
+    const myId = AuthService.getMyId()!;
     const navigate = useNavigate();
     const cards = CardSetRepository.getCardSetsByOwner(myId);
     

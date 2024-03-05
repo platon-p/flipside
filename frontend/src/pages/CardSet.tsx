@@ -12,6 +12,7 @@ export function CardSet() {
 
     function moveDown(position: number) {
     }
+
     if (!cardSet) {
         return <h2>CardSet not found</h2>
     }
