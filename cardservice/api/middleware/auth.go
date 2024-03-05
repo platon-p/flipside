@@ -28,10 +28,11 @@ func (m *AuthMiddleware) ValidateToken(token string) (*int, error) {
     if err != nil {
         return nil, err
     }
-	userId, ok := claims["id"].(int)
+	userIdFloat, ok := claims["id"].(float64)
 	if !ok {
 		return nil, fmt.Errorf("invalid token")
 	}
+    userId := int(userIdFloat)
 	return &userId, nil
 }
 
