@@ -47,13 +47,18 @@ func (r *CardRepositoryImpl) CreateCards(cards []model.Card) ([]model.Card, erro
 
 func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) {
 	query := fmt.Sprintf(
-		`UPDATE %v
-        SET question = :question, answer = :answer,
-        position = :position, card_set_id = :card_set_id
-        WHERE position = :position AND card_set_id = :card_set_id
-        RETURNING *`,
+        `SELECT c FROM %v
+        INNER JOIN %v s ON c.card_set_id = s.id
+        WHERE s.slug = $1`,
 		cardsTable,
+        cardSetsTable,
 	)
+    var res []model.Card
+    err := r.db.Select(&res, query, cardSetSlug)
+    if err != nil {
+        return nil, err
+    }
+    return res, nil
 }
 
 func (r *CardRepositoryImpl) UpdateCards(cards []model.Card) ([]model.Card, error) {
