@@ -17,6 +17,13 @@ type CardService struct {
 	cardRepository    repository.CardRepository
 }
 
+func NewCardService(cardSetRepository repository.CardSetRepository, cardRepository repository.CardRepository) *CardService {
+    return &CardService{
+    	cardSetRepository: cardSetRepository,
+    	cardRepository:    cardRepository,
+    }
+}
+
 func (s *CardService) CreateCards(userId int, slug string, cards []model.Card) ([]model.Card, error) {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
 	if err != nil {
