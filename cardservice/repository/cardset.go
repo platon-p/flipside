@@ -1,14 +1,21 @@
 package repository
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/lib/pq"
 	"github.com/platon-p/flipside/cardservice/model"
 )
 
 var (
 	cardSetsTable = "card_sets"
+    cardSetsSlugConstraint = `card_sets_slug_key`
+
+	ErrCardSetNotFound = errors.New("Card Set not found")
+    ErrCardSetSlugAlreadyExists = errors.New("Slug already exists")
 )
 
 type CardSetRepository interface {
@@ -36,7 +43,14 @@ func (r *CardSetRepositoryImpl) CreateCardSet(cardSet *model.CardSet) (*model.Ca
 		cardSetsTable,
 	)
 	var newEntity model.CardSet
-	err := r.db.QueryRowx(query, cardSet.Title, cardSet.Title, cardSet.OwnerId).StructScan(&newEntity)
+	err := r.db.QueryRowx(query, cardSet.Title, cardSet.Slug, cardSet.OwnerId).StructScan(&newEntity)
+    switch e := err.(type) {
+    case *pq.Error:
+        if e.Constraint == cardSetsSlugConstraint {
+            return nil, ErrCardSetSlugAlreadyExists
+        }
+        fmt.Println(*e)
+    }
 	if err != nil {
 		return nil, err
 	}
@@ -47,6 +61,9 @@ func (r *CardSetRepositoryImpl) GetCardSet(slug string) (*model.CardSet, error) 
 	var found model.CardSet
 	query := fmt.Sprintf(`SELECT * FROM %v WHERE slug = $1`, cardSetsTable)
 	err := r.db.QueryRowx(query, slug).StructScan(&found)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, ErrCardSetNotFound
+	}
 	if err != nil {
 		return nil, err
 	}

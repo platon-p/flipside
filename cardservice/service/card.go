@@ -8,7 +8,6 @@ import (
 )
 
 var (
-	ErrCardSetNotFound = errors.New("Card Set not found")
 	ErrNotCardSetOwner = errors.New("You are not owner of this card set")
 )
 
