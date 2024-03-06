@@ -14,7 +14,7 @@ type CardRepository interface {
 	CreateCards(cards []model.Card) ([]model.Card, error)
 	GetCards(cardSetSlug string) ([]model.Card, error)
 	UpdateCards(cards []model.Card) ([]model.Card, error)
-	DeleteCards(cards []model.Card) error
+	DeleteCards(slug string, positions []int) error
 }
 
 type CardRepositoryImpl struct {
@@ -66,12 +66,11 @@ func (r *CardRepositoryImpl) UpdateCards(cards []model.Card) ([]model.Card, erro
 	return res, nil
 }
 
-func (r *CardRepositoryImpl) DeleteCards(cards []model.Card) error {
+func (r *CardRepositoryImpl) DeleteCards(cardSetId int, positions []int) error {
 	query := fmt.Sprintf(
-		`DELETE FROM %v
-        WHERE position = :position AND card_set_id = :card_set_id`,
+		`DELETE FROM %v WHERE position in $1 AND card_set_id = $2`,
 		cardsTable,
 	)
-	_, err := r.db.NamedQuery(query, cards)
+	_, err := r.db.Queryx(query, positions, cardSetId)
 	return err
 }
