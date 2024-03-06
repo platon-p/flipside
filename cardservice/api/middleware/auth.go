@@ -52,7 +52,7 @@ func (m *AuthMiddleware) Handler() gin.HandlerFunc {
 			ctx.Abort()
 			return
 		}
-		ctx.Set("userId", userId)
+		ctx.Set("userId", *userId)
 		ctx.Next()
 	}
 }
