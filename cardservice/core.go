@@ -16,7 +16,7 @@ type Core struct {
 }
 
 type Config struct {
-	DataSource string `env:"CARD_DATASOURCE"`
+	DataSource string `env:"DATASOURCE"`
 	SignKey    string `env:"JWT_SIGN_KEY"`
 }
 
@@ -44,15 +44,17 @@ func NewCore() *Core {
         panic(err)
     }
 	cardSetRepository := repository.NewCardSetRepositoryImpl(conn)
-	cardSetService := service.NewCardSetService(cardSetRepository)
+    cardRepository := repository.NewCardRepositoryImpl(conn)
 
+	cardSetService := service.NewCardSetService(cardSetRepository)
+    cardService := service.NewCardService(cardSetRepository, cardRepository)
 	authMiddleware := middleware.NewAuthMiddleware(cfg.SignKey)
 
 	cardSetController := controller.NewCardSetController(cardSetService)
-	cardController := controller.NewCardController()
+	cardController := controller.NewCardController(cardService)
 
 	cardSetRouter := route.NewCardSetRouter(cardSetController, authMiddleware)
-	cardRouter := route.NewCardRouter(cardController)
+	cardRouter := route.NewCardRouter(cardController, authMiddleware)
 
 	router := route.NewRouter(cardSetRouter, cardRouter)
 	engine := gin.Default()
