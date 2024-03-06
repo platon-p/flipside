@@ -8,6 +8,16 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
       - db-data:/var/lib/postgresql/data
+  cardservice:
+    build:
+      context: ./cardservice
+      dockerfile: Dockerfile
+    env_file: './.env'
+    environment:
+      - PORT=80
+      - DATASOURCE=postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db/${POSTGRES_DB}?sslmode=disable
+    depends_on:
+      - db
   authservice:
     build:
       context: ./authservice
