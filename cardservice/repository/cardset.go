@@ -57,8 +57,8 @@ func (r *CardSetRepositoryImpl) UpdateCardSet(id int, card *model.CardSet) (*mod
 	var updated model.CardSet
 	query := fmt.Sprintf(
 		`UPDATE %v 
-        SET title = $1, slug = $2, owner_id = $3 
-        WHERE id = $4
+        SET title = $1, slug = $2
+        WHERE id = $4, owner_id = $3
         RETURNING *`,
 		cardSetsTable,
 	)
