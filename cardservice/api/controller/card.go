@@ -1,11 +1,18 @@
 package controller
 
-import "github.com/platon-p/flipside/cardservice/api/transfer"
+import (
+	"github.com/platon-p/flipside/cardservice/api/transfer"
+	"github.com/platon-p/flipside/cardservice/service"
+)
 
-type CardController struct{}
+type CardController struct {
+	cardService *service.CardService
+}
 
-func NewCardController() *CardController {
-	return &CardController{}
+func NewCardController(cardService *service.CardService) *CardController {
+	return &CardController{
+		cardService: cardService,
+	}
 }
 
 func (c *CardController) CreateCards(
@@ -21,7 +28,7 @@ func (c *CardController) GetCards(slug string) ([]transfer.CardResponse, error) 
 }
 
 func (c *CardController) UpdateCards(
-    userId int,
+	userId int,
 	slug string,
 	request []transfer.CardRequest,
 ) ([]transfer.CardResponse, error) {
