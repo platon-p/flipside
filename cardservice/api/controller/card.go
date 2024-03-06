@@ -21,12 +21,13 @@ func (c *CardController) GetCards(slug string) ([]transfer.CardResponse, error) 
 }
 
 func (c *CardController) UpdateCards(
+    userId int,
 	slug string,
 	request []transfer.CardRequest,
 ) ([]transfer.CardResponse, error) {
 	panic("Not implemented")
 }
 
-func (c *CardController) DeleteCards(slug string, positions []int) error {
+func (c *CardController) DeleteCards(userId int, slug string, positions []string) error {
 	panic("Not implemented")
 }
