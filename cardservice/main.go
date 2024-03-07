@@ -1,6 +1,6 @@
 package main
 
 func main() {
-    core := NewCore()
-    core.Start()
+	core := NewCore()
+	core.Start()
 }

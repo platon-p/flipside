@@ -26,28 +26,28 @@ type CoreConfig struct {
 }
 
 func LoadConfig() *CoreConfig {
-    var config Config
-    if err := cleanenv.ReadEnv(&config); err != nil {
-        panic(err)
-    }
-    return &CoreConfig{
-        DataSource: config.DataSource,
-        SignKey: []byte(config.SignKey),
-    }
+	var config Config
+	if err := cleanenv.ReadEnv(&config); err != nil {
+		panic(err)
+	}
+	return &CoreConfig{
+		DataSource: config.DataSource,
+		SignKey:    []byte(config.SignKey),
+	}
 
 }
 
 func NewCore() *Core {
 	cfg := LoadConfig()
 	conn, err := repository.NewConnection(cfg.DataSource)
-    if err != nil {
-        panic(err)
-    }
+	if err != nil {
+		panic(err)
+	}
 	cardSetRepository := repository.NewCardSetRepositoryImpl(conn)
-    cardRepository := repository.NewCardRepositoryImpl(conn)
+	cardRepository := repository.NewCardRepositoryImpl(conn)
 
 	cardSetService := service.NewCardSetService(cardSetRepository)
-    cardService := service.NewCardService(cardSetRepository, cardRepository)
+	cardService := service.NewCardService(cardSetRepository, cardRepository)
 	authMiddleware := middleware.NewAuthMiddleware(cfg.SignKey)
 
 	cardSetController := controller.NewCardSetController(cardSetService)
