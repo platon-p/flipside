@@ -17,10 +17,10 @@ type CardService struct {
 }
 
 func NewCardService(cardSetRepository repository.CardSetRepository, cardRepository repository.CardRepository) *CardService {
-    return &CardService{
-    	cardSetRepository: cardSetRepository,
-    	cardRepository:    cardRepository,
-    }
+	return &CardService{
+		cardSetRepository: cardSetRepository,
+		cardRepository:    cardRepository,
+	}
 }
 
 func (s *CardService) CreateCards(userId int, slug string, cards []model.Card) ([]model.Card, error) {
