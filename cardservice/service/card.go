@@ -9,6 +9,7 @@ import (
 
 var (
 	ErrNotCardSetOwner = errors.New("You are not owner of this card set")
+    ErrCardNegativePosition = errors.New("Card's position should be positive")
 )
 
 type CardService struct {
@@ -25,17 +26,20 @@ func NewCardService(cardSetRepository repository.CardSetRepository, cardReposito
 
 func (s *CardService) CreateCards(userId int, slug string, cards []model.Card) ([]model.Card, error) {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
+    if errors.Is(err, repository.ErrCardSetNotFound) {
+        return nil, ErrCardSetNotFound
+    }
 	if err != nil {
 		return nil, err
-	}
-	if cardSet == nil {
-		return nil, ErrCardSetNotFound
 	}
 	if cardSet.OwnerId != userId {
 		return nil, ErrNotCardSetOwner
 	}
-	for _, v := range cards {
-		v.CardSetId = cardSet.Id
+	for i := range cards {
+        if cards[i].Position <= 0 {
+            return nil, ErrCardNegativePosition
+        }
+		cards[i].CardSetId = cardSet.Id
 	}
 	return s.cardRepository.CreateCards(cards)
 }
