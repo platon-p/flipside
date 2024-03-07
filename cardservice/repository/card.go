@@ -1,7 +1,10 @@
 package repository
 
 import (
+	"database/sql"
+	"errors"
 	"fmt"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/platon-p/flipside/cardservice/model"
 )
@@ -46,17 +49,22 @@ func (r *CardRepositoryImpl) CreateCards(cards []model.Card) ([]model.Card, erro
 }
 
 func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) {
-	query := fmt.Sprintf(
-        `SELECT c FROM %v
-        INNER JOIN %v s ON c.card_set_id = s.id
-        WHERE s.slug = $1`,
-		cardsTable,
-        cardSetsTable,
-	)
-    var res []model.Card
-    err := r.db.Select(&res, query, cardSetSlug)
+    cardSet, err := r.getCardSet(cardSetSlug)
     if err != nil {
         return nil, err
+    }
+	query := fmt.Sprintf(`SELECT * FROM %v WHERE card_set_id = $1`, cardsTable,)
+    var res []model.Card
+    rows, err := r.db.Queryx(query, cardSet.Id)
+    if err != nil {
+        return nil, err
+    }
+    for rows.Next() {
+        var cur model.Card
+        if err := rows.StructScan(&cur); err != nil {
+            return nil, err
+        }
+        res = append(res, cur)
     }
     return res, nil
 }
@@ -92,4 +100,17 @@ func (r *CardRepositoryImpl) DeleteCards(slug string, positions []int) error {
 	)
 	_, err := r.db.Queryx(query, slug, positions)
 	return err
+}
+
+func (r *CardRepositoryImpl) getCardSet(slug string) (*model.CardSet, error) {
+	var found model.CardSet
+	query := fmt.Sprintf(`SELECT * FROM %v WHERE slug = $1`, cardSetsTable)
+	err := r.db.QueryRowx(query, slug).StructScan(&found)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, ErrCardSetNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &found, nil
 }

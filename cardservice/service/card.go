@@ -58,7 +58,14 @@ func (s *CardService) UpdateCards(userId int, slug string, cards []model.Card) (
 }
 
 func (s *CardService) GetCards(slug string) ([]model.Card, error) {
-	return s.cardRepository.GetCards(slug)
+    res, err := s.cardRepository.GetCards(slug)
+    if errors.Is(err, repository.ErrCardSetNotFound) {
+        return nil, ErrCardSetNotFound
+    }
+    if err != nil {
+        return nil, err
+    }
+    return res, nil
 }
 
 func (s *CardService) DeleteCards(userId int, slug string, positions []int) error {

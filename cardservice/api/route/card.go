@@ -1,6 +1,7 @@
 package route
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/platon-p/flipside/cardservice/api/helper"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
 	"github.com/platon-p/flipside/cardservice/api/transfer"
+	"github.com/platon-p/flipside/cardservice/service"
 )
 
 type CardRouter struct {
@@ -53,7 +55,9 @@ func (r *CardRouter) CreateCards(ctx *gin.Context) {
 func (r *CardRouter) GetCards(ctx *gin.Context) {
     slug := ctx.Param("slug")
     response, err := r.controller.GetCards(slug)
-	if err != nil {
+    if errors.Is(err, service.ErrCardSetNotFound) {
+		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+    } else if err != nil {
 		fmt.Println("GetCards:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
 	} else {
