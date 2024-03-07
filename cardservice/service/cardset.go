@@ -37,6 +37,13 @@ func (s *CardSetService) GetCardSet(slug string) (*model.CardSet, error) {
 }
 
 func (s *CardSetService) UpdateCardSet(oldSlug string, cardSet *model.CardSet) (*model.CardSet, error) {
+    oldCardSet, err := s.cardSetRepository.GetCardSet(oldSlug)
+    if err != nil {
+        return nil, err
+    }
+    if oldCardSet.OwnerId != cardSet.OwnerId {
+        return nil, ErrNotCardSetOwner
+    }
 	res, err := s.cardSetRepository.UpdateCardSet(oldSlug, cardSet)
 	if errors.Is(err, repository.ErrCardSetNotFound) {
 		return nil, ErrCardSetNotFound

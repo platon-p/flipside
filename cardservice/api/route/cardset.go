@@ -45,14 +45,13 @@ func (r *CardSetRouter) CreateCardSet(ctx *gin.Context) {
 	}
 	userId := ctx.GetInt("userId")
 	response, err := r.controller.CreateCardSet(userId, &request)
-	if errors.Is(err, repository.ErrCardSetSlugAlreadyExists) {
+	switch {
+	case errors.Is(err, repository.ErrCardSetSlugAlreadyExists):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
-		return
-	}
-	if err != nil {
+	case err != nil:
 		fmt.Println("CreateCardSet:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
-	} else {
+	default:
 		ctx.JSON(http.StatusCreated, response)
 	}
 }
@@ -79,16 +78,19 @@ func (r *CardSetRouter) UpdateCardSet(ctx *gin.Context) {
 	}
 	userId := ctx.GetInt("userId")
 	response, err := r.controller.UpdateCardSet(userId, slug, &request)
-	if errors.Is(err, service.ErrCardSetNotFound) {
+	switch {
+	case errors.Is(err, service.ErrNotCardSetOwner):
+		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+	case errors.Is(err, service.ErrCardSetNotFound):
 		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
-	} else if err != nil {
+	case err != nil:
 		fmt.Println("UpdateCardSet:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
-	} else {
+	default:
 		ctx.JSON(http.StatusOK, response)
 	}
-
 }
+
 func (r *CardSetRouter) DeleteCardSet(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	userId := ctx.GetInt("userId")
