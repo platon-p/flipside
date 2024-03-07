@@ -103,22 +103,37 @@ func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) 
 func (r *CardRepositoryImpl) UpdateCards(cards []model.Card) ([]model.Card, error) {
 	query := fmt.Sprintf(
 		`UPDATE %v
-        SET question = :question, answer = :answer,
-        position = :position, card_set_id = :card_set_id
-        WHERE position = :position AND card_set_id = :card_set_id
+        SET question = $1, answer = $2
+        WHERE position = $3 AND card_set_id = $4
         RETURNING *`,
 		cardsTable,
 	)
-	rows, err := r.db.NamedQuery(query, cards)
-	if err != nil {
-		return nil, err
-	}
-	var res []model.Card
-	err = rows.StructScan(&res)
-	if err != nil {
-		return nil, err
-	}
-	return res, nil
+    tx, err := r.db.Beginx()
+    if err != nil {
+        return nil, err
+    }
+    stmt, err := tx.Preparex(query)
+    if err != nil {
+        return nil, err
+    }
+    res := make([]model.Card, len(cards))
+    for i, v := range cards {
+        err := stmt.QueryRowx(v.Question, v.Answer, v.Position, v.CardSetId).StructScan(&res[i])
+        if err != nil {
+            if err := tx.Rollback(); err != nil {
+                return nil, err
+            }
+            if errors.Is(err, sql.ErrNoRows) {
+                return nil, ErrCardNotFound
+            }
+            fmt.Println(err)
+            return nil, err
+        }
+    }
+    if err := tx.Commit(); err != nil {
+        return nil, err
+    }
+    return res, nil
 }
 
 func (r *CardRepositoryImpl) DeleteCards(cardSetId int, positions []int) error {

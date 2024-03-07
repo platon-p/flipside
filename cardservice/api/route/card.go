@@ -51,6 +51,8 @@ func (r *CardRouter) CreateCards(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, service.ErrCardSetNotFound):
 		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+    case errors.Is(err, service.ErrNotCardSetOwner):
+        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
 	case errors.Is(err, repository.ErrCardWithThisPositionExists):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
 	case errors.Is(err, service.ErrCardNegativePosition):
@@ -88,6 +90,10 @@ func (r *CardRouter) UpdateCards(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, service.ErrNotCardSetOwner):
 		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+    case errors.Is(err, service.ErrCardSetNotFound):
+        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+    case errors.Is(err, service.ErrCardNotFound):
+        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("UpdateCards:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")

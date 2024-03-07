@@ -47,19 +47,26 @@ func (s *CardService) CreateCards(userId int, slug string, cards []model.Card) (
 
 func (s *CardService) UpdateCards(userId int, slug string, cards []model.Card) ([]model.Card, error) {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
+    if errors.Is(err, repository.ErrCardSetNotFound) {
+        return nil, ErrCardSetNotFound
+    }
 	if err != nil {
 		return nil, err
-	}
-	if cardSet == nil {
-		return nil, ErrCardSetNotFound
 	}
 	if cardSet.OwnerId != userId {
 		return nil, ErrNotCardSetOwner
 	}
-	for _, v := range cards {
-		v.CardSetId = cardSet.Id
+	for i := range cards {
+		cards[i].CardSetId = cardSet.Id
 	}
-	return s.cardRepository.UpdateCards(cards)
+    res, err := s.cardRepository.UpdateCards(cards)
+    if errors.Is(err, repository.ErrCardNotFound) {
+        return nil, ErrCardNotFound
+    }
+    if err != nil {
+        return nil, err
+    }
+    return res, nil
 }
 
 func (s *CardService) GetCards(slug string) ([]model.Card, error) {
