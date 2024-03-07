@@ -8,8 +8,9 @@ import (
 )
 
 var (
-	ErrNotCardSetOwner = errors.New("You are not owner of this card set")
-    ErrCardNegativePosition = errors.New("Card's position should be positive")
+	ErrCardNotFound         = errors.New("Card not found")
+	ErrNotCardSetOwner      = errors.New("You are not owner of this card set")
+	ErrCardNegativePosition = errors.New("Card's position should be positive")
 )
 
 type CardService struct {
@@ -26,9 +27,9 @@ func NewCardService(cardSetRepository repository.CardSetRepository, cardReposito
 
 func (s *CardService) CreateCards(userId int, slug string, cards []model.Card) ([]model.Card, error) {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
-    if errors.Is(err, repository.ErrCardSetNotFound) {
-        return nil, ErrCardSetNotFound
-    }
+	if errors.Is(err, repository.ErrCardSetNotFound) {
+		return nil, ErrCardSetNotFound
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -36,9 +37,9 @@ func (s *CardService) CreateCards(userId int, slug string, cards []model.Card) (
 		return nil, ErrNotCardSetOwner
 	}
 	for i := range cards {
-        if cards[i].Position <= 0 {
-            return nil, ErrCardNegativePosition
-        }
+		if cards[i].Position <= 0 {
+			return nil, ErrCardNegativePosition
+		}
 		cards[i].CardSetId = cardSet.Id
 	}
 	return s.cardRepository.CreateCards(cards)
@@ -62,26 +63,30 @@ func (s *CardService) UpdateCards(userId int, slug string, cards []model.Card) (
 }
 
 func (s *CardService) GetCards(slug string) ([]model.Card, error) {
-    res, err := s.cardRepository.GetCards(slug)
-    if errors.Is(err, repository.ErrCardSetNotFound) {
-        return nil, ErrCardSetNotFound
-    }
-    if err != nil {
-        return nil, err
-    }
-    return res, nil
+	res, err := s.cardRepository.GetCards(slug)
+	if errors.Is(err, repository.ErrCardSetNotFound) {
+		return nil, ErrCardSetNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (s *CardService) DeleteCards(userId int, slug string, positions []int) error {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
+    if errors.Is(err, repository.ErrCardSetNotFound) {
+        return ErrCardSetNotFound
+    }
 	if err != nil {
 		return err
-	}
-	if cardSet == nil {
-		return ErrCardSetNotFound
 	}
 	if cardSet.OwnerId != userId {
 		return ErrNotCardSetOwner
 	}
-	return s.cardRepository.DeleteCards(slug, positions)
+	err = s.cardRepository.DeleteCards(cardSet.Id, positions)
+	if errors.Is(err, repository.ErrCardNotFound) {
+		return ErrCardNotFound
+	}
+	return err
 }

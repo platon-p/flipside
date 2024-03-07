@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/platon-p/flipside/cardservice/api/transfer"
 	"github.com/platon-p/flipside/cardservice/model"
 	"github.com/platon-p/flipside/cardservice/service"
@@ -69,7 +71,15 @@ func (c *CardController) UpdateCards(
 }
 
 func (c *CardController) DeleteCards(userId int, slug string, positions []string) error {
-	return c.DeleteCards(userId, slug, positions)
+    pos := make([]int, len(positions))
+    for i := range positions {
+        num, err := strconv.Atoi(positions[i])
+        if err != nil {
+            return err
+        }
+        pos[i] = num
+    }
+	return c.cardService.DeleteCards(userId, slug, pos)
 }
 
 func cardRequestToModel(request *transfer.CardRequest) *model.Card {

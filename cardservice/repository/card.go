@@ -11,17 +11,18 @@ import (
 )
 
 var (
-	cardsTable = "cards"
-    positionConstraint = "unique_position_per_set"
+	cardsTable         = "cards"
+	positionConstraint = "unique_position_per_set"
 
-    ErrCardWithThisPositionExists = errors.New("Card with this position already exists")
+	ErrCardWithThisPositionExists = errors.New("Card with this position already exists")
+	ErrCardNotFound               = errors.New("Card not found")
 )
 
 type CardRepository interface {
 	CreateCards(cards []model.Card) ([]model.Card, error)
 	GetCards(slug string) ([]model.Card, error)
 	UpdateCards(cards []model.Card) ([]model.Card, error)
-	DeleteCards(slug string, positions []int) error
+	DeleteCards(cardSetId int, positions []int) error
 }
 
 type CardRepositoryImpl struct {
@@ -78,7 +79,12 @@ func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) 
 	if err != nil {
 		return nil, err
 	}
-	query := fmt.Sprintf(`SELECT * FROM %v WHERE card_set_id = $1`, cardsTable)
+	query := fmt.Sprintf(
+		`SELECT * FROM %v 
+        WHERE card_set_id = $1
+        ORDER BY position`,
+		cardsTable,
+	)
 	var res []model.Card
 	rows, err := r.db.Queryx(query, cardSet.Id)
 	if err != nil {
@@ -115,15 +121,42 @@ func (r *CardRepositoryImpl) UpdateCards(cards []model.Card) ([]model.Card, erro
 	return res, nil
 }
 
-func (r *CardRepositoryImpl) DeleteCards(slug string, positions []int) error {
+func (r *CardRepositoryImpl) DeleteCards(cardSetId int, positions []int) error {
 	query := fmt.Sprintf(
-		`DELETE c FROM %v c
-        INNER JOIN %v s ON s.id = c.card_set_id
-        WHERE s.slug = $1 AND c.position in $2`,
+		`DELETE FROM %v WHERE card_set_id = $1 AND position = $2`,
 		cardsTable,
-		cardSetsTable,
 	)
-	_, err := r.db.Queryx(query, slug, positions)
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return err
+	}
+	stmt, err := tx.Preparex(query)
+	if err != nil {
+		return err
+	}
+	for _, v := range positions {
+		res, err := stmt.Exec(cardSetId, v)
+		if err != nil {
+			if err := tx.Rollback(); err != nil {
+				return err
+			}
+			return err
+		}
+		c, err := res.RowsAffected()
+		if c != 0 {
+			continue
+		}
+		if err := tx.Rollback(); err != nil {
+			return err
+		}
+		if err != nil {
+			return err
+		}
+		return ErrCardNotFound
+	}
+	if err := tx.Commit(); err != nil {
+		return err
+	}
 	return err
 }
 

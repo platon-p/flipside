@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/platon-p/flipside/cardservice/api/controller"
@@ -60,6 +62,7 @@ func (r *CardRouter) CreateCards(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, response)
 	}
 }
+
 func (r *CardRouter) GetCards(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	response, err := r.controller.GetCards(slug)
@@ -72,6 +75,7 @@ func (r *CardRouter) GetCards(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, response)
 	}
 }
+
 func (r *CardRouter) UpdateCards(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	var request []transfer.CardRequest
@@ -81,22 +85,35 @@ func (r *CardRouter) UpdateCards(ctx *gin.Context) {
 	}
 	userId := ctx.GetInt("userId")
 	response, err := r.controller.UpdateCards(userId, slug, request)
-	if err != nil {
+	switch {
+	case errors.Is(err, service.ErrNotCardSetOwner):
+		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+	case err != nil:
 		fmt.Println("UpdateCards:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
-	} else {
+	default:
 		ctx.JSON(http.StatusOK, response)
 	}
 }
+
 func (r *CardRouter) DeleteCards(ctx *gin.Context) {
 	slug := ctx.Param("slug")
-	positions := ctx.QueryArray("positions")
+	positions := strings.Split(ctx.Query("positions"), ",")
 	userId := ctx.GetInt("userId")
 	err := r.controller.DeleteCards(userId, slug, positions)
-	if err != nil {
+	switch {
+	case errors.Is(err, strconv.ErrSyntax):
+		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
+	case errors.Is(err, service.ErrCardSetNotFound):
+		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+    case errors.Is(err, service.ErrCardNotFound):
+        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+    case errors.Is(err, service.ErrNotCardSetOwner):
+        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+	case err != nil:
 		fmt.Println("DeleteCards:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
-	} else {
+	default:
 		helper.ErrorMessage(ctx, http.StatusOK, "Success")
 	}
 }
