@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom"
-import { Button } from "../shared/Button"
-import { Input } from "../shared/Input"
-import { useAuth } from "../../hooks/Auth"
+import { Button } from "@/components/shared/Button"
+import { Input } from "@/components/shared/Input"
+import { useAuth } from "@/hooks/Auth"
 import { useState } from "react";
-import { AuthService } from "../../service/AuthService";
+import './Login.css';
 
 export function Login() {
   const auth = useAuth();
@@ -39,18 +39,17 @@ export function Login() {
       flexDirection: 'column',
       gap: '0.2em'
     }}>
-      <h3 onClick={goToMain}>На главную</h3>
-      <Input onInput={(event) => {
-        setEmail(event.currentTarget.value)
-      }} placeholder="Почта" />
-      <Input onInput={(event) => {
-        setPassword(event.currentTarget.value)
-      }} placeholder="Пароль" type="password" />
-      <Button onClick={submit}>Войти</Button>
-      {errorMessage && <p style={{
-        color: 'red'
-      }}>{errorMessage}</p>}
-      <p onClick={goToRegister}>Регистрация</p>
+      <h3>Вход</h3>
+      <div className="login-form">
+        <Input onInput={e => setEmail(e.currentTarget.value)} placeholder="Почта" />
+        <Input onInput={e => setPassword(e.currentTarget.value)} placeholder="Пароль" type="password" />
+        <Button onClick={submit}>Войти</Button>
+        {errorMessage && <p className='error-message'>{errorMessage}</p>}
+      </div>
+      <div>
+        <Button onClick={goToRegister}>К регистрации</Button>
+        <Button onClick={goToMain}>На главную</Button>
+      </div>
     </div>
   </>
 }

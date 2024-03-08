@@ -1,0 +1,11 @@
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+    margin-bottom: 1em;
+}
+
+.error-message {
+    margin: 0;
+    color: red;
+}
