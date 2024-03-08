@@ -2,7 +2,10 @@ import { ApiService, TokenPairResponse } from "./ApiService";
 
 export const AuthService = {
     getUserId(): number | null {
-        const token = localStorage.getItem('accessToken')?.split('.')[1] || '';
+        const token = localStorage.getItem('accessToken')?.split('.')[1];
+        if (!token) {
+            return null;
+        }
         const payload = JSON.parse(atob(token));
         return payload.id;
     },
