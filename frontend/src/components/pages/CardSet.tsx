@@ -1,9 +1,9 @@
 import { useNavigate, useParams } from "react-router-dom"
-import { CardSet as CardSetModel, CardSetRepository } from "../repository/CardSetRepository";
+import { CardSet as CardSetModel, CardSetRepository } from "../../repository/CardSetRepository";
 import { useEffect, useState } from "react";
 import { Card, CardRepository } from "@/repository/CardRepository";
 import { useAuth } from "@/hooks/Auth";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/shared/Button";
 
 export function CardSet() {
     const { userId } = useAuth();

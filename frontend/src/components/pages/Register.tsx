@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import { Button } from "../components/Button"
-import { Input } from "../components/Input"
-import { useAuth } from "../hooks/Auth";
+import { Button } from "../shared/Button"
+import { Input } from "../shared/Input"
+import { useAuth } from "../../hooks/Auth";
 import { useState } from "react";
 
 export function Register() {

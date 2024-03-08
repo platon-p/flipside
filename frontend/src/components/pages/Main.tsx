@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom"
-import { CardSetItem } from "../components/CardSetItem";
-import { CardSetRepository } from "../repository/CardSetRepository";
-import { useAuth } from "../hooks/Auth";
+import { CardSetItem } from "../shared/CardSetItem";
+import { CardSetRepository } from "../../repository/CardSetRepository";
+import { useAuth } from "../../hooks/Auth";
 
 export function Main() {
     const auth = useAuth();

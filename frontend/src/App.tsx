@@ -1,8 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Main } from './pages/Main'
-import { Login } from './pages/Login'
-import { Register } from './pages/Register'
-import { CardSet } from './pages/CardSet'
+import { Main } from './components/pages/Main'
+import { Login } from './components/pages/Login'
+import { Register } from './components/pages/Register'
+import { CardSet } from './components/pages/CardSet'
 import { AuthProvider } from './provider/AuthProvider'
 
 function App() {
