@@ -3,7 +3,7 @@ import { Main } from './pages/Main'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { CardSet } from './pages/CardSet'
-import { AuthProvider } from './service/AuthService'
+import { AuthProvider } from './provider/AuthProvider'
 
 function App() {
   return (

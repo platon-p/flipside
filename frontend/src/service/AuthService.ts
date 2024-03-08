@@ -1,13 +1,3 @@
-interface TokenPairResponse {
-    access_token: string
-    refresh_token: string
-}
-
-interface MessageResponse {
-    status_code: string
-    message: string
-}
-
 export const AuthService = {
     getAccessToken(): string | undefined {
         return localStorage.getItem('accessToken') ?? undefined;
@@ -34,9 +24,8 @@ export const AuthService = {
         });
         const json = await response.json();
         if (response.status == 200){
-            const response: TokenPairResponse = json;
-            localStorage.setItem('accessToken', response.access_token);
-            localStorage.setItem('refreshToken', response.refresh_token);
+            localStorage.setItem('accessToken', json.access_token);
+            localStorage.setItem('refreshToken', json.refresh_token);
             return null;
         }
         return json.message;

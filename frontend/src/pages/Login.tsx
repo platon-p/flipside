@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom"
 import { Button } from "../components/Button"
 import { Input } from "../components/Input"
-import { AuthService, useAuth } from "../service/AuthService";
+import { useAuth } from "../hooks/Auth"
 import { useState } from "react";
+import { AuthService } from "../service/AuthService";
 
 export function Login() {
-  const {isAuth} = useAuth();
+  const { isAuth } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
