@@ -1,8 +1,14 @@
 import { ApiService, TokenPairResponse } from "./ApiService";
 
 export const AuthService = {
+    getUserId(): number | null {
+        const token = localStorage.getItem('accessToken')?.split('.')[1] || '';
+        const payload = JSON.parse(atob(token));
+        return payload.id;
+    },
+
     isAuth(): boolean {
-        return localStorage.getItem('accessToken') !== null;
+        return localStorage.getItem('accessToken') !== null && this.getUserId() !== null;
     },
 
     logout(): void {
@@ -13,6 +19,20 @@ export const AuthService = {
     async loginByEmail(email: string, password: string): Promise<string | null> {
         try {
             const tokenPair = await ApiService.Auth.loginByEmail(email, password)
+            this._applyTokenPair(tokenPair);
+            return null;
+        } catch (e: any) {
+            return e;
+        }
+    },
+
+    async loginByRefreshToken(): Promise<string | null> {
+        try {
+            const refreshToken = localStorage.getItem('refreshToken');
+            if (!refreshToken) {
+                return 'No refresh token';
+            }
+            const tokenPair = await ApiService.Auth.loginByToken(refreshToken);
             this._applyTokenPair(tokenPair);
             return null;
         } catch (e: any) {
