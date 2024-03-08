@@ -163,7 +163,7 @@ export const ApiService = {
             throw error.message
         },
 
-        async getCards(slug: string): Promise<CardResponse> {
+        async getCards(slug: string): Promise<Array<CardResponse>> {
             const response = await fetch(`${config.baseUrl}${config.cards}/${slug}`, {
                 method: 'GET'
             })
