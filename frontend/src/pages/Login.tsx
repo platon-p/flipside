@@ -6,10 +6,11 @@ import { useState } from "react";
 import { AuthService } from "../service/AuthService";
 
 export function Login() {
-  const { isAuth } = useAuth();
+  const auth = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("")
 
   function goToRegister() {
     navigate('/register');
@@ -20,11 +21,15 @@ export function Login() {
   }
 
   async function submit() {
-    const res = await AuthService.loginByEmail(email, password);
-    console.log(res);
+    const res = await auth.login(email, password);
+    if (res) {
+      setErrorMessage(res);
+      return
+    }
+    goToMain();
   }
 
-  if (isAuth) {
+  if (auth.isAuth) {
     goToMain();
   }
 
@@ -42,6 +47,9 @@ export function Login() {
         setPassword(event.currentTarget.value)
       }} placeholder="Пароль" type="password" />
       <Button onClick={submit}>Войти</Button>
+      {errorMessage && <p style={{
+        color: 'red'
+      }}>{errorMessage}</p>}
       <p onClick={goToRegister}>Регистрация</p>
     </div>
   </>

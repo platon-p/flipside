@@ -4,8 +4,9 @@ import { CardSetRepository } from "../repository/CardSetRepository";
 import { useAuth } from "../hooks/Auth";
 
 export function Main() {
-    const { isAuth } = useAuth();
-    if (isAuth) {
+    const auth = useAuth();
+
+    if (auth.isAuth) {
         return <UserPage />
     }
     return <NewbiePage />
@@ -19,6 +20,7 @@ function UserPage() {
     function navigateToCardSet(slug: string) {
         navigate(`/set/${slug}`)
     }
+    
     return <>
         <p>Hello</p>
         <p onClick={() => { logout() }}>logout</p>
