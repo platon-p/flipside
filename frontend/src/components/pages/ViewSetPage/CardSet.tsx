@@ -6,7 +6,7 @@ import { useAuth } from "@/hooks/Auth";
 import { Button } from "@/components/shared/Button";
 import { CardListItem } from "./CardListItem";
 
-export function CardSet() {
+export function ViewSetPage() {
     const { userId } = useAuth();
     const { slug } = useParams();
     const navigate = useNavigate();
