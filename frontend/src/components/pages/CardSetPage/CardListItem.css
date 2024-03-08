@@ -1,0 +1,23 @@
+.card__position-holder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card__content-holder {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.card__question {
+    margin: 0;
+    background-color: #ddd;
+}
+
+.card__answer {
+    margin: 0;
+    background-color: #eee;
+}

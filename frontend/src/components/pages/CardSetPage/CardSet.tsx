@@ -1,9 +1,10 @@
-import { useNavigate, useParams } from "react-router-dom"
-import { CardSet as CardSetModel, CardSetRepository } from "../../repository/CardSetRepository";
 import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom"
+import { CardSet as CardSetModel, CardSetRepository } from "@/repository/CardSetRepository";
 import { Card, CardRepository } from "@/repository/CardRepository";
 import { useAuth } from "@/hooks/Auth";
 import { Button } from "@/components/shared/Button";
+import { CardListItem } from "./CardListItem";
 
 export function CardSet() {
     const { userId } = useAuth();
@@ -74,45 +75,13 @@ export function CardSet() {
         </div>}
 
         <h4>Cards</h4>
-        <div style={{
+        {cards?.length === 0 ? <p>Empty list</p> : <div style={{
             display: 'flex',
             flexDirection: 'column',
             gap: '1em'
         }}>
-            {cards && cards.map((v, i) => {
-                return <div style={{
-                    display: 'flex',
-                    border: '1px solid black',
-                    padding: '0.8em',
-                    gap: '1em',
-                }} key={i}>
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        justifyContent: 'center',
-                    }}>
-                        <a>#{v.position}</a>
-                    </div>
-                    <div style={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: '1em',
-                        width: '100%',
-                        justifyContent: 'space-between'
-                    }}>
-                        <p style={{
-                            margin: 0,
-                            backgroundColor: '#ddd'
-                        }}>{v.question}</p>
-                        <p style={{
-                            margin: 0,
-                            backgroundColor: '#eee'
-                        }}>{v.answer}</p>
-                    </div>
-                </div>
-            })}
-
-
+            {cards?.map((v, i) => <CardListItem card={v} key={i} />)}
         </div>
+        }
     </div>
 }
