@@ -4,7 +4,7 @@ import { AuthService } from "../service/AuthService";
 
 const useProvideAuth = (): AuthData => {
     const [isAuth, setIsAuth] = useState(false);
-    const [userId] = useState<number | null>(null);
+    const [userId, setUserId] = useState<number | null>(null);
 
     function logout() {
         AuthService.logout();
@@ -32,13 +32,9 @@ const useProvideAuth = (): AuthData => {
         return res;
     }
 
-    const init = () => {
-        console.log('init');
-        setIsAuth(AuthService.isAuth());
-    }
-
     useEffect(() => {
-        init();
+        setIsAuth(AuthService.isAuth());
+        setUserId(AuthService.getUserId());
     }, []);
 
     return {
