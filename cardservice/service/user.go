@@ -12,7 +12,12 @@ var (
 )
 type UserService struct {
 	userRepository    repository.UserRepository
-	cardSetRepository repository.CardSetRepository
+}
+
+func NewUserService(userRepository repository.UserRepository) *UserService {
+    return &UserService{
+    	userRepository: userRepository,
+    }
 }
 
 func (s *UserService) GetProfile(nickname string) (*model.Profile, error) {
@@ -27,5 +32,17 @@ func (s *UserService) GetProfile(nickname string) (*model.Profile, error) {
 }
 
 func (s *UserService) GetCardSets(nickname string) ([]model.CardSet, error) {
+    profile, err := s.GetProfile(nickname)
+    if err != nil {
+        return nil, err
+    }
+    res, err := s.userRepository.GetCardSets(profile.Id)
+    if errors.Is(err, repository.ErrProfileNotFound) {
+        return nil, ErrProfileNotFound
+    }
+    if err != nil {
+        return nil, err
+    }
+    return res, nil
 
 }

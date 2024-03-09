@@ -3,19 +3,22 @@ package route
 import "github.com/gin-gonic/gin"
 
 type Router struct {
-	cardSetRouter *CardSetRouter
-	cardRouter    *CardRouter
+	routers []IRouter
 }
 
-func NewRouter(cardSetRouter *CardSetRouter, cardRouter *CardRouter) *Router {
+type IRouter interface {
+	Setup(group *gin.RouterGroup)
+}
+
+func NewRouter(routers ...IRouter) *Router {
 	return &Router{
-		cardSetRouter: cardSetRouter,
-		cardRouter:    cardRouter,
+		routers: routers,
 	}
 }
 
 func (r *Router) Setup(group *gin.RouterGroup) {
 	api := group.Group("/api")
-	r.cardSetRouter.Setup(api)
-	r.cardRouter.Setup(api)
+    for _, v := range r.routers {
+        v.Setup(api)
+    }
 }

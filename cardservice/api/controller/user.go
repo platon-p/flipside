@@ -10,6 +10,12 @@ type UserController struct {
     userService *service.UserService
 }
 
+func NewUserController(userService *service.UserService) *UserController {
+    return &UserController{
+    	userService: userService,
+    }
+}
+
 func (c *UserController) GetProfile(nickname string) (*transfer.ProfileResponse, error) {
     model, err := c.userService.GetProfile(nickname)
     if err != nil {
@@ -22,13 +28,13 @@ func (c *UserController) GetProfile(nickname string) (*transfer.ProfileResponse,
 }
 
 func (c *UserController) GetSets(nickname string) ([]transfer.CardSetResponse, error) {
-    models, err := c.userService.GetSets(nickname)
+    models, err := c.userService.GetCardSets(nickname)
     if err != nil {
         return nil, err
     }
     res := make([]transfer.CardSetResponse, len(models))
     for i := range models {
-        res[i] = *c.cardSetModelToResponse(models[i])
+        res[i] = *c.cardSetModelToResponse(&models[i])
     }
     return res, nil
 }

@@ -15,6 +15,12 @@ type UserRouter struct {
     controller *controller.UserController
 }
 
+func NewUserRouter(userController *controller.UserController) *UserRouter {
+    return &UserRouter{
+    	controller: userController,
+    }
+}
+
 func (r *UserRouter) Setup(group *gin.RouterGroup) {
     group.Group("/users").
         GET("/:nickname/profile", r.GetProfileHandler).

@@ -45,18 +45,23 @@ func NewCore() *Core {
 	}
 	cardSetRepository := repository.NewCardSetRepositoryImpl(conn)
 	cardRepository := repository.NewCardRepositoryImpl(conn)
+	userRepository := repository.NewUserRepositoryImpl(conn)
 
 	cardSetService := service.NewCardSetService(cardSetRepository)
 	cardService := service.NewCardService(cardSetRepository, cardRepository)
+	userService := service.NewUserService(userRepository)
+
 	authMiddleware := middleware.NewAuthMiddleware(cfg.SignKey)
 
 	cardSetController := controller.NewCardSetController(cardSetService)
 	cardController := controller.NewCardController(cardService)
+	userController := controller.NewUserController(userService)
 
 	cardSetRouter := route.NewCardSetRouter(cardSetController, authMiddleware)
 	cardRouter := route.NewCardRouter(cardController, authMiddleware)
+	userRouter := route.NewUserRouter(userController)
 
-	router := route.NewRouter(cardSetRouter, cardRouter)
+	router := route.NewRouter(cardSetRouter, cardRouter, userRouter)
 	engine := gin.Default()
 
 	return &Core{
