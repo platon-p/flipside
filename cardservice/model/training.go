@@ -5,6 +5,8 @@ import "time"
 const (
 	TrainingTypeBasic TrainingType = "basic"
 	TrainingTypeQuiz  TrainingType = "quiz"
+
+	TrainingStatusCompleted = "COMPLETED"
 )
 
 type TrainingType string
@@ -16,14 +18,14 @@ type Training struct {
 	TrainingType TrainingType
 	Status       string
 	CreatedAt    time.Time
-	FinishedAt   time.Time
+	FinishedAt   *time.Time
 }
 
 type TrainingTaskResult struct {
 	Id         int
 	TrainingId int
 	CardId     int
-	Answer     string
+	Answer     *string
 	IsCorrect  bool
 	CreatedAt  time.Time
 }
@@ -37,7 +39,7 @@ type TrainingSummary struct {
 }
 
 type Task struct {
-	Question string
-	TaskType string
-	Answers  []string
+	Question     string
+	TrainingType TrainingType
+	Answers      []string
 }

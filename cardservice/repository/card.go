@@ -21,6 +21,8 @@ var (
 type CardRepository interface {
 	CreateCards(cards []model.Card) ([]model.Card, error)
 	GetCards(slug string) ([]model.Card, error)
+	GetCardsByCardSet(cardSetId int) ([]model.Card, error)
+	GetCard(cardId int) (*model.Card, error)
 	UpdateCards(cards []model.Card) ([]model.Card, error)
 	DeleteCards(cardSetId int, positions []int) error
 }
@@ -74,11 +76,7 @@ func (r *CardRepositoryImpl) CreateCards(cards []model.Card) ([]model.Card, erro
 	return res, nil
 }
 
-func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) {
-	cardSet, err := r.getCardSet(cardSetSlug)
-	if err != nil {
-		return nil, err
-	}
+func (r *CardRepositoryImpl) GetCardsByCardSet(cardSetId int) ([]model.Card, error) {
 	query := fmt.Sprintf(
 		`SELECT * FROM %v 
         WHERE card_set_id = $1
@@ -86,7 +84,7 @@ func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) 
 		cardsTable,
 	)
 	var res []model.Card
-	rows, err := r.db.Queryx(query, cardSet.Id)
+	rows, err := r.db.Queryx(query, cardSetId)
 	if err != nil {
 		return nil, err
 	}
@@ -100,6 +98,31 @@ func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) 
 	return res, nil
 }
 
+func (r *CardRepositoryImpl) GetCards(cardSetSlug string) ([]model.Card, error) {
+	cardSet, err := r.getCardSet(cardSetSlug)
+	if err != nil {
+		return nil, err
+	}
+	return r.GetCardsByCardSet(cardSet.Id)
+}
+
+func (r *CardRepositoryImpl) GetCard(cardId int) (*model.Card, error) {
+    query := fmt.Sprintf(
+        `SELECT * FROM %v WHERE id = $1`,
+        cardsTable,
+    )
+    var found model.Card
+    err := r.db.QueryRowx(query, cardId).StructScan(&found)
+    if errors.Is(err, sql.ErrNoRows) {
+        return nil, ErrCardNotFound
+    }
+    if err != nil {
+        return nil, err
+    }
+    return &found, nil
+    
+}
+
 func (r *CardRepositoryImpl) UpdateCards(cards []model.Card) ([]model.Card, error) {
 	query := fmt.Sprintf(
 		`UPDATE %v
@@ -108,32 +131,32 @@ func (r *CardRepositoryImpl) UpdateCards(cards []model.Card) ([]model.Card, erro
         RETURNING *`,
 		cardsTable,
 	)
-    tx, err := r.db.Beginx()
-    if err != nil {
-        return nil, err
-    }
-    stmt, err := tx.Preparex(query)
-    if err != nil {
-        return nil, err
-    }
-    res := make([]model.Card, len(cards))
-    for i, v := range cards {
-        err := stmt.QueryRowx(v.Question, v.Answer, v.Position, v.CardSetId).StructScan(&res[i])
-        if err != nil {
-            if err := tx.Rollback(); err != nil {
-                return nil, err
-            }
-            if errors.Is(err, sql.ErrNoRows) {
-                return nil, ErrCardNotFound
-            }
-            fmt.Println(err)
-            return nil, err
-        }
-    }
-    if err := tx.Commit(); err != nil {
-        return nil, err
-    }
-    return res, nil
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return nil, err
+	}
+	stmt, err := tx.Preparex(query)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]model.Card, len(cards))
+	for i, v := range cards {
+		err := stmt.QueryRowx(v.Question, v.Answer, v.Position, v.CardSetId).StructScan(&res[i])
+		if err != nil {
+			if err := tx.Rollback(); err != nil {
+				return nil, err
+			}
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, ErrCardNotFound
+			}
+			fmt.Println(err)
+			return nil, err
+		}
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (r *CardRepositoryImpl) DeleteCards(cardSetId int, positions []int) error {
