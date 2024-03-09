@@ -1,10 +1,12 @@
-import { Input } from "@/components/shared/Input";
-import { useState } from "react";
-import './CreateSetPage.css';
-import { Button } from "@/components/shared/Button";
 import { CardSetRepository } from "@/repository/CardSetRepository";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Input } from "@/components/shared/Input";
+import { Button } from "@/components/shared/Button";
+import './CreateSetPage.css';
 
 export function CreateSetPage() {
+    const navigate = useNavigate();
     const [title, setTitle] = useState('');
     const [slug, setSlug] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
@@ -12,7 +14,7 @@ export function CreateSetPage() {
     function submit() {
         CardSetRepository.createCardSet(title, slug)
             .then((response) => {
-                console.log(response);
+                navigate(`/set/${response.slug}`)
             })
             .catch(err => {
                 setErrorMessage(err?.toString());

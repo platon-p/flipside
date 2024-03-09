@@ -1,11 +1,6 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Main } from './components/pages/MainPage/MainPage'
-import { Login } from './components/pages/LoginPage/Login'
-import { Register } from './components/pages/Register'
-import { ViewSetPage } from './components/pages/ViewSetPage/CardSet'
-import { AuthProvider } from './provider/AuthProvider'
-import { CreateSetPage } from './components/pages/CreateSetPage/CreateSetPage'
-
+import { Main, Register, Login, ViewSetPage, CreateSetPage, EditSetPage } from './components/pages';
+import { AuthProvider } from './provider/AuthProvider';
 function App() {
   return (
     <BrowserRouter>
@@ -15,6 +10,7 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/login' element={<Login />} />
           <Route path='/set/:slug' element={<ViewSetPage />} />
+          <Route path='/set/:slug/edit' element={<EditSetPage />} />
           <Route path='/create-set' element={<CreateSetPage />} />
         </Routes>
       </AuthProvider>

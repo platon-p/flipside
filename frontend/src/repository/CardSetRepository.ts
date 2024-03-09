@@ -32,6 +32,21 @@ export const CardSetRepository = {
         }
     },
 
+    async updateCardSet(oldSlug: string, title: string, slug: string): Promise<CardSet> {
+        const token = AuthService.getToken() ?? '';
+        const cardSet = await ApiService.CardSet.updateCardSet(token, oldSlug, title, slug);
+        return {
+            title: cardSet.title,
+            slug: cardSet.slug,
+            ownerId: cardSet.owner_id,
+        }
+    },
+
+    async deleteCardSet(slug: string): Promise<boolean> {
+        const token = AuthService.getToken() ?? '';
+        return await ApiService.CardSet.deleteCardSet(token, slug);
+    },
+
     getCardSetsByOwner(ownerId: number): CardSet[] {
         return this._cardSets.filter(it => it.ownerId == ownerId);
     }

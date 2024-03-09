@@ -51,6 +51,21 @@ export function ViewSetPage() {
         navigate('/');
     }
 
+    function edit() {
+        navigate('edit')
+    }
+
+    function remove() {
+        CardSetRepository.deleteCardSet(slug!)
+        .then(res => {
+            console.log('CardSet deleted', res)
+            navigate('/')
+        })
+        .catch(e => {
+            console.log(e)
+        })
+    }
+
     if (errorMessage) {
         return <p style={{
             color: 'red'
@@ -70,8 +85,8 @@ export function ViewSetPage() {
         <p>/{cardSet.slug}</p>
 
         {cardSet.ownerId === userId && <div>
-            <Button>Edit</Button>
-            <Button>Delete</Button>
+            <Button onClick={edit}>Edit</Button>
+            <Button onClick={remove}>Delete</Button>
         </div>}
 
         <h4>Cards</h4>
