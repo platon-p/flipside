@@ -97,7 +97,7 @@ export const ApiService = {
                     slug: slug,
                 })
             })
-            if (response.status === 200) {
+            if (response.ok) {
                 return response.json()
             }
             const error = await response.json() as MessageResponse
