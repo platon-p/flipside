@@ -4,7 +4,7 @@ CREATE TABLE card_sets
     title    VARCHAR        NOT NULL,
     slug     VARCHAR UNIQUE NOT NULL UNIQUE,
     owner_id INT            NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES users (id)
+    FOREIGN KEY (owner_id) REFERENCES users (id) ON DELETE CASCADE
 );
 
 CREATE TABLE cards
