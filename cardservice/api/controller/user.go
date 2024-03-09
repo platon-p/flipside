@@ -7,42 +7,43 @@ import (
 )
 
 type UserController struct {
-    userService *service.UserService
+	userService *service.UserService
 }
 
 func NewUserController(userService *service.UserService) *UserController {
-    return &UserController{
-    	userService: userService,
-    }
+	return &UserController{
+		userService: userService,
+	}
 }
 
 func (c *UserController) GetProfile(nickname string) (*transfer.ProfileResponse, error) {
-    model, err := c.userService.GetProfile(nickname)
-    if err != nil {
-        return nil, err
-    }
-    return &transfer.ProfileResponse{
-    	Name:     model.Name,
-    	Nickname: model.Nickname,
-    }, nil
+	model, err := c.userService.GetProfile(nickname)
+	if err != nil {
+		return nil, err
+	}
+	return &transfer.ProfileResponse{
+		Id:       model.Id,
+		Name:     model.Name,
+		Nickname: model.Nickname,
+	}, nil
 }
 
 func (c *UserController) GetSets(nickname string) ([]transfer.CardSetResponse, error) {
-    models, err := c.userService.GetCardSets(nickname)
-    if err != nil {
-        return nil, err
-    }
-    res := make([]transfer.CardSetResponse, len(models))
-    for i := range models {
-        res[i] = *c.cardSetModelToResponse(&models[i])
-    }
-    return res, nil
+	models, err := c.userService.GetCardSets(nickname)
+	if err != nil {
+		return nil, err
+	}
+	res := make([]transfer.CardSetResponse, len(models))
+	for i := range models {
+		res[i] = *c.cardSetModelToResponse(&models[i])
+	}
+	return res, nil
 }
 
 func (c *UserController) cardSetModelToResponse(cardSet *model.CardSet) *transfer.CardSetResponse {
-    return &transfer.CardSetResponse{
-    	Title:   cardSet.Title,
-    	Slug:    cardSet.Title,
-    	OwnerId: cardSet.OwnerId,
-    }
+	return &transfer.CardSetResponse{
+		Title:   cardSet.Title,
+		Slug:    cardSet.Title,
+		OwnerId: cardSet.OwnerId,
+	}
 }
