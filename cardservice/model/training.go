@@ -7,7 +7,15 @@ const (
 	TrainingTypeQuiz  TrainingType = "quiz"
 
 	TrainingStatusCompleted = "COMPLETED"
+	TrainingStatusCreated   = "CREATED"
+	TrainingStatusStarted   = "STARTED"
+
+	QuestionTypeBinary QuestionType = "Binary"
+	QuestionTypeChoice QuestionType = "Choice"
+	QuestionTypeInput  QuestionType = "Input"
 )
+
+type QuestionType string
 
 type TrainingType string
 
@@ -22,24 +30,28 @@ type Training struct {
 }
 
 type TrainingTaskResult struct {
-	Id         int
-	TrainingId int
-	CardId     int
-	Answer     *string
-	IsCorrect  bool
-	CreatedAt  time.Time
+	Id            int
+	TrainingId    int
+	CardId        int
+	Answer        *string
+	CorrectAnswer *string
+	IsCorrect     bool
+	CreatedAt     time.Time
 }
 
 type TrainingSummary struct {
 	Id           int
+	CardSetId    int
 	Status       string
 	TrainingType TrainingType
-	CountRight   int
-	CountWrong   int
+	CreatedAt    time.Time
+
+	CountRight int
+	CountWrong int
 }
 
 type Task struct {
 	Question     string
-	TrainingType TrainingType
+	QuestionType QuestionType
 	Answers      []string
 }

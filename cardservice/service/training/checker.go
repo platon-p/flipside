@@ -3,6 +3,7 @@ package training
 import (
 	"errors"
 	"math/rand"
+	"time"
 
 	"github.com/platon-p/flipside/cardservice/model"
 	"github.com/platon-p/flipside/cardservice/repository"
@@ -49,7 +50,7 @@ func (c *BasicTaskChecker) GetNextTask(trainingId int, cardSetId int) (*model.Ta
 		if _, found := idsSet[cards[v].Id]; !found {
 			return &model.Task{
 				Question:     cards[v].Question,
-				TrainingType: model.TrainingTypeBasic,
+				QuestionType: model.QuestionTypeBinary,
 				Answers:      answer,
 			}, nil
 		}
@@ -58,11 +59,11 @@ func (c *BasicTaskChecker) GetNextTask(trainingId int, cardSetId int) (*model.Ta
 }
 
 func (c *BasicTaskChecker) Submit(training *model.Training, answer string) (*model.TrainingTaskResult, error) {
-	results, err := c.repository.GetTaskResults(training.Id)
+	lastQuestion, err := c.repository.GetLastTaskResult(training.Id)
 	if err != nil {
 		return nil, err
 	}
-	task := results[len(results)-1]
+	card, err := c.cardRepository.GetCard(lastQuestion.CardId)
 	isCorrect := false
 	if answer == knowAnswer {
 		isCorrect = true
@@ -70,10 +71,12 @@ func (c *BasicTaskChecker) Submit(training *model.Training, answer string) (*mod
 		return nil, ErrInvalidAnswer
 	}
 	result := model.TrainingTaskResult{
-		TrainingId: training.Id,
-		CardId:     task.CardId,
-		Answer:     &answer,
-		IsCorrect:  isCorrect,
+		TrainingId:    lastQuestion.TrainingId,
+		CardId:        lastQuestion.CardId,
+		Answer:        &answer,
+		CorrectAnswer: &card.Answer,
+		IsCorrect:     isCorrect,
+		CreatedAt:     time.Now(),
 	}
-    return &result, nil
+	return &result, nil
 }

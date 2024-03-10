@@ -11,8 +11,8 @@ import (
 )
 
 var (
-	ErrNotATrainingOwner = errors.New("Not a training owner")
-    ErrTrainingIsCompleted = errors.New("Training is completed")
+	ErrNotATrainingOwner   = errors.New("Not a training owner")
+	ErrTrainingIsCompleted = errors.New("Training is completed")
 )
 
 type TrainingService struct {
@@ -22,7 +22,19 @@ type TrainingService struct {
 	checkers []TaskChecker
 }
 
-func (s *TrainingService) CreateTraining(userId int, slug string, trainingType model.TrainingType) (*model.Training, error) {
+func (s *TrainingService) GetCardSetTrainings(userId int, slug string) ([]model.TrainingSummary, error) {
+    cardSet, err := s.cardSetRepository.GetCardSet(slug)
+    if errors.Is(err, repository.ErrCardSetNotFound) {
+        return nil, service.ErrCardSetNotFound
+    }
+    trainings, err := s.trainingRepository.GetCardSetTrainings(userId, cardSet.Id)
+    if err != nil {
+        return nil, err
+    }
+    return trainings, nil
+}
+
+func (s *TrainingService) CreateTraining(userId int, slug string, trainingType model.TrainingType) (*model.TrainingSummary, error) {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
 	if errors.Is(err, repository.ErrCardSetNotFound) {
 		return nil, service.ErrCardSetNotFound
@@ -41,9 +53,9 @@ func (s *TrainingService) GetTrainingSummary(userId int, trainingId int) (*model
 	if err != nil {
 		return nil, err
 	}
-    if training.Status == model.TrainingStatusCompleted {
-        return nil, ErrTrainingIsCompleted
-    }
+	if training.Status == model.TrainingStatusCompleted {
+		return nil, ErrTrainingIsCompleted
+	}
 	results, err := s.trainingRepository.GetTaskResults(trainingId)
 	if err != nil {
 		return nil, err
@@ -71,38 +83,45 @@ func (s *TrainingService) GetNextTask(userId int, trainingId int) (*model.Task, 
 	if err != nil {
 		return nil, err
 	}
-    if training.Status == model.TrainingStatusCompleted {
-        return nil, ErrTrainingIsCompleted
-    }
+	if training.Status == model.TrainingStatusCompleted {
+		return nil, ErrTrainingIsCompleted
+	}
+	if training.Status == model.TrainingStatusCreated {
+		if _, err := s.trainingRepository.SetTrainingStatus(trainingId, model.TrainingStatusStarted); err != nil {
+			return nil, err
+		}
+	}
 	checker := s.resolveChecker(training.TrainingType)
-    task, err := checker.GetNextTask(trainingId)
-    if errors.Is(err, ErrAllTasksAreCompleted) {
-        if _, err := s.trainingRepository.SetTrainingStatus(training.Id, model.TrainingStatusCompleted); err != nil {
-            return nil, err
-        }
-        return nil, ErrTrainingIsCompleted
-    }
-    if err != nil {
-        return nil, err
-    }
-    return task, nil
-    
+	task, err := checker.GetNextTask(trainingId)
+	if errors.Is(err, ErrAllTasksAreCompleted) {
+		if _, err := s.trainingRepository.SetTrainingStatus(training.Id, model.TrainingStatusCompleted); err != nil {
+			return nil, err
+		}
+		return nil, ErrTrainingIsCompleted
+	}
+	if err != nil {
+		return nil, err
+	}
+	return task, nil
 }
 
-func (s *TrainingService) SubmitAnswer(userId int, trainingId int, answer string) error {
+func (s *TrainingService) SubmitAnswer(userId int, trainingId int, answer string) (*model.TrainingTaskResult, error) {
 	training, err := s.GetTraining(userId, trainingId)
 	if err != nil {
-		return err
+		return nil, err
 	}
-    if training.Status == model.TrainingStatusCompleted {
-        return ErrTrainingIsCompleted
-    }
+	if training.Status == model.TrainingStatusCompleted {
+		return nil, ErrTrainingIsCompleted
+	}
 	result, err := s.resolveChecker(training.TrainingType).Submit(training, answer)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	_, err = s.trainingRepository.CreateTaskResult(trainingId, result)
-	return err
+	res, err := s.trainingRepository.CreateTaskResult(trainingId, result)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (s *TrainingService) GetTraining(userId int, trainingId int) (*model.Training, error) {

@@ -2,6 +2,7 @@ package transfer
 
 type TrainingSummaryResponse struct {
 	Id           int    `json:"id"`
+	CardSetId    int    `json:"card_set_id"`
 	TrainingType string `json:"training_type"`
 	Status       string `json:"status"`
 	CountRight   int    `json:"count_right"`
@@ -15,7 +16,6 @@ type TaskResponse struct {
 }
 
 type TaskResultResponse struct {
-	Question  string `json:"question"`
 	Answer    string `json:"answer"`
 	IsCorrect bool   `json:"is_correct"`
 }
