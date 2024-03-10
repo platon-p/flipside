@@ -83,7 +83,7 @@ func (r *TrainingRepositoryImpl) GetCardSetTrainings(userId int, cardSetId int) 
 }
 
 func (r *TrainingRepositoryImpl) SetTrainingStatus(trainingId int, status string) (*model.Training, error) {
-	query := fmt.Sprintf(`UPDATE %v SET status = $1 WHERE id = $2`, trainingsTable)
+	query := fmt.Sprintf(`UPDATE %v SET status = $1 WHERE id = $2 RETURNING *`, trainingsTable)
 	var updated model.Training
 	err := r.db.QueryRowx(query, status, trainingId).StructScan(&updated)
 	if err != nil {
@@ -129,13 +129,13 @@ func (r *TrainingRepositoryImpl) GetLastTaskResult(trainingId int) (*model.Train
 func (r *TrainingRepositoryImpl) CreateTaskResult(taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error) {
 	query := fmt.Sprintf(
 		`INSERT INTO %v(training_id, card_id, answer, is_correct) 
-        VALUES ($1, $2, $3, $4, $5)
+        VALUES ($1, $2, $3, $4)
         RETURNING *;`,
 		trainingTasksResultsTable,
 	)
 	var newEntity model.TrainingTaskResult
 	err := r.db.
-		QueryRowx(query, taskResult.TrainingId, taskResult.CardId, taskResult.Answer, taskResult, taskResult.IsCorrect).
+		QueryRowx(query, taskResult.TrainingId, taskResult.CardId, taskResult.Answer, taskResult.IsCorrect).
 		StructScan(&newEntity)
 	if err != nil {
 		return nil, err

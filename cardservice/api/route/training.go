@@ -40,10 +40,10 @@ func (r *TrainingRouter) GetCardSetTrainings(ctx *gin.Context) {
 	userId := ctx.GetInt("userId")
 	res, err := r.controller.GetCardSetTrainings(userId, slug)
 	switch {
-    case errors.Is(err, service.ErrCardSetNotFound):
-        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
-    case errors.Is(err, training.ErrNotATrainingOwner):
-        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+	case errors.Is(err, service.ErrCardSetNotFound):
+		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+	case errors.Is(err, training.ErrNotATrainingOwner):
+		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
 	case err != nil:
 		fmt.Println("GetCardSetTrainings:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
@@ -58,10 +58,10 @@ func (r *TrainingRouter) CreateTraining(ctx *gin.Context) {
 	trainingType := ctx.Query("type")
 	res, err := r.controller.CreateTraining(userId, slug, trainingType)
 	switch {
-    case errors.Is(err, controller.ErrUnresolvedTrainingType):
-        helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
-    case errors.Is(err, service.ErrCardSetNotFound):
-        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+	case errors.Is(err, controller.ErrUnresolvedTrainingType):
+		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
+	case errors.Is(err, service.ErrCardSetNotFound):
+		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("CreateTraining:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
@@ -77,10 +77,10 @@ func (r *TrainingRouter) GetTrainingSummary(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, strconv.ErrSyntax):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
-    case errors.Is(err, training.ErrNotATrainingOwner):
-        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
-    case errors.Is(err, training.ErrTrainingNotFound):
-        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+	case errors.Is(err, training.ErrNotATrainingOwner):
+		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+	case errors.Is(err, training.ErrTrainingNotFound):
+		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("GetTrainingSummary:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
@@ -96,12 +96,12 @@ func (r *TrainingRouter) GetNextTask(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, strconv.ErrSyntax):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
-    case errors.Is(err, training.ErrNotATrainingOwner):
-        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
-    case errors.Is(err, training.ErrTrainingIsCompleted):
-        helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
-    case errors.Is(err, training.ErrTrainingNotFound):
-        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+	case errors.Is(err, training.ErrNotATrainingOwner):
+		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+	case errors.Is(err, training.ErrTrainingIsCompleted):
+		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
+	case errors.Is(err, training.ErrTrainingNotFound):
+		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("GetNextTask:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
@@ -122,14 +122,16 @@ func (r *TrainingRouter) SubmitTask(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, strconv.ErrSyntax):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
-    case errors.Is(err, training.ErrTrainingIsCompleted):
-        helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
-    case errors.Is(err, training.ErrTaskNotFound):
-        helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
-    case errors.Is(err, training.ErrNotATrainingOwner):
-        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
-    case errors.Is(err, training.ErrTrainingNotFound):
-        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+	case errors.Is(err, training.ErrInvalidAnswer):
+		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
+	case errors.Is(err, training.ErrTrainingIsCompleted):
+		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
+	case errors.Is(err, training.ErrTaskNotFound):
+		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
+	case errors.Is(err, training.ErrNotATrainingOwner):
+		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+	case errors.Is(err, training.ErrTrainingNotFound):
+		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("SubmitTask:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)

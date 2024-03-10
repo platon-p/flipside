@@ -24,10 +24,11 @@ type CheckerTask struct {
 }
 
 type TaskChecker interface {
+	// GetNextTask returns next task and сan save it to trainingRepository
 	GetNextTask(training *model.Training) (*CheckerTask, error)
 
-	// Does not save result to trainingRepository
-	Validate(card *model.Card, answer string) (bool, error)
+	// Validate validates answer
+	Validate(training *model.Training, answer string) (bool, error)
 
 	IsSupporting(trainingType model.TrainingType) bool
 }
@@ -45,6 +46,18 @@ func NewBasicTaskChecker(repository repository.TrainingRepository, cardRepositor
 }
 
 func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, error) {
+	lastTask, err := c.trainingRepository.GetLastTaskResult(training.Id)
+	if err != nil && !errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
+		return nil, err
+	}
+	if lastTask != nil && lastTask.Answer == nil {
+		return &CheckerTask{
+			TrainingId:   training.Id,
+			CardId:       lastTask.CardId,
+			QuestionType: model.QuestionTypeBinary,
+			Answers:      []string{knowAnswer, dontKnowAnswer},
+		}, nil
+	}
 	doneCards, err := c.trainingRepository.GetTaskResults(training.Id)
 	if err != nil {
 		return nil, err
@@ -55,24 +68,43 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, 
 	}
 	cards, err := c.cardRepository.GetCardsByCardSet(training.CardSetId)
 	answer := []string{knowAnswer, dontKnowAnswer}
+	var task *CheckerTask
 	for _, i := range rand.Perm(len(cards)) {
 		if _, found := idsSet[cards[i].Id]; !found {
-			return &CheckerTask{
+			task = &CheckerTask{
 				TrainingId:   training.Id,
 				CardId:       cards[i].Id,
 				QuestionType: model.QuestionTypeBinary,
 				Answers:      answer,
-			}, nil
+			}
+			break
 		}
 	}
-	return nil, ErrAllTasksAreCompleted
+	if task == nil {
+		return nil, ErrAllTasksAreCompleted
+	}
+	taskResult := model.TrainingTaskResult{
+		TrainingId: training.Id,
+		CardId:     task.CardId,
+	}
+	if _, err := c.trainingRepository.CreateTaskResult(&taskResult); err != nil {
+		return nil, err
+	}
+	return task, nil
 }
 
-func (c *BasicTaskChecker) Validate(card *model.Card, answer string) (bool, error) {
+func (c *BasicTaskChecker) Validate(training *model.Training, answer string) (bool, error) {
+	lastTask, err := c.trainingRepository.GetLastTaskResult(training.Id)
+	if err != nil {
+		return false, err
+	}
+	if lastTask == nil || lastTask.Answer != nil {
+		return false, ErrTaskNotFound
+	}
 	if answer == knowAnswer {
 		return true, nil
 	} else if answer == dontKnowAnswer {
-		return true, nil
+		return false, nil
 	} else {
 		return false, ErrInvalidAnswer
 	}

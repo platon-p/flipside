@@ -101,13 +101,6 @@ func (s *TrainingService) GetNextTask(userId int, trainingId int) (*model.Task, 
 	if err != nil {
 		return nil, err
 	}
-	taskResult := model.TrainingTaskResult{
-		TrainingId: training.Id,
-		CardId:     task.CardId,
-	}
-	if _, err := s.trainingRepository.CreateTaskResult(&taskResult); err != nil {
-		return nil, err
-	}
 	card, err := s.cardRepository.GetCard(task.CardId)
 	if err != nil {
 		return nil, err
@@ -132,11 +125,7 @@ func (s *TrainingService) SubmitAnswer(userId int, trainingId int, answer string
 	if errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
 		return nil, ErrTaskNotFound
 	}
-	card, err := s.cardRepository.GetCard(lastTask.CardId)
-	if err != nil {
-		return nil, err
-	}
-	isCorrect, err := s.resolveChecker(training.TrainingType).Validate(card, answer)
+	isCorrect, err := s.resolveChecker(training.TrainingType).Validate(training, answer)
 	if err != nil {
 		return nil, err
 	}
