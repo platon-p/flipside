@@ -58,6 +58,10 @@ func (r *TrainingRouter) CreateTraining(ctx *gin.Context) {
 	trainingType := ctx.Query("type")
 	res, err := r.controller.CreateTraining(userId, slug, trainingType)
 	switch {
+    case errors.Is(err, controller.ErrUnresolvedTrainingType):
+        helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
+    case errors.Is(err, service.ErrCardSetNotFound):
+        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("CreateTraining:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
