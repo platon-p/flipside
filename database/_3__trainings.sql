@@ -23,7 +23,5 @@ CREATE TABLE training_tasks_results
 
     FOREIGN KEY (training_id) REFERENCES trainings (id) ON DELETE CASCADE,
     FOREIGN KEY (card_id) REFERENCES cards (id) ON DELETE CASCADE,
-
-    CONSTRAINT training_tasks_results_training_id_card_id_unique UNIQUE (training_id, card_id)
 );
 

@@ -23,9 +23,9 @@ type TrainingRepository interface {
 	SetTrainingStatus(trainingId int, status string) (*model.Training, error)
 
 	GetTaskResults(trainingId int) ([]model.TrainingTaskResult, error)
-	SaveTaskResult(taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error)
 	GetLastTaskResult(trainingId int) (*model.TrainingTaskResult, error)
-	CreateTaskResult(trainingId int, taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error)
+	CreateTaskResult(taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error)
+	SaveTaskResult(taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error)
 }
 
 type TrainingRepositoryImpl struct {
@@ -126,22 +126,32 @@ func (r *TrainingRepositoryImpl) GetLastTaskResult(trainingId int) (*model.Train
 	return &found, nil
 }
 
-func (r *TrainingRepositoryImpl) CreateTaskResult(trainingId int, taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error) {
+func (r *TrainingRepositoryImpl) CreateTaskResult(taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error) {
 	query := fmt.Sprintf(
-		`INSERT INTO %v(training_id, card_id, answer, correct_answer, is_correct) 
+		`INSERT INTO %v(training_id, card_id, answer, is_correct) 
         VALUES ($1, $2, $3, $4, $5)
         RETURNING *;`,
 		trainingTasksResultsTable,
 	)
 	var newEntity model.TrainingTaskResult
 	err := r.db.
-		QueryRowx(query, trainingId, taskResult.CardId, taskResult.Answer, taskResult.CorrectAnswer, taskResult.IsCorrect).
+		QueryRowx(query, taskResult.TrainingId, taskResult.CardId, taskResult.Answer, taskResult, taskResult.IsCorrect).
 		StructScan(&newEntity)
-	if errors.Is(err, sql.ErrNoRows) {
-		fmt.Println("asdasdasd", err)
-	}
 	if err != nil {
 		return nil, err
 	}
 	return &newEntity, nil
+}
+
+func (r *TrainingRepositoryImpl) SaveTaskResult(taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error) {
+	query := fmt.Sprintf(
+		`UPDATE %v SET answer = $1, is_correct = $2 WHERE id = $3 RETURNING *`,
+		trainingTasksResultsTable,
+	)
+	var updated model.TrainingTaskResult
+	err := r.db.QueryRowx(query, taskResult.Answer, taskResult.IsCorrect, taskResult.Id).StructScan(&updated)
+	if err != nil {
+		return nil, err
+	}
+	return &updated, nil
 }

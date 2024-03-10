@@ -2,9 +2,7 @@ package training
 
 import (
 	"errors"
-
 	"fmt"
-
 	"github.com/platon-p/flipside/cardservice/model"
 	"github.com/platon-p/flipside/cardservice/repository"
 	"github.com/platon-p/flipside/cardservice/service"
@@ -44,13 +42,21 @@ func (s *TrainingService) GetCardSetTrainings(userId int, slug string) ([]model.
 	}
 	summaries := make([]model.TrainingSummary, len(trainings))
 	for i := range trainings {
-		summary, err := s.MakeTrainingSummary(&trainings[i])
+		summary, err := s.makeTrainingSummary(&trainings[i])
 		if err != nil {
 			return nil, err
 		}
 		summaries[i] = *summary
 	}
 	return summaries, nil
+}
+
+func (s *TrainingService) GetTrainingSummary(userId int, trainingId int) (*model.TrainingSummary, error) {
+	training, err := s.getTraining(userId, trainingId)
+	if err != nil {
+		return nil, err
+	}
+	return s.makeTrainingSummary(training)
 }
 
 func (s *TrainingService) CreateTraining(userId int, slug string, trainingType model.TrainingType) (*model.TrainingSummary, error) {
@@ -68,47 +74,11 @@ func (s *TrainingService) CreateTraining(userId int, slug string, trainingType m
 	if err != nil {
 		return nil, err
 	}
-	return s.MakeTrainingSummary(newEntity)
-}
-
-func (s *TrainingService) GetTrainingSummary(userId int, trainingId int) (*model.TrainingSummary, error) {
-	training, err := s.GetTraining(userId, trainingId)
-	if err != nil {
-		return nil, err
-	}
-	return s.MakeTrainingSummary(training)
-}
-
-func (s *TrainingService) MakeTrainingSummary(training *model.Training) (*model.TrainingSummary, error) {
-	results, err := s.trainingRepository.GetTaskResults(training.Id)
-	if err != nil {
-		return nil, err
-	}
-	correct, wrong := 0, 0
-	for i := range results {
-		if results[i].IsCorrect == nil {
-			continue
-		}
-		if *results[i].IsCorrect {
-			correct++
-		} else {
-			wrong++
-		}
-	}
-	summary := model.TrainingSummary{
-		Id:           training.Id,
-		CardSetId:    training.CardSetId,
-		Status:       training.Status,
-		TrainingType: training.TrainingType,
-		CreatedAt:    training.CreatedAt,
-		CountRight:   correct,
-		CountWrong:   wrong,
-	}
-	return &summary, nil
+	return s.makeTrainingSummary(newEntity)
 }
 
 func (s *TrainingService) GetNextTask(userId int, trainingId int) (*model.Task, error) {
-	training, err := s.GetTraining(userId, trainingId)
+	training, err := s.getTraining(userId, trainingId)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +105,7 @@ func (s *TrainingService) GetNextTask(userId int, trainingId int) (*model.Task, 
 		TrainingId: training.Id,
 		CardId:     task.CardId,
 	}
-	if _, err := s.trainingRepository.SaveTaskResult(&taskResult); err != nil {
+	if _, err := s.trainingRepository.CreateTaskResult(&taskResult); err != nil {
 		return nil, err
 	}
 	card, err := s.cardRepository.GetCard(task.CardId)
@@ -151,25 +121,35 @@ func (s *TrainingService) GetNextTask(userId int, trainingId int) (*model.Task, 
 }
 
 func (s *TrainingService) SubmitAnswer(userId int, trainingId int, answer string) (*model.TrainingTaskResult, error) {
-	training, err := s.GetTraining(userId, trainingId)
+	training, err := s.getTraining(userId, trainingId)
 	if err != nil {
 		return nil, err
 	}
 	if training.Status == model.TrainingStatusCompleted {
 		return nil, ErrTrainingIsCompleted
 	}
-	result, err := s.resolveChecker(training.TrainingType).Submit(training, answer)
+	lastTask, err := s.trainingRepository.GetLastTaskResult(trainingId)
+	if errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
+		return nil, ErrTaskNotFound
+	}
+	card, err := s.cardRepository.GetCard(lastTask.CardId)
 	if err != nil {
 		return nil, err
 	}
-	res, err := s.trainingRepository.CreateTaskResult(trainingId, result)
+	isCorrect, err := s.resolveChecker(training.TrainingType).Validate(card, answer)
+	if err != nil {
+		return nil, err
+	}
+	lastTask.Answer = &answer
+	lastTask.IsCorrect = &isCorrect
+	res, err := s.trainingRepository.SaveTaskResult(lastTask)
 	if err != nil {
 		return nil, err
 	}
 	return res, nil
 }
 
-func (s *TrainingService) GetTraining(userId int, trainingId int) (*model.Training, error) {
+func (s *TrainingService) getTraining(userId int, trainingId int) (*model.Training, error) {
 	training, err := s.trainingRepository.GetTraining(trainingId)
 	if errors.Is(err, repository.ErrTrainingNotFound) {
 		return nil, ErrTrainingNotFound
@@ -181,6 +161,34 @@ func (s *TrainingService) GetTraining(userId int, trainingId int) (*model.Traini
 		return nil, ErrNotATrainingOwner
 	}
 	return training, nil
+}
+
+func (s *TrainingService) makeTrainingSummary(training *model.Training) (*model.TrainingSummary, error) {
+	results, err := s.trainingRepository.GetTaskResults(training.Id)
+	if err != nil {
+		return nil, err
+	}
+	correct, wrong := 0, 0
+	for i := range results {
+		if results[i].IsCorrect == nil {
+			continue
+		}
+		if *results[i].IsCorrect {
+			correct++
+		} else {
+			wrong++
+		}
+	}
+	summary := model.TrainingSummary{
+		Id:           training.Id,
+		CardSetId:    training.CardSetId,
+		Status:       training.Status,
+		TrainingType: training.TrainingType,
+		CreatedAt:    training.CreatedAt,
+		CountRight:   correct,
+		CountWrong:   wrong,
+	}
+	return &summary, nil
 }
 
 func (s *TrainingService) resolveChecker(trainingType model.TrainingType) TaskChecker {
