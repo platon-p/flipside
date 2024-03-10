@@ -10,6 +10,15 @@ export const AuthService = {
         return payload.id;
     },
 
+    getNickname(): string | undefined {
+        const token = this.getToken()?.split('.')[1];
+        if (!token) {
+            return undefined;
+        }
+        const payload = JSON.parse(atob(token));
+        return payload.nickname;
+    },
+
     getToken(): string | null {
         return localStorage.getItem('accessToken');
     },

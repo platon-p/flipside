@@ -10,6 +10,7 @@ export interface RegisterData {
 export interface AuthData {
     isAuth: boolean
     userId: number | null
+    nickname: string | undefined
     login(email: string, password: string): Promise<string | null>
     register(data: RegisterData): Promise<string | null>
     logout(): void

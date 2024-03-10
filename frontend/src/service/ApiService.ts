@@ -203,5 +203,17 @@ export const ApiService = {
             const error = await response.json() as MessageResponse
             throw error.message
         }
+    },
+    Profile: {
+        async getUserCards(nickname: string): Promise<Array<CardSetResponse>> {
+            const response = await fetch(`${config.baseUrl}/users/${nickname}/sets`, {
+                method: 'GET'
+            })
+            if (response.status === 200) {
+                return response.json()
+            }
+            const error = await response.json() as MessageResponse
+            throw error.message
+        }
     }
 }

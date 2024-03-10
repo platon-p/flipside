@@ -1,15 +1,24 @@
 import { useAuth } from "@/hooks/Auth";
-import { CardSetRepository } from "@/repository/CardSetRepository";
+import { CardSet, CardSetRepository } from "@/repository/CardSetRepository";
 import { useNavigate } from "react-router-dom";
 import { CardSetList } from "./CardSetList";
 import { Button } from "@/components/shared/Button";
 import "./UserPage.css";
+import { useEffect, useState } from "react";
 
 export function UserPage() {
-    const { userId, logout } = useAuth();
+    const { nickname, logout } = useAuth();
     const navigate = useNavigate();
-    const cards = CardSetRepository.getCardSetsByOwner(userId!);
+    const [cardSets, setCardSets] = useState<CardSet[] | undefined>(undefined);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        if (!nickname) return;
+        Promise.resolve(CardSetRepository.getCardSetsByOwner(nickname).then(cardSets => {
+            setCardSets(cardSets);
+            setLoading(false);
+        }).catch(e => console.log(e)))
+    }, [nickname])
     function navigateToCardSet(slug: string) {
         navigate(`/set/${slug}`)
     }
@@ -24,6 +33,7 @@ export function UserPage() {
             <Button onClick={logout}>Logout</Button>
         </div>
         <h2>Yout sets</h2>
-        <CardSetList cards={cards} onClick={navigateToCardSet} />
+        {loading && <div>Loading...</div>}
+        {cardSets && <CardSetList cards={cardSets} onClick={navigateToCardSet} /> }
     </div>
 }

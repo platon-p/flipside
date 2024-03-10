@@ -47,7 +47,13 @@ export const CardSetRepository = {
         return await ApiService.CardSet.deleteCardSet(token, slug);
     },
 
-    getCardSetsByOwner(ownerId: number): CardSet[] {
-        return this._cardSets.filter(it => it.ownerId == ownerId);
+    async getCardSetsByOwner(nickname: string): Promise<CardSet[]> {
+        return (await ApiService.Profile.getUserCards(nickname)).map(cardSet => {
+            return {
+                title: cardSet.title,
+                slug: cardSet.slug,
+                ownerId: cardSet.owner_id,
+            }
+        })
     }
 }
