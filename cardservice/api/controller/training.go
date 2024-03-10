@@ -107,7 +107,7 @@ func (c *TrainingController) SubmitTask(userId int, trainingId string, answer st
 	}
 	return &transfer.TaskResultResponse{
 		Answer:    *res.Answer,
-		IsCorrect: res.IsCorrect,
+		IsCorrect: *res.IsCorrect,
 	}, nil
 }
 
