@@ -4,6 +4,7 @@ CREATE TABLE trainings
     user_id       INT,
     card_set_id   INT,
     training_type VARCHAR,
+    status        VARCHAR,
     created_at    TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     finished_at   TIMESTAMP NULL,
 
