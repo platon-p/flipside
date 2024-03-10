@@ -21,12 +21,12 @@ type TrainingType string
 
 type Training struct {
 	Id           int
-	UserId       int
-	CardSetId    int
-	TrainingType TrainingType
+	UserId       int          `db:"user_id"`
+	CardSetId    int          `db:"card_set_id"`
+	TrainingType TrainingType `db:"training_type"`
 	Status       string
-	CreatedAt    time.Time
-	FinishedAt   *time.Time
+	CreatedAt    time.Time  `db:"created_at"`
+	FinishedAt   *time.Time `db:"finished_at"`
 }
 
 type TrainingTaskResult struct {
