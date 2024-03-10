@@ -1,0 +1,11 @@
+.input-holder {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2em;
+}
+
+.error {
+    color: red;
+    font-size: 0.8em;
+    margin-top: 0.2em;
+}
