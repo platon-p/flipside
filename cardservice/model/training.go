@@ -34,8 +34,8 @@ type TrainingTaskResult struct {
 	TrainingId    int       `db:"training_id"`
 	CardId        int       `db:"card_id"`
 	Answer        *string   `db:"answer"`
-	CorrectAnswer *string   `db:"correct_answer`
-	IsCorrect     bool      `db:"is_correct`
+	CorrectAnswer *string   `db:"correct_answer"`
+	IsCorrect     bool      `db:"is_correct"`
 	CreatedAt     time.Time `db:"created_at"`
 }
 
