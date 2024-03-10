@@ -71,9 +71,6 @@ func (s *TrainingService) CreateTraining(userId int, slug string, trainingType m
 
 func (s *TrainingService) GetTrainingSummary(userId int, trainingId int) (*model.TrainingSummary, error) {
 	training, err := s.GetTraining(userId, trainingId)
-	if errors.Is(err, repository.ErrTrainingNotFound) {
-		return nil, ErrTrainingNotFound
-	}
 	if err != nil {
 		return nil, err
 	}
@@ -153,6 +150,9 @@ func (s *TrainingService) SubmitAnswer(userId int, trainingId int, answer string
 
 func (s *TrainingService) GetTraining(userId int, trainingId int) (*model.Training, error) {
 	training, err := s.trainingRepository.GetTraining(trainingId)
+    if errors.Is(err, repository.ErrTrainingNotFound) {
+        return nil, ErrTrainingNotFound
+    }
 	if err != nil {
 		return nil, err
 	}
