@@ -5,6 +5,7 @@ import { CardSetList } from "./CardSetList";
 import { Button } from "@/components/shared/Button";
 import "./UserPage.css";
 import { useEffect, useState } from "react";
+import Navbar from "../../Navbar";
 
 export function UserPage() {
     const { nickname, logout } = useAuth();
@@ -28,12 +29,24 @@ export function UserPage() {
     }
 
     return <div>
-        <div className="controls">
-            <Button onClick={createCardSet}>Create new card set</Button>
-            <Button onClick={logout}>Logout</Button>
+        <div className="header">
+            <div className="logo"></div>
+            <div className="sign-in">
+                <a onClick={logout} href="/">выйти</a>
+            </div>
         </div>
-        <h2>Yout sets</h2>
-        {loading && <div>Loading...</div>}
-        {cardSets && <CardSetList cards={cardSets} onClick={navigateToCardSet} /> }
+
+        <div className="onboarding">
+            <h1>Мои наборы</h1>
+            {loading && <div>Загрузка...</div>}
+            {cardSets && <CardSetList cards={cardSets!} onClick={navigateToCardSet} />}
+            <div className="line"></div>
+            <div className="controls">
+                <Button className="create-set" onClick={createCardSet}>+ создать новый набор</Button>
+            </div>
+        </div>
+
+        <Navbar />
     </div>
+
 }

@@ -25,8 +25,8 @@ export function CreateSetPage() {
         <div>
             <h1>Create a Set</h1>
             <div className="input-holder">
-                <Input value={title} onInput={e => setTitle(e.currentTarget.value)} placeholder="title" />
-                <Input value={slug} onInput={e => setSlug(e.currentTarget.value)} placeholder="slug" />
+                <Input value={title} onInput={(e : any) => setTitle(e.currentTarget.value)} placeholder="title" />
+                <Input value={slug} onInput={(e : any) => setSlug(e.currentTarget.value)} placeholder="slug" />
                 <Button onClick={submit}>Continue</Button>
             </div>
             {errorMessage && <p className="error">{errorMessage}</p>}

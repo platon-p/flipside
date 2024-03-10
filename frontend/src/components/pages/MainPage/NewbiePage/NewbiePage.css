@@ -1,0 +1,44 @@
+.sign-in{
+    width: auto;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 20px;
+}
+
+.onboarding{
+    display: flex;
+    margin: 15px;
+    width: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 0;
+}
+
+h1{
+    position: relative;
+    font-family: mulish;
+    margin-bottom: 3px;
+    margin-top: 20px;
+    left: 20px;
+}
+h3{
+    position: relative;
+    font-family: mulish;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    left: 20px;
+
+}
+.line{
+    height: 2px;
+    width: 90%;
+    background-color: rgba(217, 217, 217, 1);
+    margin: auto;
+}
+.info{
+    display: flex;
+    padding: 0 10px;
+    margin-top: 2px;
+    
+}
