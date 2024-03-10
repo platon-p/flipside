@@ -23,15 +23,23 @@ type TrainingService struct {
 }
 
 func (s *TrainingService) GetCardSetTrainings(userId int, slug string) ([]model.TrainingSummary, error) {
-    cardSet, err := s.cardSetRepository.GetCardSet(slug)
-    if errors.Is(err, repository.ErrCardSetNotFound) {
-        return nil, service.ErrCardSetNotFound
-    }
-    trainings, err := s.trainingRepository.GetCardSetTrainings(userId, cardSet.Id)
-    if err != nil {
-        return nil, err
-    }
-    return trainings, nil
+	cardSet, err := s.cardSetRepository.GetCardSet(slug)
+	if errors.Is(err, repository.ErrCardSetNotFound) {
+		return nil, service.ErrCardSetNotFound
+	}
+	trainings, err := s.trainingRepository.GetCardSetTrainings(userId, cardSet.Id)
+	if err != nil {
+		return nil, err
+	}
+	summaries := make([]model.TrainingSummary, len(trainings))
+	for i := range trainings {
+		summary, err := s.MakeTrainingSummary(&trainings[i])
+		if err != nil {
+			return nil, err
+		}
+		summaries[i] = *summary
+	}
+	return summaries, nil
 }
 
 func (s *TrainingService) CreateTraining(userId int, slug string, trainingType model.TrainingType) (*model.TrainingSummary, error) {
@@ -43,9 +51,13 @@ func (s *TrainingService) CreateTraining(userId int, slug string, trainingType m
 		UserId:       userId,
 		CardSetId:    cardSet.Id,
 		TrainingType: trainingType,
-		Status:       "Created",
+		Status:       model.TrainingStatusCreated,
 	}
-	return s.trainingRepository.CreateTraining(&training)
+	newEntity, err := s.trainingRepository.CreateTraining(&training)
+	if err != nil {
+		return nil, err
+	}
+	return s.MakeTrainingSummary(newEntity)
 }
 
 func (s *TrainingService) GetTrainingSummary(userId int, trainingId int) (*model.TrainingSummary, error) {
@@ -53,10 +65,11 @@ func (s *TrainingService) GetTrainingSummary(userId int, trainingId int) (*model
 	if err != nil {
 		return nil, err
 	}
-	if training.Status == model.TrainingStatusCompleted {
-		return nil, ErrTrainingIsCompleted
-	}
-	results, err := s.trainingRepository.GetTaskResults(trainingId)
+	return s.MakeTrainingSummary(training)
+}
+
+func (s *TrainingService) MakeTrainingSummary(training *model.Training) (*model.TrainingSummary, error) {
+	results, err := s.trainingRepository.GetTaskResults(training.Id)
 	if err != nil {
 		return nil, err
 	}

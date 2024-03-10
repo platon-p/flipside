@@ -46,10 +46,10 @@ func (c *BasicTaskChecker) GetNextTask(trainingId int, cardSetId int) (*model.Ta
 	}
 	cards, err := c.cardRepository.GetCardsByCardSet(cardSetId)
 	answer := []string{knowAnswer, dontKnowAnswer}
-	for _, v := range rand.Perm(len(cards)) {
-		if _, found := idsSet[cards[v].Id]; !found {
+	for _, i := range rand.Perm(len(cards)) {
+		if _, found := idsSet[cards[i].Id]; !found {
 			return &model.Task{
-				Question:     cards[v].Question,
+				Question:     cards[i].Question,
 				QuestionType: model.QuestionTypeBinary,
 				Answers:      answer,
 			}, nil
