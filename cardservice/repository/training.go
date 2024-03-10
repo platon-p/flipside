@@ -31,6 +31,10 @@ type TrainingRepositoryImpl struct {
 	db *sqlx.DB
 }
 
+func NewTrainingRepositoryImpl(db *sqlx.DB) *TrainingRepositoryImpl {
+	return &TrainingRepositoryImpl{db: db}
+}
+
 func (r *TrainingRepositoryImpl) GetTraining(trainingId int) (*model.Training, error) {
 	query := fmt.Sprintf(`SELECT * FROM %v WHERE id = $1`, trainingsTable)
 	var found model.Training
@@ -128,15 +132,15 @@ func (r *TrainingRepositoryImpl) CreateTaskResult(trainingId int, taskResult *mo
         RETURNING *;`,
 		trainingTasksResultsTable,
 	)
-    var newEntity model.TrainingTaskResult
+	var newEntity model.TrainingTaskResult
 	err := r.db.
 		QueryRowx(query, trainingId, taskResult.CardId, taskResult.Answer, taskResult.CorrectAnswer, taskResult.IsCorrect).
 		StructScan(&newEntity)
-    if errors.Is(err, sql.ErrNoRows) {
-        fmt.Println("asdasdasd", err)
-    }
+	if errors.Is(err, sql.ErrNoRows) {
+		fmt.Println("asdasdasd", err)
+	}
 	if err != nil {
 		return nil, err
 	}
-    return &newEntity, nil
+	return &newEntity, nil
 }

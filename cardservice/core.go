@@ -8,6 +8,7 @@ import (
 	"github.com/platon-p/flipside/cardservice/api/route"
 	"github.com/platon-p/flipside/cardservice/repository"
 	"github.com/platon-p/flipside/cardservice/service"
+	"github.com/platon-p/flipside/cardservice/service/training"
 )
 
 type Core struct {
@@ -43,25 +44,33 @@ func NewCore() *Core {
 	if err != nil {
 		panic(err)
 	}
+
 	cardSetRepository := repository.NewCardSetRepositoryImpl(conn)
 	cardRepository := repository.NewCardRepositoryImpl(conn)
 	userRepository := repository.NewUserRepositoryImpl(conn)
+	trainingRepository := repository.NewTrainingRepositoryImpl(conn)
+
+	basicTaskChecker := training.NewBasicTaskChecker(trainingRepository, cardRepository)
+	checkers := []training.TaskChecker{basicTaskChecker}
 
 	cardSetService := service.NewCardSetService(cardSetRepository)
 	cardService := service.NewCardService(cardSetRepository, cardRepository)
 	userService := service.NewUserService(userRepository)
+	trainingService := training.NewTrainingService(trainingRepository, cardSetRepository, checkers)
 
 	authMiddleware := middleware.NewAuthMiddleware(cfg.SignKey)
 
 	cardSetController := controller.NewCardSetController(cardSetService)
 	cardController := controller.NewCardController(cardService)
 	userController := controller.NewUserController(userService)
+	trainingController := controller.NewTrainingController(trainingService)
 
 	cardSetRouter := route.NewCardSetRouter(cardSetController, authMiddleware)
 	cardRouter := route.NewCardRouter(cardController, authMiddleware)
 	userRouter := route.NewUserRouter(userController)
+	trainingRouter := route.NewTrainingRouter(trainingController, authMiddleware)
 
-	router := route.NewRouter(cardSetRouter, cardRouter, userRouter)
+	router := route.NewRouter(cardSetRouter, cardRouter, userRouter, trainingRouter)
 	engine := gin.Default()
 
 	return &Core{
@@ -72,5 +81,8 @@ func NewCore() *Core {
 
 func (c *Core) Start() {
 	c.router.Setup(&c.engine.RouterGroup)
-	c.engine.Run()
+	err := c.engine.Run()
+	if err != nil {
+		panic(err)
+	}
 }

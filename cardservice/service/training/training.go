@@ -22,6 +22,14 @@ type TrainingService struct {
 	checkers []TaskChecker
 }
 
+func NewTrainingService(trainingRepository repository.TrainingRepository, cardSetRepository repository.CardSetRepository, checkers []TaskChecker) *TrainingService {
+	return &TrainingService{
+		trainingRepository: trainingRepository,
+		cardSetRepository:  cardSetRepository,
+		checkers:           checkers,
+	}
+}
+
 func (s *TrainingService) GetCardSetTrainings(userId int, slug string) ([]model.TrainingSummary, error) {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
 	if errors.Is(err, repository.ErrCardSetNotFound) {
@@ -105,7 +113,7 @@ func (s *TrainingService) GetNextTask(userId int, trainingId int) (*model.Task, 
 		}
 	}
 	checker := s.resolveChecker(training.TrainingType)
-	task, err := checker.GetNextTask(trainingId)
+	task, err := checker.GetNextTask(training)
 	if errors.Is(err, ErrAllTasksAreCompleted) {
 		if _, err := s.trainingRepository.SetTrainingStatus(training.Id, model.TrainingStatusCompleted); err != nil {
 			return nil, err

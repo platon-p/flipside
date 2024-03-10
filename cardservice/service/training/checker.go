@@ -18,25 +18,28 @@ var (
 )
 
 type TaskChecker interface {
-	GetNextTask(trainingId int) (*model.Task, error)
+	GetNextTask(training *model.Training) (*model.Task, error)
 
-	// Does not save result to repository
+	// Does not save result to trainingRepository
 	Submit(training *model.Training, answer string) (*model.TrainingTaskResult, error)
 
 	IsSupporting(trainingType model.TrainingType) bool
 }
 
 type BasicTaskChecker struct {
-	repository     repository.TrainingRepository
-	cardRepository repository.CardRepository
+	trainingRepository repository.TrainingRepository
+	cardRepository     repository.CardRepository
 }
 
-func (c *BasicTaskChecker) IsSupporting(trainingType model.TrainingType) bool {
-	return trainingType == model.TrainingTypeBasic
+func NewBasicTaskChecker(repository repository.TrainingRepository, cardRepository repository.CardRepository) *BasicTaskChecker {
+	return &BasicTaskChecker{
+		trainingRepository: repository,
+		cardRepository:     cardRepository,
+	}
 }
 
-func (c *BasicTaskChecker) GetNextTask(trainingId int, cardSetId int) (*model.Task, error) {
-	doneCards, err := c.repository.GetTaskResults(trainingId)
+func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*model.Task, error) {
+	doneCards, err := c.trainingRepository.GetTaskResults(training.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +47,7 @@ func (c *BasicTaskChecker) GetNextTask(trainingId int, cardSetId int) (*model.Ta
 	for i := range doneCards {
 		idsSet[doneCards[i].CardId] = struct{}{}
 	}
-	cards, err := c.cardRepository.GetCardsByCardSet(cardSetId)
+	cards, err := c.cardRepository.GetCardsByCardSet(training.CardSetId)
 	answer := []string{knowAnswer, dontKnowAnswer}
 	for _, i := range rand.Perm(len(cards)) {
 		if _, found := idsSet[cards[i].Id]; !found {
@@ -59,7 +62,7 @@ func (c *BasicTaskChecker) GetNextTask(trainingId int, cardSetId int) (*model.Ta
 }
 
 func (c *BasicTaskChecker) Submit(training *model.Training, answer string) (*model.TrainingTaskResult, error) {
-	lastQuestion, err := c.repository.GetLastTaskResult(training.Id)
+	lastQuestion, err := c.trainingRepository.GetLastTaskResult(training.Id)
 	if err != nil {
 		return nil, err
 	}
@@ -79,4 +82,8 @@ func (c *BasicTaskChecker) Submit(training *model.Training, answer string) (*mod
 		CreatedAt:     time.Now(),
 	}
 	return &result, nil
+}
+
+func (c *BasicTaskChecker) IsSupporting(trainingType model.TrainingType) bool {
+	return trainingType == model.TrainingTypeBasic
 }

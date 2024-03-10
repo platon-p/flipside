@@ -13,9 +13,15 @@ import (
 )
 
 type TrainingRouter struct {
-	controller *controller.TrainingController
-
+	controller     *controller.TrainingController
 	authMiddleware *middleware.AuthMiddleware
+}
+
+func NewTrainingRouter(controller *controller.TrainingController, authMiddleware *middleware.AuthMiddleware) *TrainingRouter {
+	return &TrainingRouter{
+		controller:     controller,
+		authMiddleware: authMiddleware,
+	}
 }
 
 func (r *TrainingRouter) Setup(group *gin.RouterGroup) {
