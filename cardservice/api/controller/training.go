@@ -31,12 +31,12 @@ func (c *TrainingController) GetCardSetTrainings(userId int, slug string) ([]tra
 	response := make([]transfer.TrainingSummaryResponse, len(trainings))
 	for i := range trainings {
 		response[i] = transfer.TrainingSummaryResponse{
-			Id:           response[i].Id,
-			CardSetId:    response[i].CardSetId,
-			TrainingType: response[i].TrainingType,
-			Status:       response[i].Status,
-			CountRight:   response[i].CountRight,
-			CountWrong:   response[i].CountWrong,
+			Id:           trainings[i].Id,
+			CardSetId:    trainings[i].CardSetId,
+			TrainingType: string(trainings[i].TrainingType),
+			Status:       trainings[i].Status,
+			CountRight:   trainings[i].CountRight,
+			CountWrong:   trainings[i].CountWrong,
 		}
 	}
 	return response, nil

@@ -91,8 +91,10 @@ func (s *TrainingService) MakeTrainingSummary(training *model.Training) (*model.
 	}
 	summary := model.TrainingSummary{
 		Id:           training.Id,
+		CardSetId:    training.CardSetId,
 		Status:       training.Status,
 		TrainingType: training.TrainingType,
+		CreatedAt:    training.CreatedAt,
 		CountRight:   correct,
 		CountWrong:   wrong,
 	}

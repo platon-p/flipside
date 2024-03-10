@@ -10,6 +10,8 @@ import (
 	"github.com/platon-p/flipside/cardservice/api/controller"
 	"github.com/platon-p/flipside/cardservice/api/helper"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
+	"github.com/platon-p/flipside/cardservice/service"
+	"github.com/platon-p/flipside/cardservice/service/training"
 )
 
 type TrainingRouter struct {
@@ -38,6 +40,10 @@ func (r *TrainingRouter) GetCardSetTrainings(ctx *gin.Context) {
 	userId := ctx.GetInt("userId")
 	res, err := r.controller.GetCardSetTrainings(userId, slug)
 	switch {
+    case errors.Is(err, service.ErrCardSetNotFound):
+        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
+    case errors.Is(err, training.ErrNotATrainingOwner):
+        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
 	case err != nil:
 		fmt.Println("GetCardSetTrainings:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
