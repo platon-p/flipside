@@ -96,6 +96,8 @@ func (r *TrainingRouter) GetNextTask(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, strconv.ErrSyntax):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
+    case errors.Is(err, training.ErrNotATrainingOwner):
+        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
     case errors.Is(err, training.ErrTrainingIsCompleted):
         helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
     case errors.Is(err, training.ErrTrainingNotFound):
@@ -120,6 +122,12 @@ func (r *TrainingRouter) SubmitTask(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, strconv.ErrSyntax):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
+    case errors.Is(err, training.ErrNotATrainingOwner):
+        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+    case errors.Is(err, training.ErrTrainingIsCompleted):
+        helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
+    case errors.Is(err, training.ErrTrainingNotFound):
+        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("SubmitTask:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
