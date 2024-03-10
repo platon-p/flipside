@@ -77,6 +77,10 @@ func (r *TrainingRouter) GetTrainingSummary(ctx *gin.Context) {
 	switch {
 	case errors.Is(err, strconv.ErrSyntax):
 		helper.ErrorMessage(ctx, http.StatusBadRequest, helper.BadRequest)
+    case errors.Is(err, training.ErrNotATrainingOwner):
+        helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
+    case errors.Is(err, training.ErrTrainingNotFound):
+        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
 	case err != nil:
 		fmt.Println("GetTrainingSummary:", err)
 		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)

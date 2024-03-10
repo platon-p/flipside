@@ -53,6 +53,7 @@ func (c *TrainingController) GetTrainingSummary(userId int, trainingId string) (
 	}
 	return &transfer.TrainingSummaryResponse{
 		Id:           res.Id,
+		CardSetId:    res.CardSetId,
 		TrainingType: string(res.TrainingType),
 		Status:       res.Status,
 		CountRight:   res.CountRight,

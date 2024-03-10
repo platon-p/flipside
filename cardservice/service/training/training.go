@@ -13,6 +13,7 @@ import (
 var (
 	ErrNotATrainingOwner   = errors.New("Not a training owner")
 	ErrTrainingIsCompleted = errors.New("Training is completed")
+	ErrTrainingNotFound    = errors.New("Training not found")
 )
 
 type TrainingService struct {
@@ -70,6 +71,9 @@ func (s *TrainingService) CreateTraining(userId int, slug string, trainingType m
 
 func (s *TrainingService) GetTrainingSummary(userId int, trainingId int) (*model.TrainingSummary, error) {
 	training, err := s.GetTraining(userId, trainingId)
+	if errors.Is(err, repository.ErrTrainingNotFound) {
+		return nil, ErrTrainingNotFound
+	}
 	if err != nil {
 		return nil, err
 	}
