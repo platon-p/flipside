@@ -38,7 +38,7 @@ func NewTrainingRepositoryImpl(db *sqlx.DB) *TrainingRepositoryImpl {
 func (r *TrainingRepositoryImpl) GetTraining(trainingId int) (*model.Training, error) {
 	query := fmt.Sprintf(`SELECT * FROM %v WHERE id = $1`, trainingsTable)
 	var found model.Training
-	err := r.db.QueryRowx(query, trainingsTable).StructScan(&found)
+	err := r.db.QueryRowx(query, trainingId).StructScan(&found)
 	if errors.Is(err, sql.ErrNoRows) {
 		return nil, ErrTrainingNotFound
 	}
