@@ -20,23 +20,23 @@ type QuestionType string
 type TrainingType string
 
 type Training struct {
-	Id           int
+	Id           int          `db:"id"`
 	UserId       int          `db:"user_id"`
 	CardSetId    int          `db:"card_set_id"`
 	TrainingType TrainingType `db:"training_type"`
-	Status       string
-	CreatedAt    time.Time  `db:"created_at"`
-	FinishedAt   *time.Time `db:"finished_at"`
+	Status       string       `db:"status"`
+	CreatedAt    time.Time    `db:"created_at"`
+	FinishedAt   *time.Time   `db:"finished_at"`
 }
 
 type TrainingTaskResult struct {
-	Id            int
-	TrainingId    int
-	CardId        int
-	Answer        *string
-	CorrectAnswer *string
-	IsCorrect     bool
-	CreatedAt     time.Time
+	Id            int       `db:"id"`
+	TrainingId    int       `db:"training_id"`
+	CardId        int       `db:"card_id"`
+	Answer        *string   `db:"answer"`
+	CorrectAnswer *string   `db:"correct_answer`
+	IsCorrect     bool      `db:"is_correct`
+	CreatedAt     time.Time `db:"created_at"`
 }
 
 type TrainingSummary struct {
