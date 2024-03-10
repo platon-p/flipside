@@ -56,7 +56,7 @@ func NewCore() *Core {
 	cardSetService := service.NewCardSetService(cardSetRepository)
 	cardService := service.NewCardService(cardSetRepository, cardRepository)
 	userService := service.NewUserService(userRepository)
-	trainingService := training.NewTrainingService(trainingRepository, cardSetRepository, checkers)
+	trainingService := training.NewTrainingService(trainingRepository, cardSetRepository, cardRepository, checkers)
 
 	authMiddleware := middleware.NewAuthMiddleware(cfg.SignKey)
 

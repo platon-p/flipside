@@ -30,20 +30,19 @@ type Training struct {
 }
 
 type TrainingTaskResult struct {
-	Id            int       `db:"id"`
-	TrainingId    int       `db:"training_id"`
-	CardId        int       `db:"card_id"`
-	Answer        *string   `db:"answer"`
-	CorrectAnswer *string   `db:"correct_answer"`
-	IsCorrect     *bool     `db:"is_correct"`
-	CreatedAt     time.Time `db:"created_at"`
+	Id         int       `db:"id"`
+	TrainingId int       `db:"training_id"`
+	CardId     int       `db:"card_id"`
+	Answer     *string   `db:"answer"`
+	IsCorrect  *bool     `db:"is_correct"`
+	CreatedAt  time.Time `db:"created_at"`
 }
 
 type TrainingSummary struct {
 	Id           int
 	CardSetId    int
-	Status       string
 	TrainingType TrainingType
+	Status       string
 	CreatedAt    time.Time
 
 	CountRight int

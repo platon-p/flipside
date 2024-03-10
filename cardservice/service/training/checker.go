@@ -2,11 +2,9 @@ package training
 
 import (
 	"errors"
-	"math/rand"
-	"time"
-
 	"github.com/platon-p/flipside/cardservice/model"
 	"github.com/platon-p/flipside/cardservice/repository"
+	"math/rand"
 )
 
 var (
@@ -26,10 +24,11 @@ type CheckerTask struct {
 }
 
 type TaskChecker interface {
+	// GetNextTask returns next task and сan save it to trainingRepository
 	GetNextTask(training *model.Training) (*CheckerTask, error)
 
-	// Does not save result to trainingRepository
-	Submit(training *model.Training, answer string) (*model.TrainingTaskResult, error)
+	// Validate validates answer
+	Validate(training *model.Training, answer string) (bool, error)
 
 	IsSupporting(trainingType model.TrainingType) bool
 }
@@ -47,6 +46,18 @@ func NewBasicTaskChecker(repository repository.TrainingRepository, cardRepositor
 }
 
 func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, error) {
+	lastTask, err := c.trainingRepository.GetLastTaskResult(training.Id)
+	if err != nil && !errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
+		return nil, err
+	}
+	if lastTask != nil && lastTask.Answer == nil {
+		return &CheckerTask{
+			TrainingId:   training.Id,
+			CardId:       lastTask.CardId,
+			QuestionType: model.QuestionTypeBinary,
+			Answers:      []string{knowAnswer, dontKnowAnswer},
+		}, nil
+	}
 	doneCards, err := c.trainingRepository.GetTaskResults(training.Id)
 	if err != nil {
 		return nil, err
@@ -57,43 +68,46 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, 
 	}
 	cards, err := c.cardRepository.GetCardsByCardSet(training.CardSetId)
 	answer := []string{knowAnswer, dontKnowAnswer}
+	var task *CheckerTask
 	for _, i := range rand.Perm(len(cards)) {
 		if _, found := idsSet[cards[i].Id]; !found {
-			return &CheckerTask{
+			task = &CheckerTask{
 				TrainingId:   training.Id,
 				CardId:       cards[i].Id,
 				QuestionType: model.QuestionTypeBinary,
 				Answers:      answer,
-			}, nil
+			}
+			break
 		}
 	}
-	return nil, ErrAllTasksAreCompleted
-}
-
-func (c *BasicTaskChecker) Submit(training *model.Training, answer string) (*model.TrainingTaskResult, error) {
-	lastQuestion, err := c.trainingRepository.GetLastTaskResult(training.Id)
-	if errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
-		return nil, ErrTaskNotFound
+	if task == nil {
+		return nil, ErrAllTasksAreCompleted
 	}
-	if err != nil {
+	taskResult := model.TrainingTaskResult{
+		TrainingId: training.Id,
+		CardId:     task.CardId,
+	}
+	if _, err := c.trainingRepository.CreateTaskResult(&taskResult); err != nil {
 		return nil, err
 	}
-	card, err := c.cardRepository.GetCard(lastQuestion.CardId)
-	isCorrect := false
+	return task, nil
+}
+
+func (c *BasicTaskChecker) Validate(training *model.Training, answer string) (bool, error) {
+	lastTask, err := c.trainingRepository.GetLastTaskResult(training.Id)
+	if err != nil {
+		return false, err
+	}
+	if lastTask == nil || lastTask.Answer != nil {
+		return false, ErrTaskNotFound
+	}
 	if answer == knowAnswer {
-		isCorrect = true
-	} else if answer != dontKnowAnswer {
-		return nil, ErrInvalidAnswer
+		return true, nil
+	} else if answer == dontKnowAnswer {
+		return false, nil
+	} else {
+		return false, ErrInvalidAnswer
 	}
-	result := model.TrainingTaskResult{
-		TrainingId:    lastQuestion.TrainingId,
-		CardId:        lastQuestion.CardId,
-		Answer:        &answer,
-		CorrectAnswer: &card.Answer,
-		IsCorrect:     &isCorrect,
-		CreatedAt:     time.Now(),
-	}
-	return &result, nil
 }
 
 func (c *BasicTaskChecker) IsSupporting(trainingType model.TrainingType) bool {
