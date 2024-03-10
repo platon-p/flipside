@@ -12,6 +12,7 @@ import (
 var (
 	ErrAllTasksAreCompleted = errors.New("All tasks are completed")
 	ErrInvalidAnswer        = errors.New("Invalid answer")
+	ErrTaskNotFound         = errors.New("Task not found")
 
 	knowAnswer     = "Know"
 	dontKnowAnswer = "Don't know"
@@ -63,6 +64,9 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*model.Task, e
 
 func (c *BasicTaskChecker) Submit(training *model.Training, answer string) (*model.TrainingTaskResult, error) {
 	lastQuestion, err := c.trainingRepository.GetLastTaskResult(training.Id)
+	if errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
+		return nil, ErrTaskNotFound
+	}
 	if err != nil {
 		return nil, err
 	}
