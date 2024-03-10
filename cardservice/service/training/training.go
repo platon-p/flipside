@@ -19,14 +19,16 @@ var (
 type TrainingService struct {
 	trainingRepository repository.TrainingRepository
 	cardSetRepository  repository.CardSetRepository
+	cardRepository     repository.CardRepository
 
 	checkers []TaskChecker
 }
 
-func NewTrainingService(trainingRepository repository.TrainingRepository, cardSetRepository repository.CardSetRepository, checkers []TaskChecker) *TrainingService {
+func NewTrainingService(trainingRepository repository.TrainingRepository, cardSetRepository repository.CardSetRepository, cardRepository repository.CardRepository, checkers []TaskChecker) *TrainingService {
 	return &TrainingService{
 		trainingRepository: trainingRepository,
 		cardSetRepository:  cardSetRepository,
+		cardRepository:     cardRepository,
 		checkers:           checkers,
 	}
 }
@@ -84,7 +86,10 @@ func (s *TrainingService) MakeTrainingSummary(training *model.Training) (*model.
 	}
 	correct, wrong := 0, 0
 	for i := range results {
-		if results[i].IsCorrect {
+		if results[i].IsCorrect == nil {
+			continue
+		}
+		if *results[i].IsCorrect {
 			correct++
 		} else {
 			wrong++
@@ -126,7 +131,23 @@ func (s *TrainingService) GetNextTask(userId int, trainingId int) (*model.Task, 
 	if err != nil {
 		return nil, err
 	}
-	return task, nil
+	taskResult := model.TrainingTaskResult{
+		TrainingId: training.Id,
+		CardId:     task.CardId,
+	}
+	if _, err := s.trainingRepository.SaveTaskResult(&taskResult); err != nil {
+		return nil, err
+	}
+	card, err := s.cardRepository.GetCard(task.CardId)
+	if err != nil {
+		return nil, err
+	}
+	taskResponse := model.Task{
+		Question:     card.Question,
+		QuestionType: task.QuestionType,
+		Answers:      task.Answers,
+	}
+	return &taskResponse, nil
 }
 
 func (s *TrainingService) SubmitAnswer(userId int, trainingId int, answer string) (*model.TrainingTaskResult, error) {
@@ -150,9 +171,9 @@ func (s *TrainingService) SubmitAnswer(userId int, trainingId int, answer string
 
 func (s *TrainingService) GetTraining(userId int, trainingId int) (*model.Training, error) {
 	training, err := s.trainingRepository.GetTraining(trainingId)
-    if errors.Is(err, repository.ErrTrainingNotFound) {
-        return nil, ErrTrainingNotFound
-    }
+	if errors.Is(err, repository.ErrTrainingNotFound) {
+		return nil, ErrTrainingNotFound
+	}
 	if err != nil {
 		return nil, err
 	}

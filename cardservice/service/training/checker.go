@@ -18,8 +18,15 @@ var (
 	dontKnowAnswer = "Don't know"
 )
 
+type CheckerTask struct {
+	TrainingId   int
+	CardId       int
+	QuestionType model.QuestionType
+	Answers      []string
+}
+
 type TaskChecker interface {
-	GetNextTask(training *model.Training) (*model.Task, error)
+	GetNextTask(training *model.Training) (*CheckerTask, error)
 
 	// Does not save result to trainingRepository
 	Submit(training *model.Training, answer string) (*model.TrainingTaskResult, error)
@@ -39,7 +46,7 @@ func NewBasicTaskChecker(repository repository.TrainingRepository, cardRepositor
 	}
 }
 
-func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*model.Task, error) {
+func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, error) {
 	doneCards, err := c.trainingRepository.GetTaskResults(training.Id)
 	if err != nil {
 		return nil, err
@@ -52,8 +59,9 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*model.Task, e
 	answer := []string{knowAnswer, dontKnowAnswer}
 	for _, i := range rand.Perm(len(cards)) {
 		if _, found := idsSet[cards[i].Id]; !found {
-			return &model.Task{
-				Question:     cards[i].Question,
+			return &CheckerTask{
+				TrainingId:   training.Id,
+				CardId:       cards[i].Id,
 				QuestionType: model.QuestionTypeBinary,
 				Answers:      answer,
 			}, nil
@@ -82,7 +90,7 @@ func (c *BasicTaskChecker) Submit(training *model.Training, answer string) (*mod
 		CardId:        lastQuestion.CardId,
 		Answer:        &answer,
 		CorrectAnswer: &card.Answer,
-		IsCorrect:     isCorrect,
+		IsCorrect:     &isCorrect,
 		CreatedAt:     time.Now(),
 	}
 	return &result, nil

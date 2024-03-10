@@ -23,6 +23,7 @@ type TrainingRepository interface {
 	SetTrainingStatus(trainingId int, status string) (*model.Training, error)
 
 	GetTaskResults(trainingId int) ([]model.TrainingTaskResult, error)
+	SaveTaskResult(taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error)
 	GetLastTaskResult(trainingId int) (*model.TrainingTaskResult, error)
 	CreateTaskResult(trainingId int, taskResult *model.TrainingTaskResult) (*model.TrainingTaskResult, error)
 }
