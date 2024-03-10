@@ -18,7 +18,7 @@ CREATE TABLE training_tasks_results
     training_id INT,
     card_id     INT,
     answer      VARCHAR NULL,
-    is_correct  BOOLEAN,
+    is_correct  BOOLEAN NULL ,
     created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 
     FOREIGN KEY (training_id) REFERENCES trainings (id) ON DELETE CASCADE,
