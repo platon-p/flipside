@@ -21,9 +21,9 @@ const useProvideAuth = (): AuthData => {
 
     async function register(data: RegisterData): Promise<string | null> {
         // validate
-        const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]$/;
+        const emailPattern = /^\s*[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+\s*$/;
         if (!emailPattern.test(data.email)) {
-            return 'Некорректный email';
+            return 'некорректный email';
         }
         const res = await AuthService.register(data);
         if (!res) {

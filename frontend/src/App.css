@@ -1,0 +1,14 @@
+@font-face {
+    font-family: inter;
+    src: url(./fonts/Inter/static/Inter-Bold.ttf);
+  }
+  
+  @font-face {
+    font-family: inter-norm;
+    src: url(./fonts/Inter/static/Inter-Medium.ttf);
+  }
+  
+  @font-face {
+    font-family: mulish;
+    src: url(./fonts/mulish/Mulish-VariableFont_wght.ttf);
+  }

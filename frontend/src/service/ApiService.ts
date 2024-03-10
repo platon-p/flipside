@@ -36,7 +36,7 @@ export interface MessageResponse {
 }
 
 const config = {
-    baseUrl: 'http://localhost:80',
+    baseUrl: 'http://79.137.204.109',
     auth: '/api/auth',
     cardSet: '/api/cardset',
     cards: '/api/cards',

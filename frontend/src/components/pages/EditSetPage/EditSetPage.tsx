@@ -85,7 +85,7 @@ export default function EditSetPage() {
                 gap: '10px'
             }}>
                 <p style={{ margin: 0 }}>Title</p>
-                <Input value={title} onChange={e => setTitle(e.currentTarget.value)} />
+                <Input value={title} onChange={(e: any) => setTitle(e.currentTarget.value)} />
             </div>
             <div style={{
                 display: 'flex',
@@ -93,7 +93,7 @@ export default function EditSetPage() {
                 gap: '10px'
             }}>
                 <p>Slug</p>
-                <Input value={slug} onChange={e => setSlug(e.currentTarget.value)} />
+                <Input value={slug} onChange={(e: any) => setSlug(e.currentTarget.value)} />
             </div>
             <Button onClick={submit}>Submit</Button>
         </div>
