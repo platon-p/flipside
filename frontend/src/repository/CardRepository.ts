@@ -4,7 +4,6 @@ export interface Card {
     question: string,
     answer: string,
     position: number,
-    owner_id: number,
 }
 
 export const CardRepository = {
@@ -15,9 +14,26 @@ export const CardRepository = {
                 question: card.question,
                 answer: card.answer,
                 position: card.position,
-                owner_id: card.card_set_id,
             }
         })
         return res;
-    }
+    },
+
+    async createCards(slug: string, cards: Card[]): Promise<Card[]> {
+        const token = localStorage.getItem('accessToken')!;
+        const response = await ApiService.Card.createCards(token, slug, cards.map(card => {
+            return {
+                question: card.question,
+                answer: card.answer,
+                position: card.position,
+            }
+        }));
+        return response.map(card => {
+            return {
+                question: card.question,
+                answer: card.answer,
+                position: card.position,
+            }
+        });
+    },
 }

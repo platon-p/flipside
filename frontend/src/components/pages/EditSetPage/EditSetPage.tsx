@@ -13,12 +13,15 @@ export default function EditSetPage() {
     const navigate = useNavigate();
 
     const [cardSet, setCardSet] = useState<CardSet | undefined>();
-    const [cards, setCards] = useState<Card[] | undefined>();
+    const [initCards, setInitCards] = useState<Card[] | undefined>();
+    const [displayCards, setDisplayCards] = useState<Card[] | undefined>();
     const [loading, setLoading] = useState(true);
 
     const [title, setTitle] = useState<string>('');
     const [slug, setSlug] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string | undefined>();
+
+    const [createdCards, setCreatedCards] = useState(new Array<Card>());
 
     useEffect(() => {
         function loadCardSet() {
@@ -34,19 +37,29 @@ export default function EditSetPage() {
         }
         function loadCards() {
             CardRepository.getCards(slugParam!)
-                .then(i => setCards(i))
+                .then(i => {
+                    setInitCards(i)
+                    setDisplayCards(i)
+                })
         }
         Promise.all([loadCardSet(), loadCards()]).then(() => setLoading(false))
     }, [slugParam])
 
     const handleUpdate = (position: number, question: string, answer: string) => {
-        if (!cards) return;
-        cards[position].question = question
-        cards[position].answer = answer
-        setCards([...cards])
+        if (!displayCards) return;
+        displayCards[position].question = question
+        displayCards[position].answer = answer
+        setDisplayCards([...displayCards])
     }
 
-    function submit() {
+    async function submit() {
+        try {
+            await CardRepository.createCards(slugParam!, createdCards)
+        } catch (e) {
+            console.log(e)
+            return
+        }
+
         CardSetRepository.updateCardSet(slugParam!, title, slug)
             .then(res => {
                 navigate(`/set/${res.slug}`)
@@ -55,6 +68,17 @@ export default function EditSetPage() {
             .catch(e => {
                 console.log(e)
             })
+    }
+
+    function addCard() {
+        if (!displayCards) return;
+        displayCards.push({
+            question: 'question',
+            answer: 'answer',
+            position: (displayCards.at(-1)?.position ?? 0) + 1,
+        })
+        setDisplayCards([...displayCards])
+        setCreatedCards([...createdCards, displayCards.at(-1)!])
     }
 
     if (!isAuth) {
@@ -99,17 +123,22 @@ export default function EditSetPage() {
         </div>
 
         <h4>Cards</h4>
-        <div className="cards">
-            {cards?.map((_, i) => {
+        <div style={{
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '1em',
+            marginBottom: '1em'
+        }}>
+            {displayCards?.map((v, i) => {
                 return <CardItem
-                    position={cards[i].position}
-                    question={cards[i].question}
-                    answer={cards[i].answer}
+                    position={v.position}
+                    question={v.question}
+                    answer={v.answer}
                     onUpdate={(q, a) => handleUpdate(i, q, a)}
-                    key={cards[i].position}
+                    key={v.position}
                 />
             })}
         </div>
-        <Button>Add card</Button>
+        <Button onClick={addCard}>Add card</Button>
     </div>
 }
