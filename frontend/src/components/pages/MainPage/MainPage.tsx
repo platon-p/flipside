@@ -10,3 +10,5 @@ export function Main() {
     }
     return <NewbiePage />
 }
+
+export default Main

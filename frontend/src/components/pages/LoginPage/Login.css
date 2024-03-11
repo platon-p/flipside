@@ -1,11 +1,212 @@
-.login-form {
-    display: flex;
-    flex-direction: column;
-    gap: 0.2em;
-    margin-bottom: 1em;
+.error-message {
+  margin: 0;
+  color: red;
 }
 
-.error-message {
-    margin: 0;
-    color: red;
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.authorize {
+  width: 60.8vw;
+  height: 30px !important;
+  font-size: 18px;
+  padding: 0 7.63vw;
+  border-width: 0;
+  border-bottom-width: 3px;
+  margin-bottom: 12px;
+  margin-top: 12px;
+  outline: none;
+  outline-width: 4px;
+  border-color: rgb(217, 217, 217);
+  color: black;
+  max-width: 450px;
+}
+
+.authorize:hover {
+  border-color: rgba(241, 105, 79, 1);
+}
+
+.enter {
+  width: 52.16vw;
+  height: 50px;
+  margin-top: 28px;
+  background-color: rgba(241, 105, 79, 1);
+  font-style: bold;
+  font-size: 18px;
+  outline: none;
+  border: 0;
+  padding: auto;
+}
+
+.log_or_reg {
+  width: 76.6vw;
+  background-color: rgb(217, 217, 217);
+  display: flex;
+  margin: auto;
+  margin-bottom: 7.38vw;
+}
+
+.container {
+  position: absolute;
+  height: 300px;
+  overflow: hidden;
+}
+
+.underline {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgb(217, 217, 217);
+  transition: 0.5s;
+  height: 4px;
+}
+
+.input-group {
+  top: 42vw;
+  transition: 0.5s;
+  position: absolute;
+  left: 0;
+}
+
+.button-box {
+  margin: 0;
+  position: relative;
+  width: 76.6vw;
+  height: 30px;
+  margin-bottom: auto;
+  top: 35vw;
+  left: 11.7vw;
+  max-width: 450px;
+}
+
+.toggle-btn {
+  padding: 10px 30px;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  outline: none;
+  position: relative;
+  height: 100%;
+  font-size: 18px;
+  text-align: bottom;
+}
+
+.check-box {
+  margin: 30px 10px 30px 0;
+}
+
+span {
+  color: #777;
+  font-size: 12px;
+  bottom: 68px;
+  position: absolute;
+}
+
+.log {
+  padding: 0;
+  padding-left: 5%;
+}
+
+.reg {
+  padding: 0;
+  padding-left: 28%;
+}
+
+.navbar-enter-ref {
+  top: 5px;
+  right: 0;
+  width: 100px;
+  position: absolute;
+
+}
+
+.navbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+}
+
+li {
+  display: block;
+  list-style-type: none;
+  float: left;
+  padding: 0 20px;
+  font-size: 18px;
+}
+
+ul {
+  display: inline-block;
+  justify-content: space-between;
+  padding: 0;
+  position: 0;
+}
+
+.header {
+  height: 80px;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  left: 0;
+  display: flex;
+  justify-content: center;
+  position: relative;
+}
+
+.logo {
+  width: 52px;
+  height: 52px;
+  background-color: #777;
+  position: absolute;
+  left: 24px;
+  top: 11px
+}
+
+.enter-ref {
+  position: absolute;
+  float: right;
+  right: 0px;
+  top: 0px;
+  width: auto;
+  height: 20px;
+}
+
+.search {
+  position: relative;
+  width: 76.6vw;
+  margin: auto;
+  height: 10.77vw;
+  border-width: 2px;
+  border-color: #777;
+  left: 0;
+}
+
+.input-search {
+  width: 100%;
+  height: 100%;
+  border-top: 0;
+  border-left: 0;
+  border-right: 0;
+  border-bottom: 2;
+  border-radius: 0;
+  border-color: rgb(217, 217, 217);
+  color: black;
+  outline: none;
+  font-family: inter-norm;
+  font-size: 16px;
+}
+
+.regbtn {
+  width: 75% !important;
+  max-width: 450px;
+}
+
+.logbtn {
+  width: 75% !important;
+  max-width: 450px;
+
 }

@@ -1,6 +1,8 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { Main, Register, Login, ViewSetPage, CreateSetPage, EditSetPage } from './components/pages';
+import { Main, Register, Login, ViewSetPage, CreateSetPage, EditSetPage, TrainingPage } from './components/pages';
 import { AuthProvider } from './provider/AuthProvider';
+import './App.css';
+
 function App() {
   return (
     <BrowserRouter>
@@ -12,6 +14,7 @@ function App() {
           <Route path='/set/:slug' element={<ViewSetPage />} />
           <Route path='/set/:slug/edit' element={<EditSetPage />} />
           <Route path='/create-set' element={<CreateSetPage />} />
+          <Route path='/training/:id' element={<TrainingPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
