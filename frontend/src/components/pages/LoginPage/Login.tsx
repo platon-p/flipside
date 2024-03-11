@@ -4,6 +4,7 @@ import { Input } from "@/components/shared/Input"
 import { useAuth } from "@/hooks/Auth"
 import { useState } from "react";
 import './Login.css';
+import 'typeface-inter';
 
 export function LoginPage() {
   const [view, setView] = useState<'login' | 'register'>('login');
@@ -19,19 +20,18 @@ export function LoginPage() {
 
 function ButtonBox({view, onChange}: {view: 'login' | 'register', onChange: (view: 'login' | 'register') => void}) {
   return <div className='button-box'>
-    <div id="" className="underline"></div>
+    <div className="underline"></div>
     <div style={{
       left: view === 'login' ? 0 : '43%',
       width: view === 'login' ? '43%' : '57%',
       backgroundColor: '#F1694F'
     }}></div>
-    <button id='b_l' className="toggle-btn log"
+    <button className="toggle-btn log"
       onClick={() => onChange('login')}
       style={{
         color: view === 'login' ? '#F1694F' : undefined
       }}>вход</button>
-    <button id='b_r'
-      className="toggle-btn reg" onClick={() => onChange('register')}
+    <button className="toggle-btn reg" onClick={() => onChange('register')}
       style={{
         color: view === 'register' ? '#F1694F' : undefined
       }}>регистрация</button>
@@ -76,7 +76,7 @@ function Register({ active }: { active: boolean }) {
     goToMain();
   }
 
-  return <div id='register' className='input-group form' onSubmit={(e) => { e.preventDefault() }} style={{
+  return <div className='input-group form' onSubmit={(e) => { e.preventDefault() }} style={{
     left: active ? 0 : 450
   }}>
     <div>
@@ -138,7 +138,7 @@ function Login({ active }: { active: boolean }) {
     goToMain();
   }
 
-  return <div id='login' className='input-group form' style={{
+  return <div className='input-group form' style={{
     left: active ? 0 : '-400px'
   }}>
     <div>
