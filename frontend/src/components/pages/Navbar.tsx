@@ -8,7 +8,7 @@ const Navbar = () => {
 		<div className="navbar">
 			<ul className="navbar-menu">
 				<li><a href ="/">главная</a></li>	
-				<li><a href="/authorize">создать</a></li>
+				<li><a href="/create-set">создать</a></li>
 				<li><a href="/login">профиль</a></li>
 			</ul>
 		</div>

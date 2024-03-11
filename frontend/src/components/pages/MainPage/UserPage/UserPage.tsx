@@ -33,7 +33,7 @@ export function UserPage() {
     <div className="controls">
             <Button className="create-set" onClick={createCardSet}>+ создать новый набор</Button>
         </div>
-</div>
+    </div>
         
         <Navbar/>
     </div>

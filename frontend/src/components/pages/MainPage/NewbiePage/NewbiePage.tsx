@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom"
 import { useState } from 'react'
 import Navbar from "../../Navbar";
+import { Button } from "@/components/shared/Button";
 import './NewbiePage.css'
 export function NewbiePage() {
     const [request, setRequest] = useState('');
-
     const navigate = useNavigate();
     function goToLogin() {
         navigate('/login')
@@ -23,20 +23,16 @@ export function NewbiePage() {
                 <h1>flipside</h1>
                 <div className="line"></div>
                 <div className="info">
-                    <h3>Flipside - это разъёб <br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
-                    ...<br/>
+                    <h3>Flipside - это сервис, благодоря которому 
+                        Вы можете значительно упростить процесс изучения 
+                        термиов и их понятий
+                        <br/>
+                        <br></br>
+                        Создайте свой первый набор карточек, выбрав тему, с которой вы хотели бы начать.
+                        Это может быть что угодно - от языков и наук до искусства и спорта. 
                     </h3>
                 </div>
+                <Button className="create-set" onClick={goToLogin}>+ создать новый набор</Button>
                 
             </div>
 		</div>

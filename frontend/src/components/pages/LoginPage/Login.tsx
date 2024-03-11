@@ -79,21 +79,22 @@ export function Login() {
   var btn = document.getElementById('btn')!;
   var b_r = document.getElementById('b_r')!;
   var b_l = document.getElementById('b_l')!;
+  var bb = document.getElementById('button-box')!;
   const logined = () =>{
     login.style.left = "0";
     registers.style.left = "450px";
     btn.style.left = "0";
-    btn.style.width = "34vw";
-    b_l.style.color = "white";
+    btn.style.width = "43%";
+    b_l.style.color = "rgba(241, 105, 79, 1)";
     b_r.style.color = "black";
   };
 
   const registered = () => {
     login.style.left = "-400px";
     registers.style.left = "0";
-    btn.style.left = "27.57vw";
-    btn.style.width = "48.97vw";
-    b_r.style.color = "white";
+    btn.style.left = "43%";
+    btn.style.width = "57%";
+    b_r.style.color = "rgba(241, 105, 79, 1)";
     b_l.style.color = "black";
   };
 
@@ -101,30 +102,31 @@ export function Login() {
     <div className='container' style={{height: 700, left: 0}}>
       <style>{'body{ align-items: flex-start;}'}</style>
       <div className='button-box'>
+        <div id ="" className="underline"></div>
         <div id="btn"></div>
+    
+
         <button id='b_l' className="toggle-btn log"
          onClick={() => logined()}
-         style = {{color: 'white'}}>вход</button>
+         style = {{color: 'rgba(241, 105, 79, 1)'}}>вход</button>
         <button id='b_r'
          className="toggle-btn reg" onClick={() => registered()}
          style={{color:'black'}}>регистрация</button>
       </div>
-      <form onSubmit={(e) => { e.preventDefault()}}
-      id='login' className='input-group' style={{left: 0}}>
+      <div
+      id='login' className='input-group form' style={{left: 0}}>
         <div>
           <Input className='authorize'onInput={(e: any) => setEmail(e.currentTarget.value)} placeholder="почта" />
         </div>
         <div>
         <Input className='authorize' onInput={(e: any) => setPassword(e.currentTarget.value)} placeholder="пароль" type="password" />
         </div>
-      {errorLoginMessage && <p style={{ color: 'red' }}>{errorLoginMessage}</p>}
-          <button onClick={submit} className='enter' type="submit" style={{borderRadius: 28, color: "white"}}>
-          <style>{'button { background-color: rgba(241, 105, 79, 1); }'}</style>
-          ВОЙТИ
-          </button>
-      </form>
-      <form 
-      id='register' className='input-group'
+      {errorLoginMessage && <p style={{ color: 'red',fontFamily: 'inter-norm' }}>{errorLoginMessage}</p>}
+      <Button className="create-set logbtn" onClick={submit}>войти</Button>
+
+      </div>
+      <div 
+      id='register' className='input-group form'
       onSubmit={(e) => { e.preventDefault()}}>
         <div>
         <Input 
@@ -159,15 +161,10 @@ export function Login() {
 
         </div>
       {errorRegMessage && <p style={{ color: 'red', fontFamily: 'inter-norm' }}>{errorRegMessage}</p>}
-          <Button onClick={submitreg} 
-          className='enter' 
-          type="submit" 
-          style={{borderRadius: 28, color: "white"}}>
-            <style>{'button { background-color: rgba(241, 105, 79, 1); }'}</style>
-            ЗАРЕГИСТРИРОВАТЬСЯ
-          </Button>
+      <Button className="create-set regbtn" onClick={submitreg}>зарегистрироваться</Button>
 
-      </form>
+
+      </div>
     </div>
   </>
 }

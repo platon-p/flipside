@@ -31,15 +31,22 @@
   
   .authorize{
     width: 60.8vw;
-    height: 13.77vw !important;
-    font-size: 16px;
-    border-radius: 28px;
+    height: 30px !important;
+    font-size: 18px;
     padding: 0 7.63vw;
-    border: 0;
-    margin-bottom: 3.05vw;
-    outline: rgba(241, 105, 79, 1);
-    background-color: rgb(217, 217,217);
+    border-width: 0;
+    border-bottom-width: 3px;
+    margin-bottom: 12px;
+    margin-top: 12px;
+    outline: none;
+    outline-width: 4px;
+    border-color: rgb(217, 217,217);
     color: black;
+    max-width: 450px;
+  }
+
+  .authorize:hover{
+    border-color: rgba(241, 105, 79, 1);
   }
   form{
     width: 100%;
@@ -51,11 +58,11 @@
   
   .enter{
     width: 52.16vw;
-    height: 14.75vw !important;
+    height: 50px;
     margin-top: 28px;
     background-color: rgba(241, 105, 79, 1);
     font-style: bold;
-    font-size: 14px;
+    font-size: 18px;
     outline: none;
     border: 0;
     padding: auto;
@@ -69,12 +76,10 @@
   
   .log_or_reg{
     width: 76.6vw;
-    height: 13.77vw;
     background-color: rgb(217, 217,217);
     display: flex;
     margin: auto;
     margin-bottom: 7.38vw;
-    border-radius: 28px;
   }
   
   .container{
@@ -83,7 +88,16 @@
     overflow: hidden;
   }
   
-  
+  .underline{
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgb(217, 217,217);
+    transition: 0.5s;
+    height: 4px;
+  }
   
   
   .input-group{
@@ -96,15 +110,14 @@
   
   
   .button-box{
-    margin: 35px auto;
-    position: absolute;
+    margin: 0;
+    position: relative;
     width: 76.6vw;
-    height: 13.77vw;
-    background-color: rgb(217, 217,217);
+    height: 30px;
     margin-bottom: auto;
-    border-radius: 28px;
-    top: 12vw;
+    top: 35vw;
     left: 11.7vw;
+    max-width: 450px;
   }
   
   .toggle-btn{
@@ -115,18 +128,20 @@
     outline: none;
     position: relative;
     height: 100%;
-    font-size: 16px;
+    font-size: 18px;
+    text-align: bottom;
   }
   
   #btn{
-    top: 0;
+    bottom: 0;
     left: 0;
     position: absolute;
-    width: 34vw;
+    width: 43%;
     height: 100%;
-    background: rgba(241, 105, 79, 1);
-    border-radius: 28px;
+    background: rgba(241, 105, 79, 1) ;
     transition: 0.5s;
+    height: 4px;
+    
   }
   
   
@@ -153,12 +168,12 @@
   
   .log{
     padding: 0;
-    padding-right: 15.897vw;
+    padding-left: 5%;
   }
   
   .reg {
     padding: 0;
-    padding-left: 13px;
+    padding-left: 28%;
   }
   .navbar-enter-ref{
     top: 5px;
@@ -245,5 +260,14 @@
     font-size: 16px;
   }
 
-  
+  .regbtn{
+    width: 75% !important;
+    max-width: 450px;
+  }
+
+  .logbtn{
+    width: 75% !important;
+    max-width: 450px;
+
+  }
   
