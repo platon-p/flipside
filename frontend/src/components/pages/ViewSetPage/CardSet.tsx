@@ -5,6 +5,7 @@ import { Card, CardRepository } from "@/repository/CardRepository";
 import { useAuth } from "@/hooks/Auth";
 import { Button } from "@/components/shared/Button";
 import { CardListItem } from "./CardListItem";
+import { TrainingRepository, TrainingSummary } from "@/repository/TrainingRepository";
 
 export function ViewSetPage() {
     const { userId } = useAuth();
@@ -13,6 +14,7 @@ export function ViewSetPage() {
 
     const [cardSet, setCardSet] = useState<CardSetModel | undefined>();
     const [cards, setCards] = useState<Card[] | undefined>();
+    const [trainings, setTrainings] = useState<TrainingSummary[] | undefined>();
 
     const [loading, setLoading] = useState(true);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -22,7 +24,6 @@ export function ViewSetPage() {
             try {
                 const cardSet = await CardSetRepository.getCardSetBySlug(slug!);
                 setCardSet(cardSet);
-                setLoading(false);
             } catch (e) {
                 if (e === 'Card Set not found') {
                     console.log('Card Set not found');
@@ -44,7 +45,17 @@ export function ViewSetPage() {
             }
         }
 
-        Promise.all([loadCardSet(), loadCards()]);
+        async function loadTrainings() {
+            try {
+                const trainings = await TrainingRepository.getCardSetTrainings(slug!);
+                setTrainings(trainings);
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        Promise.all([loadCardSet(), loadCards(), loadTrainings()]).then(() => {
+            setLoading(false);
+        });
     }, [slug])
 
     function goHome() {
@@ -57,13 +68,17 @@ export function ViewSetPage() {
 
     function remove() {
         CardSetRepository.deleteCardSet(slug!)
-        .then(res => {
-            console.log('CardSet deleted', res)
-            navigate('/')
-        })
-        .catch(e => {
-            console.log(e)
-        })
+            .then(res => {
+                console.log('CardSet deleted', res)
+                navigate('/')
+            })
+            .catch(e => {
+                console.log(e)
+            })
+    }
+
+    function startTraining(id: number) {
+        navigate(`/training/${id}`)
     }
 
     if (errorMessage) {
@@ -88,6 +103,16 @@ export function ViewSetPage() {
             <Button onClick={edit}>Edit</Button>
             <Button onClick={remove}>Delete</Button>
         </div>}
+        {trainings?.length === 0 ? <p>No trainings</p> : <div>
+            <h4>Trainings</h4>
+            <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '1em'
+            }}>
+            {trainings!.map((v, i) => <TrainingItem training={v} key={i} onStart={startTraining} />)}
+            </div>
+        </div>}
 
         <h4>Cards</h4>
         {cards?.length === 0 ? <p>Empty list</p> : <div style={{
@@ -98,5 +123,24 @@ export function ViewSetPage() {
             {cards?.map((v, i) => <CardListItem card={v} key={i} />)}
         </div>
         }
+    </div>
+}
+
+function TrainingItem({ training, onStart }: { training: TrainingSummary, onStart: (id: number) => void}) {
+    return <div style={{
+        display: 'flex',
+        justifyContent: 'space-around',
+        width: '100%',
+        backgroundColor: 'lightgray',
+        alignItems: 'center',
+    }}>
+        <p>{training.id}</p>
+        <p>{training.status}</p>
+        <p>{training.training_type}</p>
+        <p style={{color: 'green'}}>+{training.count_right}</p>
+        <p style={{
+            color: 'red'
+        }}>-{training.count_wrong}</p>
+        <Button onClick={() =>onStart(training.id)}>Start</Button>
     </div>
 }

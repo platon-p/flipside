@@ -44,6 +44,17 @@ export interface MessageResponse {
     message: string
 }
 
+export interface TrainingTask {
+    question: string
+    question_type: string
+    answers: string[]
+}
+
+export interface TaskResult {
+    answer: string
+    is_correct: boolean
+}
+
 const config = {
     baseUrl: 'http://localhost:80',
     auth: '/api/auth',
@@ -246,6 +257,34 @@ export const ApiService = {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 },
+            })
+            if (response.ok) {
+                return response.json()
+            }
+            const error = await response.json() as MessageResponse
+            throw error.message
+        },
+
+        async getNextTask(token: string, trainingId: number): Promise<TrainingTask> {
+            const response = await fetch(`${config.baseUrl}/api/trainings/${trainingId}/next`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            if (response.ok) {
+                return response.json()
+            }
+            const error = await response.json() as MessageResponse
+            throw error.message
+        },
+
+        async submitAnswer(token: string, trainingId: number, answer: string): Promise<TaskResult> {
+            const response = await fetch(`${config.baseUrl}/api/trainings/${trainingId}/submit?answer=${answer}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
             })
             if (response.ok) {
                 return response.json()
