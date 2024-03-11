@@ -266,7 +266,7 @@ export const ApiService = {
         },
 
         async getNextTask(token: string, trainingId: number): Promise<TrainingTask> {
-            const response = await fetch(`${config.baseUrl}/api/trainings/${trainingId}/next`, {
+            const response = await fetch(`${config.baseUrl}/api/training/${trainingId}/next`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -280,7 +280,7 @@ export const ApiService = {
         },
 
         async submitAnswer(token: string, trainingId: number, answer: string): Promise<TaskResult> {
-            const response = await fetch(`${config.baseUrl}/api/trainings/${trainingId}/submit?answer=${answer}`, {
+            const response = await fetch(`${config.baseUrl}/api/training/${trainingId}/submit?answer=${answer}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`

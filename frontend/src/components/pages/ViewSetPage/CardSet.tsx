@@ -81,6 +81,18 @@ export function ViewSetPage() {
         navigate(`/training/${id}`)
     }
 
+    function createTraining(trainingType: string) {
+        TrainingRepository.createTraining(slug!, trainingType)
+            .then(training => {
+                console.log('Training created', training)
+                window.location.reload();
+            })
+            .catch(e => {
+                console.log(e)
+            }
+        )
+    }
+
     if (errorMessage) {
         return <p style={{
             color: 'red'
@@ -103,6 +115,7 @@ export function ViewSetPage() {
             <Button onClick={edit}>Edit</Button>
             <Button onClick={remove}>Delete</Button>
         </div>}
+        <Button onClick={() => createTraining('basic')}>Create basic training</Button>
         {trainings?.length === 0 ? <p>No trainings</p> : <div>
             <h4>Trainings</h4>
             <div style={{
