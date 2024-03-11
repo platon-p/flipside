@@ -43,7 +43,7 @@ func (c *UserController) GetSets(nickname string) ([]transfer.CardSetResponse, e
 func (c *UserController) cardSetModelToResponse(cardSet *model.CardSet) *transfer.CardSetResponse {
 	return &transfer.CardSetResponse{
 		Title:   cardSet.Title,
-		Slug:    cardSet.Title,
+		Slug:    cardSet.Slug,
 		OwnerId: cardSet.OwnerId,
 	}
 }
