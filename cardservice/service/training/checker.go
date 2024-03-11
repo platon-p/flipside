@@ -50,12 +50,16 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, 
 	if err != nil && !errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
 		return nil, err
 	}
+    card, err := c.cardRepository.GetCard(lastTask.CardId)
+    if err != nil {
+        return nil, err
+    }
 	if lastTask != nil && lastTask.Answer == nil {
 		return &CheckerTask{
 			TrainingId:   training.Id,
 			CardId:       lastTask.CardId,
 			QuestionType: model.QuestionTypeBinary,
-			Answers:      []string{knowAnswer, dontKnowAnswer},
+			Answers:      []string{card.Answer},
 		}, nil
 	}
 	doneCards, err := c.trainingRepository.GetTaskResults(training.Id)

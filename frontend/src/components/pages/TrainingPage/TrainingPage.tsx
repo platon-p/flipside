@@ -8,6 +8,7 @@ export function TrainingPage() {
     const { id: trainingId } = useParams();
     const [task, setTask] = useState<TrainingTask | undefined>();
     const [result, setResult] = useState<TaskResult | undefined>();
+    const [side, setSide] = useState<'front' | 'back'>('front');
     const navigate = useNavigate();
 
     function loadTask(trainingId: number) {
@@ -54,8 +55,11 @@ export function TrainingPage() {
             backgroundColor: 'lightgray',
             minHeight: '8em',
             width: '100%',
-        }}>
-            <p>{task?.question}</p>    
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+        }} onClick={() => setSide(side === 'front' ? 'back' : 'front')}>
+            {side === 'front' ? task.question : task.answers[0]}
         </div>
         <br />
         <div style={{
