@@ -1,0 +1,549 @@
+openapi: 3.0.3
+info:
+  title: Flipside - OpenAPI 3.0
+  description: A service for memorising by the cards
+  version: 1.0.0
+tags:
+  - name: cardset
+    description: Everything about cardsets
+  - name: card
+    description: Everything about cards
+  - name: user
+    description: Everything about user, profile registration and login
+paths:
+  /api/cardset/{slug}:
+    get:
+      tags:
+        - cardset
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardSetResponse'
+        '404':
+          description: Cardset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    put:
+      tags:
+        - cardset
+      parameters:
+          - name: slug
+            in: path
+            required: true
+            schema:
+              type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardSetResponse'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardSetResponse'
+        '403':
+          description: Not cardset owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Cardset not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MessageResponse'
+        '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MessageResponse'
+    delete:
+      tags:
+        - cardset
+      parameters:
+          - name: slug
+            in: path
+            required: true
+            schema:
+              type: string
+      responses:
+        '404':
+          description: Cardset not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MessageResponse'
+        '500':
+            description: Internal server error
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MessageResponse'
+  /api/cardset:
+    post:
+      tags:
+        - cardset
+      requestBody:
+        content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardSetRequest'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardSetResponse'
+        '400':
+          description: Cardset already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /api/cards/{slug}:
+    get:
+      tags:
+        - card
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
+        '404':
+          description: Cardset not found
+          content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    post:
+      tags:
+        - card
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CardRequest'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardResponse'
+        '400':
+          description: Card on position already exists or negative
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Not cardset owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Cardset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    put:
+      tags:
+        - card
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/CardResponse'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardResponse'
+        '403':
+          description: Not cardset owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Card or cardset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+    delete:
+      tags:
+        - card
+      parameters:
+        - name: positions
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Syntax error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '403':
+          description: Not cardset owner
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '404':
+          description: Card or cardset not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /api/users/{nickname}/profile:
+    get:
+      tags:
+        - user
+      parameters:
+        - name: nickname
+          in: path
+          required: true
+          schema:
+            type: string
+      responses: 
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /api/users/{nickname}/sets:
+    get:
+      tags:
+        - user
+      parameters:
+        - name: nickname
+          in: path
+          required: true
+          schema:
+            type: string
+      responses: 
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CardSetResponse'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /api/auth/register:
+    post:
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Invalid email or nickname
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /api/auth/login-by-email:
+    post:
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginByEmailRequest'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+  /api/auth/login-by-token:
+    post:
+      tags:
+        - user
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginByTokenRequest'
+      responses:
+        '200':
+          description: Ok response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Invalid or expired token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+components: 
+  schemas:
+    CardRequest:
+      type: object
+      required:
+        - question
+        - answer
+        - position
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+        position:
+          type: integer
+    CardResponse:
+      type: object
+      properties:
+        question:
+          type: string
+        answer:
+          type: string
+        position:
+          type: integer
+        card_set_id:
+          type: integer
+    CardSetRequest:
+      type: object
+      required:
+        - title
+        - slug
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+    CardSetResponse:
+      type: object
+      properties:
+        title:
+          type: string
+        slug:
+          type: string
+        owner_id:
+          type: integer
+    MessageResponse:
+      type: object
+      properties:
+        status_code:
+          type: integer
+        message:
+          type: string
+    ProfileResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        nickname:
+          type: string
+    RegisterRequest:
+      type: object
+      required:
+        - email
+        - name
+        - nickname
+        - password
+      properties:
+        email:
+          type: string
+        name:
+          type: string
+        nickname:
+          type: string
+        password:
+          type: string
+    LoginByEmailRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    LoginByTokenRequest:
+      type: object
+      required:
+        - refresh_token
+      properties:
+        refresh_token:
+          type: string
+    TokenPairResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        expires_at:
+          type: string
+          format: date-time
