@@ -2,9 +2,10 @@ package training
 
 import (
 	"errors"
+	"math/rand"
+
 	"github.com/platon-p/flipside/cardservice/model"
 	"github.com/platon-p/flipside/cardservice/repository"
-	"math/rand"
 )
 
 var (
@@ -50,11 +51,11 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, 
 	if err != nil && !errors.Is(err, repository.ErrTrainingTaskResultNotFound) {
 		return nil, err
 	}
-    card, err := c.cardRepository.GetCard(lastTask.CardId)
-    if err != nil {
-        return nil, err
-    }
 	if lastTask != nil && lastTask.Answer == nil {
+		card, err := c.cardRepository.GetCard(lastTask.CardId)
+		if err != nil {
+			return nil, err
+		}
 		return &CheckerTask{
 			TrainingId:   training.Id,
 			CardId:       lastTask.CardId,

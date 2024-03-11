@@ -9,8 +9,12 @@ import 'typeface-inter';
 export function LoginPage() {
   const [view, setView] = useState<'login' | 'register'>('login');
 
-  return <div>
-    <div className='container' style={{ height: 700, left: 0 }}>
+  return <div style={{
+    display: 'flex',
+    alignContent: 'center',
+    justifyContent: 'center',
+  }}>
+    <div className='container' style={{ height: 700 }}>
       <ButtonBox view={view} onChange={setView} />
       <Login active={view === 'login'} />
       <Register active={view === 'register'} />
@@ -18,8 +22,8 @@ export function LoginPage() {
   </div>
 }
 
-function ButtonBox({view, onChange}: {view: 'login' | 'register', onChange: (view: 'login' | 'register') => void}) {
-  return <div className='button-box'>
+function ButtonBox({ view, onChange }: { view: 'login' | 'register', onChange: (view: 'login' | 'register') => void }) {
+  return <div className='button-box' style={{position: 'relative', left: '-5px'}}>
     <div className="underline"></div>
     <div style={{
       left: view === 'login' ? 0 : '43%',
@@ -139,12 +143,13 @@ function Login({ active }: { active: boolean }) {
   }
 
   return <div className='input-group form' style={{
-    left: active ? 0 : '-400px'
+    left: active ? 0 : '-400px',
+    width: '100%'
   }}>
-    <div>
+    <div style={{ width: '100%' }}>
       <Input className='authorize' onInput={(e) => setEmail(e.currentTarget.value)} placeholder="почта" />
     </div>
-    <div>
+    <div style={{width: '100%'}}>
       <Input className='authorize' onInput={(e) => setPassword(e.currentTarget.value)} placeholder="пароль" type="password" />
     </div>
     {errorLoginMessage && <p style={{ color: 'red', fontFamily: 'inter-norm' }}>{errorLoginMessage}</p>}
