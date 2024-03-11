@@ -56,11 +56,11 @@ export function Register() {
         gap: '0.2em'
     }}>
         <h3 onClick={goToMain}>На главную</h3>
-        <Input placeholder="Имя" onInput={(e: any) => handleInput(e, 'name')} />
-        <Input placeholder="Никнейм" onInput={(e: any) => handleInput(e, 'nickname')} />
-        <Input placeholder="Почта" onInput={(e: any) => handleInput(e, 'email')} />
-        <Input placeholder="Пароль" type="password" onInput={(e: any) => handleInput(e, 'password')} />
-        <Input placeholder="Повторите пароль" type="password" onInput={(e: any) => handleInput(e, 'repeatPassword')} />
+        <Input placeholder="Имя" onInput={(e) => handleInput(e, 'name')} />
+        <Input placeholder="Никнейм" onInput={(e) => handleInput(e, 'nickname')} />
+        <Input placeholder="Почта" onInput={(e) => handleInput(e, 'email')} />
+        <Input placeholder="Пароль" type="password" onInput={(e) => handleInput(e, 'password')} />
+        <Input placeholder="Повторите пароль" type="password" onInput={(e) => handleInput(e, 'repeatPassword')} />
         <Button onClick={submit}>Зарегистрироваться</Button>
         {errorMessage && <p style={{
             color: 'red'
