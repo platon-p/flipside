@@ -1,9 +1,3 @@
-.controls {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
 .create-set{
     background-color: white;
     margin: auto;
@@ -16,8 +10,4 @@
     border-style: solid;
     font-size: 18px;
     color: black;
-}
-
-.controls{
-    height: 30px;
 }

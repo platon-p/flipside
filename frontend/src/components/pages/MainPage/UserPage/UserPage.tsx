@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { CardSetList } from "./CardSetList";
 import { Button } from "@/components/shared/Button";
 import "./UserPage.css";
-import Navbar from "../../Navbar";
 import { useEffect, useState } from "react";
 
 export function UserPage() {
@@ -30,24 +29,28 @@ export function UserPage() {
             })
     }, [nickname])
 
-    return <div><div className="header">
-        <div className="logo"></div>
-        <div className="sign-in">
-            <a onClick={logout} href="/">выйти</a>
+    return <div>
+        <div className="header">
+            <h2>Мои наборы</h2>
+            <div className="logo"></div>
+            <div className="sign-in">
+                <a style={{ color: '#F1694F' }} onClick={logout} href="/">выйти</a>
+            </div>
         </div>
-    </div>
+        {loading && <div>Загрузка...</div>}
+        <div style={{
+            width: '80%',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            margin: '0 auto',
+        }}>
 
-        <div className="onboarding">
-            <h1>Мои наборы</h1>
-            {loading && <div>Загрузка...</div>}
-            {cardSets && <CardSetList cards={cardSets!} onClick={navigateToCardSet} /> }
-            <div className="line"></div>
-            <div className="controls">
+            {cardSets && <CardSetList cards={cardSets!} onClick={navigateToCardSet} />}
+            <div style={{width: '100%'}} className="controls">
                 <Button className="create-set" onClick={createCardSet}>+ создать новый набор</Button>
             </div>
         </div>
-
-        <Navbar />
     </div>
 
 }
