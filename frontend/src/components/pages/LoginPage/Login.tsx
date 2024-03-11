@@ -142,10 +142,10 @@ function Login({ active }: { active: boolean }) {
     left: active ? 0 : '-400px'
   }}>
     <div>
-      <Input className='authorize' onInput={(e: any) => setEmail(e.currentTarget.value)} placeholder="почта" />
+      <Input className='authorize' onInput={(e) => setEmail(e.currentTarget.value)} placeholder="почта" />
     </div>
     <div>
-      <Input className='authorize' onInput={(e: any) => setPassword(e.currentTarget.value)} placeholder="пароль" type="password" />
+      <Input className='authorize' onInput={(e) => setPassword(e.currentTarget.value)} placeholder="пароль" type="password" />
     </div>
     {errorLoginMessage && <p style={{ color: 'red', fontFamily: 'inter-norm' }}>{errorLoginMessage}</p>}
     <Button className="create-set logbtn" onClick={submit}>войти</Button>
