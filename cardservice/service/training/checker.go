@@ -67,7 +67,6 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, 
 		idsSet[doneCards[i].CardId] = struct{}{}
 	}
 	cards, err := c.cardRepository.GetCardsByCardSet(training.CardSetId)
-	answer := []string{knowAnswer, dontKnowAnswer}
 	var task *CheckerTask
 	for _, i := range rand.Perm(len(cards)) {
 		if _, found := idsSet[cards[i].Id]; !found {
@@ -75,7 +74,7 @@ func (c *BasicTaskChecker) GetNextTask(training *model.Training) (*CheckerTask, 
 				TrainingId:   training.Id,
 				CardId:       cards[i].Id,
 				QuestionType: model.QuestionTypeBinary,
-				Answers:      answer,
+				Answers:      []string{cards[i].Answer},
 			}
 			break
 		}
