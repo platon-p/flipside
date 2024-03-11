@@ -1,5 +1,5 @@
-import { Button } from "@/components/shared/Button";
-import { Input } from "@/components/shared/Input";
+import { Button } from "@/shared/Button";
+import { Input } from "@/shared/Input";
 import { useAuth } from "@/hooks/Auth";
 import { Card, CardRepository } from "@/repository/CardRepository";
 import { CardSet, CardSetRepository } from "@/repository/CardSetRepository";

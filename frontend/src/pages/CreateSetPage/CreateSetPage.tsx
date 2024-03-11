@@ -2,8 +2,8 @@ import { CardSetRepository } from "@/repository/CardSetRepository";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/Auth";
-import { Input } from "@/components/shared/Input";
-import { Button } from "@/components/shared/Button";
+import { Input } from "@/shared/Input";
+import { Button } from "@/shared/Button";
 import './CreateSetPage.css';
 
 export function CreateSetPage() {

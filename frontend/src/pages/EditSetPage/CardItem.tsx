@@ -1,4 +1,4 @@
-import { Input } from "@/components/shared/Input";
+import { Input } from "@/shared/Input";
 import css from './CardItem.module.css';
 
 export function CardItem({ position, question, answer, onUpdate }: {

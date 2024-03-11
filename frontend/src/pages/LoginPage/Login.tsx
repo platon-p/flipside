@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom"
-import { Button } from "@/components/shared/Button"
-import { Input } from "@/components/shared/Input"
+import { Button } from "@/shared/Button"
+import { Input } from "@/shared/Input"
 import { useAuth } from "@/hooks/Auth"
 import { useState } from "react";
 import './Login.css';

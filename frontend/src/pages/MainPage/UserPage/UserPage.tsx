@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/Auth";
 import { CardSet, CardSetRepository } from "@/repository/CardSetRepository";
 import { useNavigate } from "react-router-dom";
 import { CardSetList } from "./CardSetList";
-import { Button } from "@/components/shared/Button";
+import { Button } from "@/shared/Button";
 import "./UserPage.css";
 import { useEffect, useState } from "react";
 

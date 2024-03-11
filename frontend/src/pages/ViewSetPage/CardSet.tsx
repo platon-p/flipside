@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom"
 import { CardSet as CardSetModel, CardSetRepository } from "@/repository/CardSetRepository";
 import { Card, CardRepository } from "@/repository/CardRepository";
 import { useAuth } from "@/hooks/Auth";
-import { Button } from "@/components/shared/Button";
+import { Button } from "@/shared/Button";
 import { CardListItem } from "./CardListItem";
 import { TrainingRepository, TrainingSummary } from "@/repository/TrainingRepository";
 

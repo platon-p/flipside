@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom"
-import { Button } from "@/components/shared/Button";
+import { Button } from "@/shared/Button";
 import './NewbiePage.css'
 
 export function NewbiePage() {
