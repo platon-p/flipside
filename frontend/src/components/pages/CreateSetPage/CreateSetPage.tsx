@@ -8,7 +8,7 @@ import './CreateSetPage.css';
 
 export function CreateSetPage() {
     const navigate = useNavigate();
-    const { userId, logout } = useAuth();
+    const { logout } = useAuth();
     const [title, setTitle] = useState('');
     const [slug, setSlug] = useState('');
     const [errorMessage, setErrorMessage] = useState('');

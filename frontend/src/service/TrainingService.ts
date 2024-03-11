@@ -1,4 +1,4 @@
-import { ApiService, TaskResult, TrainingTask } from "./ApiService";
+import { ApiService, TaskResult, TrainingTask } from "./ApiService/ApiService";
 
 export const TrainingService = {
     getNextTask(trainingId: number): Promise<TrainingTask> {
