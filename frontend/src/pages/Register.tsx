@@ -50,21 +50,15 @@ export function Register() {
         goToMain();
     }
 
-    return <div style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.2em'
-    }}>
-        <h3 onClick={goToMain}>На главную</h3>
+    return <div className="flex flex-col gap-1">
+        <h3 className="text-2xl" onClick={goToMain}>На главную</h3>
         <Input placeholder="Имя" onInput={(e) => handleInput(e, 'name')} />
         <Input placeholder="Никнейм" onInput={(e) => handleInput(e, 'nickname')} />
         <Input placeholder="Почта" onInput={(e) => handleInput(e, 'email')} />
         <Input placeholder="Пароль" type="password" onInput={(e) => handleInput(e, 'password')} />
         <Input placeholder="Повторите пароль" type="password" onInput={(e) => handleInput(e, 'repeatPassword')} />
         <Button onClick={submit}>Зарегистрироваться</Button>
-        {errorMessage && <p style={{
-            color: 'red'
-        }}>{errorMessage}</p>}
+        {errorMessage && <p className="text-red-600">{errorMessage}</p>}
         <p onClick={goToLogin}>Вход</p>
     </div>
 }

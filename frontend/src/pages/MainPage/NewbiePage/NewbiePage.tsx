@@ -10,19 +10,13 @@ export function NewbiePage() {
   }
 
   return (
-    <div style={{padding: '0 1em'}}>
+    <div className="px-2">
       <Header />
       <div className={css.onboarding}>
-        <h1>flipside</h1>
-        <div
-          style={{
-            width: "100%",
-            backgroundColor: "rgba(217, 217, 217, 1)",
-            height: "2px",
-          }}
-        ></div>
+        <h1 className="text-3xl">flipside</h1>
+        <div className="w-full h-0.5 bg-[#D9D9D9]" />
         <div>
-          <p style={{ textAlign: "left" }}>
+          <p className="text-left">
             Flipside - это сервис, благодоря которому Вы можете значительно
             упростить процесс изучения термиов и их понятий
             <br />
@@ -32,12 +26,7 @@ export function NewbiePage() {
             искусства и спорта.
           </p>
         </div>
-        <Button
-          style={{
-            width: "100%",
-          }}
-          onClick={goToLogin}
-        >
+        <Button className="w-full" onClick={goToLogin}>
           создать новый набор
         </Button>
       </div>
