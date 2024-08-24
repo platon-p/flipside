@@ -4,7 +4,6 @@ import { Input } from "@/shared/Input"
 import { useAuth } from "@/hooks/Auth"
 import { useState } from "react";
 import './Login.css';
-import 'typeface-inter';
 
 export function LoginPage() {
   const [view, setView] = useState<'login' | 'register'>('login');

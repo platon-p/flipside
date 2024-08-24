@@ -1,0 +1,12 @@
+.onboarding {
+  display: flex;
+  width: auto;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.sign-in {
+  width: auto;
+  position: absolute;
+  font-size: 20px;
+}

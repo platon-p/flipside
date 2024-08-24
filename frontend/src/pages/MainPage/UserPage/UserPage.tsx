@@ -3,7 +3,6 @@ import { CardSet, CardSetRepository } from "@/repository/CardSetRepository";
 import { useNavigate } from "react-router-dom";
 import { CardSetList } from "./CardSetList";
 import { Button } from "@/shared/Button";
-import "./UserPage.css";
 import { useEffect, useState } from "react";
 
 export function UserPage() {
@@ -48,7 +47,7 @@ export function UserPage() {
 
             {cardSets && <CardSetList cards={cardSets!} onClick={navigateToCardSet} />}
             <div style={{width: '100%'}} className="controls">
-                <Button className="create-set" onClick={createCardSet}>+ создать новый набор</Button>
+                <Button onClick={createCardSet}>+ создать новый набор</Button>
             </div>
         </div>
     </div>

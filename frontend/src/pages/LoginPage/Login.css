@@ -146,26 +146,6 @@ ul {
   position: 0;
 }
 
-.header {
-  height: 80px;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  left: 0;
-  display: flex;
-  justify-content: center;
-  position: relative;
-}
-
-.logo {
-  width: 52px;
-  height: 52px;
-  background-color: #777;
-  position: absolute;
-  left: 24px;
-  top: 11px
-}
-
 .enter-ref {
   position: absolute;
   float: right;

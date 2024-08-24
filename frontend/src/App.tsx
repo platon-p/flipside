@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { Main, Register, Login, ViewSetPage, CreateSetPage, EditSetPage, TrainingPage } from './pages';
 import { AuthProvider } from './provider/AuthProvider';
+import 'typeface-inter';
 import './App.css';
 
 function App() {
