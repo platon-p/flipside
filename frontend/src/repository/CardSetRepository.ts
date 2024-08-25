@@ -1,5 +1,5 @@
 import { AuthService } from "@/service/AuthService";
-import { ApiService } from "../service/ApiService/ApiService";
+import { ApiService } from "@/service/ApiService/ApiService";
 
 export interface CardSet {
     title: string,

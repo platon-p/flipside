@@ -1,10 +1,8 @@
-import { CardSetRepository } from "@/repository/CardSetRepository";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CardSetRepository } from "@/repository/CardSetRepository";
 import { useAuth } from "@/hooks/Auth";
-import { Input } from "@/shared/Input";
-import { Button } from "@/shared/Button";
-import "./CreateSetPage.css";
+import { Input, Button } from "@/shared";
 
 export function CreateSetPage() {
   const navigate = useNavigate();
@@ -25,29 +23,16 @@ export function CreateSetPage() {
 
   return (
     <div>
-      <div className="header">
-        <div className="logo"></div>
-        <div className="sign-in">
-          <a onClick={logout} href="/">
-            выйти
-          </a>
-        </div>
-      </div>
-
-      <div className="naming">
-        <h1 className="mb-0">Создать набор</h1>
-      </div>
-
-      <div className="input-holder">
+      <div className="flex flex-col gap-1 px-1">
+        <a onClick={() => navigate(-1)}>Назад</a>
+        <h1 className="mb-0 text-2xl font-medium">Создать набор</h1>
         <Input
-          className="set-value"
           value={title}
           onInput={(e) => setTitle(e.currentTarget.value)}
           placeholder="название"
         />
         <div className="line"></div>
         <Input
-          className="set-value"
           value={slug}
           onInput={(e) => setSlug(e.currentTarget.value)}
           placeholder="slug"
@@ -57,11 +42,7 @@ export function CreateSetPage() {
           продолжить
         </Button>
       </div>
-      {errorMessage && (
-        <p className="error" style={{ fontSize: 12, marginTop: 12 }}>
-          {errorMessage}
-        </p>
-      )}
+      {errorMessage && <p className="text-red-500 text-lg">{errorMessage}</p>}
     </div>
   );
 }

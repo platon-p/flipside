@@ -1,3 +1,5 @@
+import colors from 'tailwindcss/colors';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -10,7 +12,7 @@ export default {
         'sans': 'inter, Arial'
       },
       colors: {
-        'primary': '#EA580B'
+        'primary': colors.orange[500]
       }
     },
   },

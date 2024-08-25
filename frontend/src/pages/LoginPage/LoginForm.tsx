@@ -1,8 +1,7 @@
-import { useAuth } from "@/hooks/Auth";
-import { Button } from "@/shared/Button";
-import { Input } from "@/shared/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/Auth";
+import { Button, Input } from "@/shared";
 
 export function LoginForm({ active }: { active: boolean }) {
   const [email, setEmail] = useState("");
@@ -32,12 +31,10 @@ export function LoginForm({ active }: { active: boolean }) {
       style={{ left: active ? 0 : "-100%" }}
     >
       <Input
-        className="authorize"
         onInput={(e) => setEmail(e.currentTarget.value)}
         placeholder="почта"
       />
       <Input
-        className="authorize"
         onInput={(e) => setPassword(e.currentTarget.value)}
         placeholder="пароль"
         type="password"

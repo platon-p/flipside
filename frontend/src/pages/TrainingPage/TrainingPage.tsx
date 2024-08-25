@@ -1,14 +1,14 @@
-import { Button } from "@/shared/Button";
+import { Button } from "@/shared";
 import { TaskResult, TrainingTask } from "@/service/ApiService/TrainingApi";
 import { TrainingService } from "@/service/TrainingService";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 export function TrainingPage() {
+  const navigate = useNavigate();
   const { id: trainingId } = useParams();
   const [task, setTask] = useState<TrainingTask | undefined>();
   const [result, setResult] = useState<TaskResult | undefined>();
-  const navigate = useNavigate();
 
   function loadTask(trainingId: number) {
     TrainingService.getNextTask(trainingId)

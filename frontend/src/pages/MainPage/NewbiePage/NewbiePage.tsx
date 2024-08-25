@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import css from "./NewbiePage.module.css";
-import { Button } from "@/shared/Button/Button";
+import { OutlineButton } from "@/shared/OutlineButton/OutlineButton";
 import { Header } from "@/shared/Header/Header";
 
 export function NewbiePage() {
@@ -12,7 +11,7 @@ export function NewbiePage() {
   return (
     <div className="px-2">
       <Header />
-      <div className={css.onboarding}>
+      <div className="flex w-auto flex-wrap">
         <h1 className="text-3xl">flipside</h1>
         <div className="w-full h-0.5 bg-[#D9D9D9]" />
         <div>
@@ -26,9 +25,9 @@ export function NewbiePage() {
             искусства и спорта.
           </p>
         </div>
-        <Button className="w-full" onClick={goToLogin}>
+        <OutlineButton className="w-full" onClick={goToLogin}>
           создать новый набор
-        </Button>
+        </OutlineButton>
       </div>
     </div>
   );

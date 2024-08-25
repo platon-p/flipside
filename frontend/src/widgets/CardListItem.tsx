@@ -1,7 +1,10 @@
 import { Card } from "@/repository/CardRepository";
-import css from "./CardListItem.module.css";
 
-export function CardListItem({ card }: { card: Card }) {
+interface CardListItemProps {
+  card: Card;
+}
+
+export function CardListItem({ card }: CardListItemProps) {
   return (
     <div className="flex border-black border-[1px] p-3 gap-4">
       <div className="w-8 flex flex-col justify-center">

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { AuthData, RegisterData, authContext } from "../hooks/Auth";
-import { AuthService } from "../service/AuthService";
+import { AuthData, RegisterData, authContext } from "@/hooks/Auth";
+import { AuthService } from "@/service/AuthService";
 
 const emailPattern = /^\s*[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+\s*$/;
 

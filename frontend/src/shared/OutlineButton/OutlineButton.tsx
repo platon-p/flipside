@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 
-export const Button = styled.button`
+export const OutlineButton = styled.button`
 background-color: white;
 font-size: 18px;
 font-weight: 200;

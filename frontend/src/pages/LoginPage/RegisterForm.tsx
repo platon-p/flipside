@@ -1,8 +1,7 @@
-import { useAuth } from "@/hooks/Auth";
-import { Button } from "@/shared/Button";
-import { Input } from "@/shared/Input";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/hooks/Auth";
+import { Button, Input } from "@/shared";
 
 export function RegisterForm({ active }: { active: boolean }) {
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ export function RegisterForm({ active }: { active: boolean }) {
     password: "",
     repeatPassword: "",
   });
-  const [errorRegMessage, setErrorRegMessage] = useState("");
+  const [errorRegMessage, setErrorMessage] = useState("");
 
   function handleInput(
     e: React.FormEvent<HTMLInputElement>,
@@ -30,19 +29,20 @@ export function RegisterForm({ active }: { active: boolean }) {
     navigate("/");
   }
 
-  async function submitreg() {
+  function submit() {
     // validate
     if (formValues.password !== formValues.repeatPassword) {
-      setErrorRegMessage("пароли не совпадают");
+      setErrorMessage("пароли не совпадают");
       return;
     }
     // register
-    const res = await register(formValues);
-    if (res) {
-      setErrorRegMessage(res);
-      return;
-    }
-    goToMain();
+    register(formValues)
+      .then(() => {
+        goToMain();
+      })
+      .catch((e: Error) => {
+        setErrorMessage(e.message);
+      });
   }
 
   return (
@@ -53,39 +53,28 @@ export function RegisterForm({ active }: { active: boolean }) {
       }}
       style={{ left: active ? 0 : "100%" }}
     >
-      <Input
-        className="authorize"
-        placeholder="имя"
-        onInput={(e) => handleInput(e, "name")}
-      />
+      <Input placeholder="имя" onInput={(e) => handleInput(e, "name")} />
       <Input
         placeholder="никнейм"
         onInput={(e) => handleInput(e, "nickname")}
-        className="authorize"
       />
-      <Input
-        placeholder="почта"
-        onInput={(e) => handleInput(e, "email")}
-        className="authorize"
-      />
+      <Input placeholder="почта" onInput={(e) => handleInput(e, "email")} />
       <Input
         placeholder="пароль"
         type="password"
         onInput={(e) => handleInput(e, "password")}
-        className="authorize"
       />
       <Input
         placeholder="повторите пароль"
         type="password"
         onInput={(e) => handleInput(e, "repeatPassword")}
-        className="authorize"
       />
       {errorRegMessage && (
         <p style={{ color: "red", fontFamily: "inter-norm" }}>
           {errorRegMessage}
         </p>
       )}
-      <Button onClick={submitreg}>зарегистрироваться</Button>
+      <Button onClick={submit}>зарегистрироваться</Button>
     </div>
   );
 }
