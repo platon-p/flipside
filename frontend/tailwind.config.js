@@ -10,7 +10,7 @@ export default {
         'sans': 'inter, Arial'
       },
       colors: {
-        'primary': '#F1694F'
+        'primary': '#EA580B'
       }
     },
   },

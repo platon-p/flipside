@@ -47,7 +47,7 @@ export function RegisterForm({ active }: { active: boolean }) {
 
   return (
     <div
-      className="input-group"
+      className="w-full absolute flex flex-col gap-1 duration-200"
       onSubmit={(e) => {
         e.preventDefault();
       }}

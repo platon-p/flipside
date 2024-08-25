@@ -1,15 +1,16 @@
-import { Card } from '@/repository/CardRepository';
-import css from './CardListItem.module.css';
+import { Card } from "@/repository/CardRepository";
+import css from "./CardListItem.module.css";
 
 export function CardListItem({ card }: { card: Card }) {
-    return <div className={css.card}>
-        <div className={css.position}>
-            <a>#{card.position}</a>
-        </div>
-        <div className={css.content}>
-            <p className={css.question}>{card.question}</p>
-            <p className={css.answer}>{card.answer}</p>
-        </div>
+  return (
+    <div className="flex border-black border-[1px] p-3 gap-4">
+      <div className="w-8 flex flex-col justify-center">
+        <a>#{card.position}</a>
+      </div>
+      <div className="flex flex-col gap-4 justify-between w-full">
+        <p className="m-0 bg-gray-200">{card.question}</p>
+        <p className="m-0 bg-gray-300">{card.answer}</p>
+      </div>
     </div>
-
+  );
 }

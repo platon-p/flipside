@@ -16,16 +16,21 @@ export function LoginForm({ active }: { active: boolean }) {
   }
 
   async function submit() {
-    const res = await auth.login(email, password);
-    if (res) {
-      setErrorLoginMessage(res);
-      return;
-    }
-    goToMain();
+    auth
+      .login(email, password)
+      .then(() => {
+        goToMain();
+      })
+      .catch((e: Error) => {
+        setErrorLoginMessage(e.message);
+      });
   }
 
   return (
-    <div className="input-group" style={{ left: active ? 0 : "-100%" }}>
+    <div
+      className="w-full absolute flex flex-col gap-1 duration-200"
+      style={{ left: active ? 0 : "-100%" }}
+    >
       <Input
         className="authorize"
         onInput={(e) => setEmail(e.currentTarget.value)}

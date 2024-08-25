@@ -7,7 +7,7 @@ export interface ButtonBoxProps {
 
 export function ButtonBox({ view, onChange }: ButtonBoxProps) {
   return (
-    <div className="max-w-[450px]">
+    <div>
       <div>
         <button
           className="w-1/2 h-8"
@@ -27,7 +27,7 @@ export function ButtonBox({ view, onChange }: ButtonBoxProps) {
       <div className="relative w-full h-1">
         <div className="absolute w-full h-full bg-[#D9D9D9] duration-150" />
         <div
-          className="absolute h-full bg-primary duration-150 w-1/2"
+          className="absolute h-full bg-orange-500 duration-150 w-1/2"
           style={{ left: view === "login" ? 0 : "50%" }}
         />
       </div>

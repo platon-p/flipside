@@ -1,10 +1,5 @@
 import styled from "styled-components";
 
-export const Input=styled.input`
-border-color: #555;
-border-width: 1px;
-border-radius: 0.25rem;
-outline: none;
-height: 2rem;
-padding: 0 0.2rem;
-`
+export const Input=styled.input.attrs({
+  className: 'h-8 px-1 outline-none rounded-[0.25rem] duration-200 border-2 border-[#999] focus:border-orange-500'
+})``
