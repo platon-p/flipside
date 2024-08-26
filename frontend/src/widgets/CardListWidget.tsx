@@ -1,5 +1,4 @@
 import { Card } from "@/repository/CardRepository";
-import { Block } from "@/shared";
 import { CardListItem } from "./CardListItem";
 
 export interface CardListWidgetProps {
@@ -8,15 +7,17 @@ export interface CardListWidgetProps {
 
 export function CardListWidget({ cards }: CardListWidgetProps) {
   return (
-    <Block>
-      <h4 className="text-xl font-semibold">Cards</h4>
-      {cards?.length === 0 ? (
+    <div className="flex flex-col">
+      <h4 className="text-lg font-semibold">Cards</h4>
+      {!cards || cards.length === 0 ? (
         <p>Empty list</p>
       ) : (
         <div className="flex flex-col gap-4">
-          {cards?.map((v, i) => <CardListItem card={v} key={i} />)}
+          {cards?.map((v, i) => (
+            <CardListItem card={v} key={i} />
+          ))}
         </div>
       )}
-    </Block>
+    </div>
   );
 }

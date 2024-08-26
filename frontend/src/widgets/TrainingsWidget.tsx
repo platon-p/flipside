@@ -14,7 +14,7 @@ export function TrainingsWidget({ trainings }: TrainingsWidgetProps) {
   }
   return (
     <Block>
-      <h4 className="text-xl font-semibold">Trainings</h4>
+      <h4 className="text-lg font-semibold">Trainings</h4>
       {!trainings || trainings.length === 0 ? (
         <p>No trainings</p>
       ) : (

@@ -1,4 +1,5 @@
 import { Card } from "@/repository/CardRepository";
+import { Block } from "@/shared";
 
 interface CardListItemProps {
   card: Card;
@@ -6,14 +7,14 @@ interface CardListItemProps {
 
 export function CardListItem({ card }: CardListItemProps) {
   return (
-    <div className="flex border-black border-[1px] p-3 gap-4">
+    <Block className="flex p-3 gap-2">
       <div className="w-8 flex flex-col justify-center">
-        <a>#{card.position}</a>
+        <p>#{card.position}</p>
       </div>
-      <div className="flex flex-col gap-4 justify-between w-full">
-        <p className="m-0 bg-gray-200">{card.question}</p>
-        <p className="m-0 bg-gray-300">{card.answer}</p>
+      <div className="flex flex-col gap-3 justify-between w-full">
+        <p className="">{card.question}</p>
+        <p className="">{card.answer}</p>
       </div>
-    </div>
+    </Block>
   );
 }

@@ -25,30 +25,21 @@ export function UserPage() {
       setLoading(false);
     });
   }, [nickname]);
-
+  if (loading) {
+    return <p>Загрузка...</p>;
+  }
   return (
-    <div>
-      <div className="header">
-        <h2>Мои наборы</h2>
-        <div className="logo"></div>
-        <div className="sign-in">
-          <a className="text-orange-500" onClick={logout} href="/">
-            выйти
-          </a>
-        </div>
-      </div>
-      {loading && <div>Загрузка...</div>}
-      <div
-        className="flex flex-col items-center mx-auto"
-        style={{ width: "80%" }}
-      >
-        {cardSets && (
-          <CardSetList cards={cardSets!} onClick={navigateToCardSet} />
-        )}
-        <div className="controls w-full">
-          <Button onClick={createCardSet}>+ создать новый набор</Button>
-        </div>
-      </div>
+    <div className="flex flex-col mx-auto max-w-xs px-2 gap-2">
+      <h1 className="text-2xl font-bold">Мои наборы</h1>
+      <a className="text-orange-500" onClick={logout} href="/">
+        выйти
+      </a>
+      {cardSets && (
+        <CardSetList cards={cardSets!} onClick={navigateToCardSet} />
+      )}
+      <Button className="w-full" onClick={createCardSet}>
+        + создать новый набор
+      </Button>
     </div>
   );
 }
