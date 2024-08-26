@@ -13,7 +13,7 @@ export const config = {
 async function after401(
   req: KyRequest,
   opt: NormalizedOptions,
-  res: KyResponse
+  res: KyResponse,
 ): Promise<Response | undefined> {
   if (res.status !== 401) return res;
   await AuthService.loginByRefreshToken();
@@ -25,12 +25,12 @@ async function after401(
 async function afterError(
   req: KyRequest,
   opt: NormalizedOptions,
-  res: KyResponse
+  res: KyResponse,
 ): Promise<KyResponse> {
   if (res.ok) {
     return res;
   }
-  
+
   const err = await res.json<MessageResponse>();
   throw new Error(err.message);
 }

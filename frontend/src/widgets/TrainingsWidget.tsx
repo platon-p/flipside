@@ -28,9 +28,7 @@ export function TrainingsWidget({ trainings }: TrainingsWidgetProps) {
           ))}
         </div>
       )}
-      <Button className="w-full bg-orange-200">
-        Create basic training
-      </Button>
+      <Button className="w-full bg-orange-200">Create basic training</Button>
     </Block>
   );
 }

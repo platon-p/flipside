@@ -23,7 +23,7 @@ export const AuthApi = {
 
   async loginByEmail(
     email: string,
-    password: string
+    password: string,
   ): Promise<TokenPairResponse> {
     const response = await client.post(`${config.auth}/login-by-email`, {
       json: { email, password },

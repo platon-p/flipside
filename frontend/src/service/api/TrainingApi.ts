@@ -23,7 +23,7 @@ export interface TaskResult {
 export const TrainingApi = {
   async getCardSetTrainings(
     token: string,
-    slug: string
+    slug: string,
   ): Promise<TrainingSummaryResponse[]> {
     const response = await client.get(`${config.cardSet}/${slug}/trainings`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -34,7 +34,7 @@ export const TrainingApi = {
   async createTraining(
     token: string,
     slug: string,
-    trainingType: string
+    trainingType: string,
   ): Promise<TrainingSummaryResponse> {
     const response = await client.post(`${config.cardSet}/${slug}/trainings`, {
       searchParams: { type: trainingType },
@@ -53,14 +53,14 @@ export const TrainingApi = {
   async submitAnswer(
     token: string,
     trainingId: number,
-    answer: string
+    answer: string,
   ): Promise<TaskResult> {
     const response = await client.post(
       `${config.training}${trainingId}/submit`,
       {
         searchParams: { answer: answer },
         headers: { Authorization: `Bearer ${token}` },
-      }
+      },
     );
     return await response.json();
   },

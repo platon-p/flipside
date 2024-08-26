@@ -17,7 +17,7 @@ export const CardApi = {
   async createCards(
     token: string,
     slug: string,
-    request: CardRequest[]
+    request: CardRequest[],
   ): Promise<CardResponse[]> {
     const response = await client.post(`${config.cards}/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -34,7 +34,7 @@ export const CardApi = {
   async updateCards(
     token: string,
     slug: string,
-    request: CardRequest[]
+    request: CardRequest[],
   ): Promise<CardResponse[]> {
     const response = await client.put(`${config.cards}/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -46,7 +46,7 @@ export const CardApi = {
   async deleteCards(
     token: string,
     slug: string,
-    positions: number[]
+    positions: number[],
   ): Promise<void> {
     await client.delete(`${config.cards}/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },

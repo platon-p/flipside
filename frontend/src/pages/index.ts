@@ -5,4 +5,12 @@ import { Main } from "./MainPage/MainPage";
 import { Register } from "./Register";
 import { ViewSetPage } from "./ViewSetPage/CardSet";
 import { TrainingPage } from "./TrainingPage/TrainingPage";
-export { Main, Register, LoginPage as Login, ViewSetPage, CreateSetPage, EditSetPage, TrainingPage };
+export {
+  Main,
+  Register,
+  LoginPage as Login,
+  ViewSetPage,
+  CreateSetPage,
+  EditSetPage,
+  TrainingPage,
+};

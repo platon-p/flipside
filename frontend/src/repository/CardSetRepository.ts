@@ -35,14 +35,14 @@ export const CardSetRepository = {
   async updateCardSet(
     oldSlug: string,
     title: string,
-    slug: string
+    slug: string,
   ): Promise<CardSet> {
     const token = AuthService.getToken() ?? "";
     const cardSet = await ApiService.CardSet.updateCardSet(
       token,
       oldSlug,
       title,
-      slug
+      slug,
     );
     return {
       title: cardSet.title,
@@ -64,7 +64,7 @@ export const CardSetRepository = {
           slug: cardSet.slug,
           ownerId: cardSet.owner_id,
         };
-      }
+      },
     );
   },
 };

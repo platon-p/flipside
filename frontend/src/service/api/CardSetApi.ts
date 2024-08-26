@@ -10,7 +10,7 @@ export const CardSetApi = {
   async createCardSet(
     token: string,
     title: string,
-    slug: string
+    slug: string,
   ): Promise<CardSetResponse> {
     const response = await client.post(`${config.cardSet}/`, {
       headers: { Authorization: `Bearer ${token}` },
@@ -28,7 +28,7 @@ export const CardSetApi = {
     token: string,
     slug: string,
     newTitle: string,
-    newSlug: string
+    newSlug: string,
   ): Promise<CardSetResponse> {
     const response = await client.put(`${config.cardSet}/${slug}`, {
       headers: { Authorization: `Bearer ${token}` },

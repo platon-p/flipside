@@ -25,7 +25,7 @@ export function Register() {
 
   function handleInput(
     e: React.FormEvent<HTMLInputElement>,
-    key: keyof typeof formValues
+    key: keyof typeof formValues,
   ) {
     setFormValues({
       ...formValues,
