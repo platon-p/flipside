@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CardSetRepository } from "@/repository/CardSetRepository";
-import { useAuth } from "@/hooks/Auth";
 import { Input, Button } from "@/shared";
 
 export function CreateSetPage() {
   const navigate = useNavigate();
-  const { logout } = useAuth();
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [errorMessage, setErrorMessage] = useState("");

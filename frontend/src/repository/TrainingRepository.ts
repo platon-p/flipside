@@ -1,4 +1,4 @@
-import { ApiService } from "@/service/ApiService/ApiService";
+import { ApiService } from "@/service/ApiService";
 
 export interface TrainingSummary {
     id: number,

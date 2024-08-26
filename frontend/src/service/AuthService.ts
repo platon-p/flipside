@@ -1,5 +1,5 @@
-import { ApiService } from "./ApiService/ApiService";
-import { TokenPairResponse } from "./ApiService/AuthApi";
+import { ApiService } from "./ApiService";
+import { TokenPairResponse } from "./api/AuthApi";
 
 export const AuthService = {
   getUserId(): number | null {

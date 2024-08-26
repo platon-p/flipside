@@ -1,5 +1,5 @@
 import { Button } from "@/shared";
-import { TaskResult, TrainingTask } from "@/service/ApiService/TrainingApi";
+import { TaskResult, TrainingTask } from "@/service/api/TrainingApi";
 import { TrainingService } from "@/service/TrainingService";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
