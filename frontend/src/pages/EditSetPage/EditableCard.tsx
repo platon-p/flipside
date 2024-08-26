@@ -1,23 +1,22 @@
-import { Input } from "@/shared";
-import css from "./CardItem.module.css";
+import { Block, Input } from "@/shared";
 
-export function CardItem({
-  position,
-  question,
-  answer,
-  onUpdate,
-}: {
+interface CardItemProps {
   position: number;
   question: string;
   answer: string;
   onUpdate: (question: string, answer: string) => void;
-}) {
+}
+
+export function EditableCard({
+  position,
+  question,
+  answer,
+  onUpdate,
+}: CardItemProps) {
   return (
-    <div className={css.card}>
-      <div className={css.position}>
-        <a>#{position}</a>
-      </div>
-      <div className={css.content}>
+    <Block className="flex gap-4">
+      <div className="flex items-center w-4">#{position}</div>
+      <div className="flex flex-col gap-2 justify-between w-full">
         <Input
           placeholder="question"
           value={question}
@@ -29,6 +28,6 @@ export function CardItem({
           onInput={(e) => onUpdate(question, e.currentTarget.value)}
         />
       </div>
-    </div>
+    </Block>
   );
 }

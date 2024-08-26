@@ -5,9 +5,7 @@ import { AuthService } from "@/service/AuthService";
 const emailPattern = /^\s*[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]+\s*$/;
 
 const useProvideAuth = (): AuthData => {
-  const [isAuth, setIsAuth] = useState(false);
-  const [userId, setUserId] = useState<number | null>(null);
-  const [nickname, setNickname] = useState<string | undefined>(undefined);
+  const [isAuth, setIsAuth] = useState<boolean>(AuthService.isAuth());
 
   function logout() {
     AuthService.logout();
@@ -32,19 +30,17 @@ const useProvideAuth = (): AuthData => {
   }
 
   useEffect(() => {
-    setIsAuth(AuthService.isAuth());
-    setUserId(AuthService.getUserId());
-    setNickname(AuthService.getNickname());
+    // setIsAuth(AuthService.isAuth());
   }, []);
 
   return {
-    isAuth,
-    userId,
-    nickname,
+    isAuth: isAuth,
+    userId: AuthService.getUserId(),
+    nickname: AuthService.getNickname(),
     login,
     register,
     logout,
-  };
+  } as AuthData;
 };
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {

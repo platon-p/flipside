@@ -4,7 +4,6 @@ import { UserPage } from "./UserPage/UserPage";
 
 export function Main() {
   const auth = useAuth();
-
   if (auth.isAuth) {
     return <UserPage />;
   }

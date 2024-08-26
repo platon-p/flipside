@@ -4,7 +4,7 @@ import { Card, CardRepository } from "@/repository/CardRepository";
 import { CardSet, CardSetRepository } from "@/repository/CardSetRepository";
 import { Button, Input } from "@/shared";
 import { useAuth } from "@/hooks/Auth";
-import { CardItem } from "./CardItem";
+import { EditableCard } from "./EditableCard";
 
 export default function EditSetPage() {
   const { isAuth, userId } = useAuth();
@@ -12,7 +12,6 @@ export default function EditSetPage() {
   const navigate = useNavigate();
 
   const [cardSet, setCardSet] = useState<CardSet | undefined>();
-  const [initCards, setInitCards] = useState<Card[] | undefined>();
   const [displayCards, setDisplayCards] = useState<Card[] | undefined>();
   const [loading, setLoading] = useState(true);
 
@@ -23,22 +22,19 @@ export default function EditSetPage() {
   const [createdCards, setCreatedCards] = useState(new Array<Card>());
 
   useEffect(() => {
-    function loadCardSet() {
-      CardSetRepository.getCardSetBySlug(slugParam!)
-        .then((i) => {
-          setCardSet(i);
-          setTitle(i.title);
-          setSlug(i.slug);
-        })
-        .catch((e) => {
-          setErrorMessage(e?.toString());
-        });
+    async function loadCardSet(): Promise<void> {
+      try {
+        const i = await CardSetRepository.getCardSetBySlug(slugParam!);
+        setCardSet(i);
+        setTitle(i.title);
+        setSlug(i.slug);
+      } catch (e) {
+        setErrorMessage(e?.toString());
+      }
     }
-    function loadCards() {
-      CardRepository.getCards(slugParam!).then((i) => {
-        setInitCards(i);
-        setDisplayCards(i);
-      });
+    async function loadCards(): Promise<void> {
+      const i = await CardRepository.getCards(slugParam!);
+      setDisplayCards(i);
     }
     Promise.all([loadCardSet(), loadCards()]).then(() => setLoading(false));
   }, [slugParam]);
@@ -97,31 +93,32 @@ export default function EditSetPage() {
   }
 
   return (
-    <div>
-      <h2>Edit Card Set</h2>
-      <div className="cardset-data">
-        <div className="flex items-center gap-2.5">
-          <p className="m-0">Title</p>
+    <div className="max-w-lg mx-auto mt-20">
+      <h2 className="text-2xl font-bold">Edit Card Set</h2>
+      <div className="w-full flex flex-col gap-2 mt-1">
+        <div className="flex items-center gap-2">
+          <p className="w-12">Title</p>
           <Input
+            className="w-full"
             value={title}
             onChange={(e) => setTitle(e.currentTarget.value)}
           />
         </div>
-        <div className="flex items-center gap-2.5">
-          <p>Slug</p>
+        <div className="flex items-center gap-2">
+          <p className="w-12">Slug</p>
           <Input
+            className="w-full"
             value={slug}
             onChange={(e) => setSlug(e.currentTarget.value)}
           />
         </div>
-        <Button onClick={submit}>Submit</Button>
       </div>
-
-      <h4>Cards</h4>
+      <Button onClick={submit}>Submit</Button>
+      <h4 className="text-lg font-medium">Cards</h4>
       <div className="flex flex-col gap-2 mb-2">
         {displayCards?.map((v, i) => {
           return (
-            <CardItem
+            <EditableCard
               position={v.position}
               question={v.question}
               answer={v.answer}
