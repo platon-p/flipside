@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { OutlineButton } from "@/shared/OutlineButton/OutlineButton";
-import { Header } from "@/shared/Header/Header";
+import { Header } from "@/widgets/Header/Header";
 
 export function NewbiePage() {
   const navigate = useNavigate();
