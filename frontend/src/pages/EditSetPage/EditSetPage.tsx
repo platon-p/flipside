@@ -1,147 +1,81 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Card, CardRepository } from "@/repository/CardRepository";
-import { CardSet, CardSetRepository } from "@/repository/CardSetRepository";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Button, Input } from "@/shared";
 import { useAuth } from "@/hooks/Auth";
 import { EditableCard } from "./EditableCard";
-// import { RootState } from "@/reducers/store";
-
-// const { editCurrent } = cardSetSlice.actions;
+import { useCardSet } from "@/store/cardset";
 
 export default function EditSetPage() {
-  const { isAuth, userId } = useAuth();
+  const { isAuth } = useAuth();
   const { slug } = useParams();
-  const navigate = useNavigate();
-  // const dispatch = useDispatch();
-
-  // const state = useSelector((state: RootState) => state.cardSet);
-
-  const [cardSet, setCardSet] = useState<CardSet | undefined>();
-  const [displayCards, setDisplayCards] = useState<Card[] | undefined>();
-  const [loading, setLoading] = useState(true);
-
-  const [errorMessage, setErrorMessage] = useState<string | undefined>();
-  const [createdCards, setCreatedCards] = useState(new Array<Card>());
-
-  useEffect(() => {
-    async function loadCardSet(): Promise<void> {
-      try {
-        const i = await CardSetRepository.getCardSetBySlug(slug!);
-        setCardSet(i);
-        // dispatch(editCurrent({ title: i.title, slug: i.slug }));
-      } catch (e) {
-        setErrorMessage(e?.toString());
-      }
-    }
-    async function loadCards(): Promise<void> {
-      const i = await CardRepository.getCards(slug!);
-      setDisplayCards(i);
-    }
-    Promise.all([loadCardSet(), loadCards()]).then(() => setLoading(false));
-  }, [slug]);
-
-  const handleUpdate = (position: number, question: string, answer: string) => {
-    if (!displayCards) return;
-    displayCards[position].question = question;
-    displayCards[position].answer = answer;
-    setDisplayCards([...displayCards]);
-  };
-
-  async function submit() {
-    try {
-      await CardRepository.createCards(slug!, createdCards);
-    } catch (e) {
-      console.log(e);
-      return;
-    }
-
-    CardSetRepository.updateCardSet(
-      slug!,
-      'state.current.title',
-      'state.current.slug'
-    )
-      .then((res) => {
-        navigate(`/set/${res.slug}`);
-        console.log("CardSet updated", res);
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }
-
-  function addCard() {
-    if (!displayCards) return;
-    displayCards.push({
-      question: "question",
-      answer: "answer",
-      position: (displayCards.at(-1)?.position ?? 0) + 1,
-    });
-    setDisplayCards([...displayCards]);
-    setCreatedCards([...createdCards, displayCards.at(-1)!]);
-  }
+  const { error, state, addCard } = useCardSet();
 
   if (!isAuth) {
     return <div>Not authorized</div>;
   }
-  if (loading) {
+  if (state === "loading") {
     return <div>Loading...</div>;
   }
-  if (errorMessage) {
-    return <p style={{ color: "red" }}>{errorMessage}</p>;
-  }
-  if (cardSet === undefined) {
-    return <div>Card Set not found</div>;
-  }
-
-  if (cardSet.ownerId !== userId) {
-    return <div>Not authorized</div>;
+  if (state === "error") {
+    return <p className="text-red-500">{error}</p>;
   }
 
   return (
     <div className="max-w-lg mx-auto mt-20">
       <h2 className="text-2xl font-bold">Edit Card Set</h2>
       <MetaDataEditor />
-      <Button onClick={submit}>Submit</Button>
-      <h4 className="text-lg font-medium">Cards</h4>
-      <div className="flex flex-col gap-2 mb-2">
-        {displayCards?.map((v, i) => {
-          return (
-            <EditableCard
-              position={v.position}
-              question={v.question}
-              answer={v.answer}
-              onUpdate={(q, a) => handleUpdate(i, q, a)}
-              key={v.position}
-            />
-          );
-        })}
+      <CardListEditor />
+      <div className="flex gap-2">
+        <Button className="w-full" onClick={addCard}>
+          Add card
+        </Button>
+        <Button className="w-full">Submit</Button>
       </div>
-      <Button onClick={addCard}>Add card</Button>
     </div>
   );
 }
 
+function CardListEditor() {
+  const slug = useParams()["slug"]!;
+  const { cards, fetchCards } = useCardSet();
+  useEffect(() => {
+    fetchCards(slug);
+  }, [slug]);
+  return (
+    <>
+      <h4 className="text-lg font-medium">Cards</h4>
+      <div className="flex flex-col gap-2 mb-2">
+        {cards.map((v) => {
+          return <EditableCard position={v.position} key={v.position} />;
+        })}
+      </div>
+    </>
+  );
+}
+
 function MetaDataEditor() {
-  // const state = useSelector((state: RootState) => state.cardSet);
+  const { slug: slugParam } = useParams();
+  const { slug, title, fetchSet, setTitle, setSlug } = useCardSet();
+  useEffect(() => {
+    fetchSet(slugParam!);
+  }, [fetchSet, slugParam]);
+
+  const onTitleChange = (title: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(title.currentTarget.value);
+  };
+  const onSlugChange = (slug: React.ChangeEvent<HTMLInputElement>) => {
+    setSlug(slug.currentTarget.value);
+  };
 
   return (
     <div className="w-full flex flex-col gap-2 mt-1">
       <div className="flex items-center gap-2">
         <p className="w-12">Title</p>
-        <Input
-          className="w-full"
-          // value={state.current.title}
-          // onChange={(e) => dispatch(setTitle(e.currentTarget.value))}
-        />
+        <Input className="w-full" value={title} onChange={onTitleChange} />
       </div>
       <div className="flex items-center gap-2">
         <p className="w-12">Slug</p>
-        <Input
-          className="w-full"
-          // value={state.current.slug}
-          // onChange={(e) => dispatch(setSlug(e.currentTarget.value))}
-        />
+        <Input className="w-full" value={slug} onChange={onSlugChange} />
       </div>
     </div>
   );

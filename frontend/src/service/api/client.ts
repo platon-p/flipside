@@ -13,19 +13,22 @@ export const config = {
 async function after401(
   req: KyRequest,
   opt: NormalizedOptions,
-  res: KyResponse,
+  res: KyResponse
 ): Promise<Response | undefined> {
   if (res.status !== 401) return res;
+  if (res.url.endsWith("login-by-token")) {
+    return res;
+  }
   await AuthService.loginByRefreshToken();
   const token = localStorage.getItem("accessToken");
   req.headers.set("Authorization", `Bearer ${token}`);
-  return ky(req);
+  return await ky(req);
 }
 
 async function afterError(
   req: KyRequest,
   opt: NormalizedOptions,
-  res: KyResponse,
+  res: KyResponse
 ): Promise<KyResponse> {
   if (res.ok) {
     return res;
