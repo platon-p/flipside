@@ -75,17 +75,6 @@ export function ViewSetPage() {
       });
   }
 
-  function createTraining(trainingType: string) {
-    TrainingRepository.createTraining(slug!, trainingType)
-      .then((training) => {
-        console.log("Training created", training);
-        window.location.reload();
-      })
-      .catch((e) => {
-        console.log(e);
-      });
-  }
-
   if (errorMessage) {
     return <p className="text-red-500">{errorMessage}</p>;
   }
