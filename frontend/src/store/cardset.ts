@@ -61,7 +61,7 @@ export const useCardSet = create<CardSetState>((set, get) => ({
   },
   addCard(): number {
     const positions = get().cards.map((i) => i.position);
-    const nextPosition = Math.max(...positions) + 1;
+    const nextPosition = positions.length != 0 ? Math.max(...positions) : 0 + 1;
     set((state) => {
       state.cards.push({ position: nextPosition, question: "", answer: "" });
       return { cards: state.cards };
