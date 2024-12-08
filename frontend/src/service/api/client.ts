@@ -3,7 +3,7 @@ import { AuthService } from "../AuthService";
 import ky, { KyRequest, NormalizedOptions, KyResponse } from "ky";
 
 export const config = {
-  baseUrl: "http://localhost:80",
+  baseUrl: import.meta.env.VITE_API_URL,
   auth: "api/auth",
   cardSet: "api/cardset",
   cards: "api/cards",
