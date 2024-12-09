@@ -1,0 +1,13 @@
+name: Cardset Workflow
+on:
+  push:
+    branches:
+    - master
+    paths:
+    - cardservice
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Rebuild docker-compose -> cardservice
+        run: docker-compose up cardservice -d --build
