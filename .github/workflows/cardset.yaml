@@ -5,6 +5,7 @@ on:
     - master
     paths:
     - cardservice
+  workflow_dispatch:
 jobs:
   deploy:
     runs-on: self-hosted
