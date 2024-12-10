@@ -1,6 +1,9 @@
 package route
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/platon-p/flipside/cardservice/api/middleware"
+)
 
 type Router struct {
 	routers []IRouter
@@ -18,6 +21,7 @@ func NewRouter(routers ...IRouter) *Router {
 
 func (r *Router) Setup(group *gin.RouterGroup) {
 	api := group.Group("/api")
+    api.Use(middleware.ErrorHandler())
     for _, v := range r.routers {
         v.Setup(api)
     }

@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strings"
@@ -10,29 +11,31 @@ import (
 	"github.com/platon-p/flipside/cardservice/api/helper"
 )
 
+var ErrInvalidToken = errors.New("invalid token")
+
 type AuthMiddleware struct {
 	SignKey interface{}
 }
 
 func NewAuthMiddleware(SignKey interface{}) *AuthMiddleware {
-    return &AuthMiddleware{
-    	SignKey: SignKey,
-    }
+	return &AuthMiddleware{
+		SignKey: SignKey,
+	}
 }
 
 func (m *AuthMiddleware) ValidateToken(token string) (*int, error) {
 	var claims jwt.MapClaims
-    _, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
+	_, err := jwt.ParseWithClaims(token, &claims, func(token *jwt.Token) (interface{}, error) {
 		return m.SignKey, nil
 	}, jwt.WithExpirationRequired())
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 	userIdFloat, ok := claims["id"].(float64)
 	if !ok {
-		return nil, fmt.Errorf("invalid token")
+		return nil, ErrInvalidToken
 	}
-    userId := int(userIdFloat)
+	userId := int(userIdFloat)
 	return &userId, nil
 }
 
