@@ -60,12 +60,10 @@ func NewCore() *Core {
 
 	authMiddleware := middleware.NewAuthMiddleware(cfg.SignKey)
 
-	cardSetController := controller.NewCardSetController(cardSetService)
-	cardController := controller.NewCardController(cardService)
 	trainingController := controller.NewTrainingController(trainingService)
 
-	cardSetRouter := route.NewCardSetRouter(cardSetController, authMiddleware)
-	cardRouter := route.NewCardRouter(cardController, authMiddleware)
+	cardSetRouter := route.NewCardSetRouter(cardSetService, authMiddleware)
+	cardRouter := route.NewCardRouter(cardService, authMiddleware)
 	userRouter := route.NewUserRouter(userService)
 	trainingRouter := route.NewTrainingRouter(trainingController, authMiddleware)
 
