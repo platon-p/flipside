@@ -1,26 +1,23 @@
 package route
 
 import (
-	"errors"
-	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/platon-p/flipside/cardservice/api/controller"
-	"github.com/platon-p/flipside/cardservice/api/helper"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
-	"github.com/platon-p/flipside/cardservice/service"
+	"github.com/platon-p/flipside/cardservice/api/transfer"
 	"github.com/platon-p/flipside/cardservice/service/training"
 )
 
 type TrainingRouter struct {
-	controller     *controller.TrainingController
+	service        *training.TrainingService
 	authMiddleware *middleware.AuthMiddleware
 }
 
-func NewTrainingRouter(controller *controller.TrainingController, authMiddleware *middleware.AuthMiddleware) *TrainingRouter {
+func NewTrainingRouter(service *training.TrainingService, authMiddleware *middleware.AuthMiddleware) *TrainingRouter {
 	return &TrainingRouter{
-		controller:     controller,
+		service:        service,
 		authMiddleware: authMiddleware,
 	}
 }
@@ -37,57 +34,64 @@ func (r *TrainingRouter) Setup(group *gin.RouterGroup) {
 func (r *TrainingRouter) GetCardSetTrainings(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	userId := ctx.GetInt("userId")
-	res, err := r.controller.GetCardSetTrainings(userId, slug)
-	switch {
-	case errors.Is(err, service.ErrCardSetNotFound):
-		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
-	case errors.Is(err, training.ErrNotATrainingOwner):
-		helper.ErrorMessage(ctx, http.StatusForbidden, err.Error())
-	case err != nil:
-		fmt.Println("GetCardSetTrainings:", err)
-		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
-	default:
-		ctx.JSON(http.StatusOK, res)
+	modelsResp, err := r.service.GetCardSetTrainings(userId, slug)
+	if err != nil {
+		ctx.Error(err)
+		return
 	}
+	res := transfer.TrainingSummariesToResponse(modelsResp)
+	ctx.JSON(http.StatusOK, res)
 }
 
 func (r *TrainingRouter) CreateTraining(ctx *gin.Context) {
-	slug := ctx.Param("slug")
 	userId := ctx.GetInt("userId")
-	trainingType := ctx.Query("type")
-	res, err := r.controller.CreateTraining(userId, slug, trainingType)
-	switch {
-	case errors.Is(err, controller.ErrUnresolvedTrainingType):
-		helper.ErrorMessage(ctx, http.StatusBadRequest, err.Error())
-	case errors.Is(err, service.ErrCardSetNotFound):
-		helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
-	case err != nil:
-		fmt.Println("CreateTraining:", err)
-		helper.ErrorMessage(ctx, http.StatusInternalServerError, helper.InternalServerError)
-	default:
-		ctx.JSON(http.StatusOK, res)
+	slug := ctx.Param("slug")
+	trainingTypeStr := ctx.Query("type")
+	trainingType, err := transfer.ResolveTrainingType(trainingTypeStr)
+	if err != nil {
+		ctx.Error(err)
+		return
 	}
+	model, err := r.service.CreateTraining(userId, slug, trainingType)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	resp := transfer.TrainingSummaryToResponse(*model)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (r *TrainingRouter) GetTrainingSummary(ctx *gin.Context) {
 	userId := ctx.GetInt("userId")
 	trainingId := ctx.Param("id")
-	res, err := r.controller.GetTrainingSummary(userId, trainingId)
+	trainingIdInt, err := strconv.Atoi(trainingId)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	model, err := r.service.GetTrainingSummary(userId, trainingIdInt)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	resp := transfer.TrainingSummaryToResponse(*model)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (r *TrainingRouter) GetNextTask(ctx *gin.Context) {
 	trainingId := ctx.Param("id")
 	userId := ctx.GetInt("userId")
-	res, err := r.controller.GetNextTask(userId, trainingId)
+	trainingIdInt, err := strconv.Atoi(trainingId)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
+	taskModel, err := r.service.GetNextTask(userId, trainingIdInt)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	res := transfer.TaskToResponse(taskModel)
 	ctx.JSON(http.StatusOK, res)
 }
 
@@ -99,10 +103,18 @@ func (r *TrainingRouter) SubmitTask(ctx *gin.Context) {
 		ctx.Error(middleware.ErrBadRequest)
 		return
 	}
-	res, err := r.controller.SubmitTask(userId, trainingId, answer)
+	trainingIdInt, err := strconv.Atoi(trainingId)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	taskResultModel, err := r.service.SubmitAnswer(userId, trainingIdInt, answer)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, transfer.TaskResultResponse{
+		Answer:    *taskResultModel.Answer,
+		IsCorrect: *taskResultModel.IsCorrect,
+	})
 }
