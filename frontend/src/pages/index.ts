@@ -5,6 +5,7 @@ import { Main } from "./MainPage/MainPage";
 import { Register } from "./Register";
 import { ViewSetPage } from "./ViewSetPage/CardSet";
 import { TrainingPage } from "./TrainingPage/TrainingPage";
+import Profile from './Profile/Profile';
 export {
   Main,
   Register,
@@ -13,4 +14,6 @@ export {
   CreateSetPage,
   EditSetPage,
   TrainingPage,
+
+  Profile
 };
