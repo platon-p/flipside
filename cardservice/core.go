@@ -62,12 +62,11 @@ func NewCore() *Core {
 
 	cardSetController := controller.NewCardSetController(cardSetService)
 	cardController := controller.NewCardController(cardService)
-	userController := controller.NewUserController(userService)
 	trainingController := controller.NewTrainingController(trainingService)
 
 	cardSetRouter := route.NewCardSetRouter(cardSetController, authMiddleware)
 	cardRouter := route.NewCardRouter(cardController, authMiddleware)
-	userRouter := route.NewUserRouter(userController)
+	userRouter := route.NewUserRouter(userService)
 	trainingRouter := route.NewTrainingRouter(trainingController, authMiddleware)
 
 	router := route.NewRouter(cardSetRouter, cardRouter, userRouter, trainingRouter)
