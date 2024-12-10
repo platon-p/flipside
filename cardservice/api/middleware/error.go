@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/platon-p/flipside/cardservice/api/controller"
 	"github.com/platon-p/flipside/cardservice/repository"
 	"github.com/platon-p/flipside/cardservice/service"
 	"github.com/platon-p/flipside/cardservice/service/training"
@@ -59,11 +60,13 @@ func profileMap(err error) int {
 
 func trainingMap(err error) int {
 	switch {
-	case errors.Is(err, training.ErrTrainingNotFound):
+	case errors.Is(err, training.ErrTrainingNotFound) ||
+        errors.Is(err, repository.ErrCardSetNotFound):
 		return http.StatusNotFound
 	case errors.Is(err, training.ErrTrainingIsCompleted) ||
 		errors.Is(err, training.ErrInvalidAnswer) ||
-		errors.Is(err, training.ErrTaskNotFound):
+		errors.Is(err, training.ErrTaskNotFound) ||
+        errors.Is(err, controller.ErrUnresolvedTrainingType):
 		return http.StatusBadRequest
 	case errors.Is(err, training.ErrNotATrainingOwner):
 		return http.StatusForbidden
