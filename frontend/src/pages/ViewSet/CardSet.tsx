@@ -10,7 +10,7 @@ import {
 import { CardSetControls, TrainingsWidget, CardListWidget } from "@/widgets";
 import { Block } from "@/shared";
 
-export function ViewSetPage() {
+export default function ViewSet() {
   const { userId } = useAuth();
   const { slug } = useParams();
   const navigate = useNavigate();

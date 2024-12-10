@@ -2,7 +2,7 @@ import { useAuth } from "@/hooks/Auth";
 import { NewbiePage } from "./NewbiePage/NewbiePage";
 import { UserPage } from "./UserPage/UserPage";
 
-export function Main() {
+export default function Main() {
   const auth = useAuth();
   if (auth.isAuth) {
     return <UserPage />;
@@ -10,4 +10,3 @@ export function Main() {
   return <NewbiePage />;
 }
 
-export default Main;

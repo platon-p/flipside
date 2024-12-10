@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { CardSetRepository } from "@/repository/CardSetRepository";
 import { Input, Button } from "@/shared";
 
-export function CreateSetPage() {
+export default function CreateSet() {
   const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");

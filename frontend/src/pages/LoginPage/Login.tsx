@@ -3,7 +3,7 @@ import { RegisterForm } from "./RegisterForm";
 import { LoginForm } from "./LoginForm";
 import { ButtonBox, ViewState } from "./ButtonBox";
 
-export function LoginPage() {
+export default function Login() {
   const [view, setView] = useState<ViewState>("login");
 
   return (
@@ -17,4 +17,3 @@ export function LoginPage() {
   );
 }
 
-export default LoginPage;
