@@ -1,10 +1,13 @@
 package route
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/platon-p/flipside/cardservice/api/controller"
+	"github.com/platon-p/flipside/cardservice/api/middleware"
+	"github.com/platon-p/flipside/cardservice/service"
 )
 
 type UserRouter struct {
@@ -18,7 +21,9 @@ func NewUserRouter(userController *controller.UserController) *UserRouter {
 }
 
 func (r *UserRouter) Setup(group *gin.RouterGroup) {
+    mw := middleware.NewErrorMiddleware(profileErrorMapper)
 	group.Group("/users").
+        Use(mw.Handler).
 		GET("/:nickname/profile", r.GetProfileHandler).
 		GET("/:nickname/sets", r.GetSetsHandler)
 }
@@ -41,4 +46,13 @@ func (r *UserRouter) GetSetsHandler(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, res)
+}
+
+func profileErrorMapper(err error) int {
+	switch {
+	case errors.Is(err, service.ErrProfileNotFound):
+		return http.StatusNotFound
+	default:
+		return -1
+	}
 }

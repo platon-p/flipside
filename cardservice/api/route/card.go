@@ -1,6 +1,7 @@
 package route
 
 import (
+	"errors"
 	"net/http"
 	"strings"
 
@@ -9,11 +10,14 @@ import (
 	"github.com/platon-p/flipside/cardservice/api/helper"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
 	"github.com/platon-p/flipside/cardservice/api/transfer"
+	"github.com/platon-p/flipside/cardservice/repository"
+	"github.com/platon-p/flipside/cardservice/service"
 )
 
 type CardRouter struct {
-	controller     *controller.CardController
-	authMiddleware *middleware.AuthMiddleware
+	controller      *controller.CardController
+	authMiddleware  *middleware.AuthMiddleware
+	errorMiddleware *middleware.ErrorMiddleware
 }
 
 func NewCardRouter(controller *controller.CardController, authMiddleware *middleware.AuthMiddleware) *CardRouter {
@@ -25,6 +29,7 @@ func NewCardRouter(controller *controller.CardController, authMiddleware *middle
 
 func (r *CardRouter) Setup(group *gin.RouterGroup) {
 	cards := group.Group("/cards/:slug")
+	cards.Use(r.errorMiddleware.Handler)
 	cards.GET("/", r.GetCards)
 
 	cards.Group("/").
@@ -88,4 +93,19 @@ func (r *CardRouter) DeleteCards(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success",
 	})
+}
+
+func cardErrorMapper(err error) int {
+	switch {
+	case errors.Is(err, repository.ErrCardSetNotFound) ||
+		errors.Is(err, repository.ErrCardNotFound) ||
+
+		errors.Is(err, repository.ErrCardWithThisPositionExists) ||
+		errors.Is(err, service.ErrCardNegativePosition):
+		return http.StatusBadRequest
+	case errors.Is(err, service.ErrNotCardSetOwner):
+		return http.StatusForbidden
+	default:
+		return -1
+	}
 }

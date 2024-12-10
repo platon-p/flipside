@@ -21,8 +21,9 @@ func NewRouter(routers ...IRouter) *Router {
 
 func (r *Router) Setup(group *gin.RouterGroup) {
 	api := group.Group("/api")
-    api.Use(middleware.ErrorHandler())
-    for _, v := range r.routers {
-        v.Setup(api)
-    }
+    mw := middleware.NewErrorMiddleware(middleware.BasicErrorMapper)
+    api.Use(mw.Handler)
+	for _, v := range r.routers {
+		v.Setup(api)
+	}
 }

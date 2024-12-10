@@ -1,6 +1,7 @@
 package route
 
 import (
+	"errors"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -8,6 +9,8 @@ import (
 	"github.com/platon-p/flipside/cardservice/api/helper"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
 	"github.com/platon-p/flipside/cardservice/api/transfer"
+	"github.com/platon-p/flipside/cardservice/repository"
+	"github.com/platon-p/flipside/cardservice/service"
 )
 
 type CardSetRouter struct {
@@ -23,9 +26,13 @@ func NewCardSetRouter(controller *controller.CardSetController, authMiddleware *
 }
 
 func (r *CardSetRouter) Setup(group *gin.RouterGroup) {
-	cardset := group.Group("/cardset")
+	mw := middleware.NewErrorMiddleware(cardErrorMapper)
 
-	cardset.GET("/:slug", r.GetCardSet)
+	cardset := group.Group("/cardset")
+	cardset.
+		Use(mw.Handler).
+		GET("/:slug", r.GetCardSet)
+    // TODO: check if the grouping is correct
 	cardset.Group("/").
 		Use(r.authMiddleware.Handler()).
 		POST("/", r.CreateCardSet).
@@ -85,4 +92,17 @@ func (r *CardSetRouter) DeleteCardSet(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"message": "Success",
 	})
+}
+
+func cardsetErrorMapper(err error) int {
+	switch {
+	case errors.Is(err, repository.ErrCardSetSlugAlreadyExists):
+		return http.StatusBadRequest
+	case errors.Is(err, repository.ErrCardSetNotFound):
+		return http.StatusNotFound
+	case errors.Is(err, service.ErrNotCardSetOwner):
+		return http.StatusForbidden
+	default:
+		return -1
+	}
 }
