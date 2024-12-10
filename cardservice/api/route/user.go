@@ -5,45 +5,51 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/platon-p/flipside/cardservice/api/controller"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
+	"github.com/platon-p/flipside/cardservice/api/transfer"
+	"github.com/platon-p/flipside/cardservice/model"
 	"github.com/platon-p/flipside/cardservice/service"
 )
 
 type UserRouter struct {
-	controller *controller.UserController
+	userService *service.UserService
 }
 
-func NewUserRouter(userController *controller.UserController) *UserRouter {
+func NewUserRouter(userService *service.UserService) *UserRouter {
 	return &UserRouter{
-		controller: userController,
+		userService: userService,
 	}
 }
 
 func (r *UserRouter) Setup(group *gin.RouterGroup) {
-    mw := middleware.NewErrorMiddleware(profileErrorMapper)
+	mw := middleware.NewErrorMiddleware(profileErrorMapper)
 	group.Group("/users").
-        Use(mw.Handler).
+		Use(mw.Handler).
 		GET("/:nickname/profile", r.GetProfileHandler).
 		GET("/:nickname/sets", r.GetSetsHandler)
 }
 
 func (r *UserRouter) GetProfileHandler(ctx *gin.Context) {
 	nickname := ctx.Param("nickname")
-	res, err := r.controller.GetProfile(nickname)
+	res, err := r.userService.GetProfile(nickname)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	resp := profileResponseFromModel(res)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (r *UserRouter) GetSetsHandler(ctx *gin.Context) {
 	nickname := ctx.Param("nickname")
-	res, err := r.controller.GetSets(nickname)
+	models, err := r.userService.GetCardSets(nickname)
 	if err != nil {
 		ctx.Error(err)
 		return
+	}
+	res := make([]transfer.CardSetResponse, len(models))
+	for i := range models {
+		res[i] = cardSetModelToResponse(&models[i])
 	}
 	ctx.JSON(http.StatusOK, res)
 }
@@ -54,5 +60,20 @@ func profileErrorMapper(err error) int {
 		return http.StatusNotFound
 	default:
 		return -1
+	}
+}
+func profileResponseFromModel(model *model.Profile) transfer.ProfileResponse {
+	return transfer.ProfileResponse{
+		Id:       model.Id,
+		Name:     model.Name,
+		Nickname: model.Nickname,
+	}
+}
+
+func cardSetModelToResponse(cardSet *model.CardSet) transfer.CardSetResponse {
+	return transfer.CardSetResponse{
+		Title:   cardSet.Title,
+		Slug:    cardSet.Slug,
+		OwnerId: cardSet.OwnerId,
 	}
 }

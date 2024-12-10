@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/platon-p/flipside/cardservice/api/controller"
 	"github.com/platon-p/flipside/cardservice/api/helper"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
 	"github.com/platon-p/flipside/cardservice/api/transfer"
@@ -14,13 +13,13 @@ import (
 )
 
 type CardSetRouter struct {
-	controller     *controller.CardSetController
+	service        *service.CardSetService
 	authMiddleware *middleware.AuthMiddleware
 }
 
-func NewCardSetRouter(controller *controller.CardSetController, authMiddleware *middleware.AuthMiddleware) *CardSetRouter {
+func NewCardSetRouter(service *service.CardSetService, authMiddleware *middleware.AuthMiddleware) *CardSetRouter {
 	return &CardSetRouter{
-		controller:     controller,
+		service:        service,
 		authMiddleware: authMiddleware,
 	}
 }
@@ -32,7 +31,7 @@ func (r *CardSetRouter) Setup(group *gin.RouterGroup) {
 	cardset.
 		Use(mw.Handler).
 		GET("/:slug", r.GetCardSet)
-    // TODO: check if the grouping is correct
+		// TODO: check if the grouping is correct
 	cardset.Group("/").
 		Use(r.authMiddleware.Handler()).
 		POST("/", r.CreateCardSet).
@@ -42,11 +41,12 @@ func (r *CardSetRouter) Setup(group *gin.RouterGroup) {
 
 func (r *CardSetRouter) GetCardSet(ctx *gin.Context) {
 	slug := ctx.Param("slug")
-	response, err := r.controller.GetCardSet(slug)
+	model, err := r.service.GetCardSet(slug)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
+	response := transfer.NewCardSetResponse(model)
 	ctx.JSON(http.StatusOK, response)
 }
 
@@ -57,11 +57,13 @@ func (r *CardSetRouter) CreateCardSet(ctx *gin.Context) {
 		return
 	}
 	userId := ctx.GetInt("userId")
-	response, err := r.controller.CreateCardSet(userId, &request)
+	cardSet := request.ToModel(userId)
+	newModel, err := r.service.CreateCardSet(cardSet)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
+	response := transfer.NewCardSetResponse(newModel)
 	ctx.JSON(http.StatusCreated, response)
 }
 
@@ -73,18 +75,20 @@ func (r *CardSetRouter) UpdateCardSet(ctx *gin.Context) {
 		return
 	}
 	userId := ctx.GetInt("userId")
-	response, err := r.controller.UpdateCardSet(userId, slug, &request)
+	model := request.ToModel(userId)
+	newModel, err := r.service.UpdateCardSet(slug, model)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
+	response := transfer.NewCardSetResponse(newModel)
 	ctx.JSON(http.StatusOK, response)
 }
 
 func (r *CardSetRouter) DeleteCardSet(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	userId := ctx.GetInt("userId")
-	err := r.controller.DeleteCardSet(userId, slug)
+	err := r.service.DeleteCardSet(userId, slug)
 	if err != nil {
 		ctx.Error(err)
 		return

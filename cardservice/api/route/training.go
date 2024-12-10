@@ -3,30 +3,31 @@ package route
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/platon-p/flipside/cardservice/api/controller"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
+	"github.com/platon-p/flipside/cardservice/api/transfer"
 	"github.com/platon-p/flipside/cardservice/repository"
 	"github.com/platon-p/flipside/cardservice/service/training"
 )
 
 type TrainingRouter struct {
-	controller     *controller.TrainingController
+	service        *training.TrainingService
 	authMiddleware *middleware.AuthMiddleware
 }
 
-func NewTrainingRouter(controller *controller.TrainingController, authMiddleware *middleware.AuthMiddleware) *TrainingRouter {
+func NewTrainingRouter(service *training.TrainingService, authMiddleware *middleware.AuthMiddleware) *TrainingRouter {
 	return &TrainingRouter{
-		controller:     controller,
+		service:        service,
 		authMiddleware: authMiddleware,
 	}
 }
 
 func (r *TrainingRouter) Setup(group *gin.RouterGroup) {
 	mw := middleware.NewErrorMiddleware(trainingsErrorMapper)
-    trainings := group.Group("")
-    trainings.
+	trainings := group.Group("")
+	trainings.
 		Use(r.authMiddleware.Handler()).
 		Use(mw.Handler).
 		GET("/cardset/:slug/trainings", r.GetCardSetTrainings).
@@ -39,45 +40,64 @@ func (r *TrainingRouter) Setup(group *gin.RouterGroup) {
 func (r *TrainingRouter) GetCardSetTrainings(ctx *gin.Context) {
 	slug := ctx.Param("slug")
 	userId := ctx.GetInt("userId")
-	res, err := r.controller.GetCardSetTrainings(userId, slug)
+	modelsResp, err := r.service.GetCardSetTrainings(userId, slug)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
+	res := transfer.TrainingSummariesToResponse(modelsResp)
 	ctx.JSON(http.StatusOK, res)
 }
 
 func (r *TrainingRouter) CreateTraining(ctx *gin.Context) {
-	slug := ctx.Param("slug")
 	userId := ctx.GetInt("userId")
-	trainingType := ctx.Query("type")
-	res, err := r.controller.CreateTraining(userId, slug, trainingType)
+	slug := ctx.Param("slug")
+	trainingTypeStr := ctx.Query("type")
+	trainingType, err := transfer.ResolveTrainingType(trainingTypeStr)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	model, err := r.service.CreateTraining(userId, slug, trainingType)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	resp := transfer.TrainingSummaryToResponse(*model)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (r *TrainingRouter) GetTrainingSummary(ctx *gin.Context) {
 	userId := ctx.GetInt("userId")
 	trainingId := ctx.Param("id")
-	res, err := r.controller.GetTrainingSummary(userId, trainingId)
+	trainingIdInt, err := strconv.Atoi(trainingId)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	model, err := r.service.GetTrainingSummary(userId, trainingIdInt)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	resp := transfer.TrainingSummaryToResponse(*model)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (r *TrainingRouter) GetNextTask(ctx *gin.Context) {
 	trainingId := ctx.Param("id")
 	userId := ctx.GetInt("userId")
-	res, err := r.controller.GetNextTask(userId, trainingId)
+	trainingIdInt, err := strconv.Atoi(trainingId)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
+	taskModel, err := r.service.GetNextTask(userId, trainingIdInt)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	res := transfer.TaskToResponse(taskModel)
 	ctx.JSON(http.StatusOK, res)
 }
 
@@ -89,12 +109,20 @@ func (r *TrainingRouter) SubmitTask(ctx *gin.Context) {
 		ctx.Error(middleware.ErrBadRequest)
 		return
 	}
-	res, err := r.controller.SubmitTask(userId, trainingId, answer)
+	trainingIdInt, err := strconv.Atoi(trainingId)
 	if err != nil {
 		ctx.Error(err)
 		return
 	}
-	ctx.JSON(http.StatusOK, res)
+	taskResultModel, err := r.service.SubmitAnswer(userId, trainingIdInt, answer)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	ctx.JSON(http.StatusOK, transfer.TaskResultResponse{
+		Answer:    *taskResultModel.Answer,
+		IsCorrect: *taskResultModel.IsCorrect,
+	})
 }
 
 func trainingsErrorMapper(err error) int {
@@ -105,7 +133,7 @@ func trainingsErrorMapper(err error) int {
 	case errors.Is(err, training.ErrTrainingIsCompleted) ||
 		errors.Is(err, training.ErrInvalidAnswer) ||
 		errors.Is(err, training.ErrTaskNotFound) ||
-		errors.Is(err, controller.ErrUnresolvedTrainingType):
+		errors.Is(err, transfer.ErrUnresolvedTrainingType):
 		return http.StatusBadRequest
 	case errors.Is(err, training.ErrNotATrainingOwner):
 		return http.StatusForbidden
