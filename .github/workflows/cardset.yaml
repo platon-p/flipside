@@ -10,5 +10,7 @@ jobs:
   deploy:
     runs-on: self-hosted
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Rebuild docker-compose -> cardservice
         run: docker-compose up cardservice -d --build
