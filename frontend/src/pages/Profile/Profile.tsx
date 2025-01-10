@@ -12,7 +12,7 @@ interface ProfileStore {
   };
   cardsets: CardSet[];
   loadProfile(nickname: string): Promise<any>;
-  loadCardsets(nickname: string): Promise<CardSet>;
+  loadCardsets(nickname: string): Promise<any>;
 }
 const st = create<ProfileStore>((set, get) => {
   return {

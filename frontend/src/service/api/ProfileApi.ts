@@ -1,8 +1,8 @@
-import { CardSetResponse } from "./CardSetApi";
 import { client } from "./client";
+import { CardSet } from "@/repository/CardSetRepository";
 
 export const ProfileApi = {
-  async getUserCardSets(nickname: string): Promise<CardSetResponse[]> {
+  async getUserCardSets(nickname: string): Promise<CardSet[]> {
     const response = await client.get(`api/users/${nickname}/sets`); // TODO: url
     return await response.json();
   },
