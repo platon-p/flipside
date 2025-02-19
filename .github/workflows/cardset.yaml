@@ -2,9 +2,9 @@ name: Cardset Workflow
 on:
   push:
     branches:
-    - master
+      - master
     paths:
-    - cardservice
+      - cardservice
   workflow_dispatch:
 jobs:
   deploy:
@@ -13,4 +13,4 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Rebuild docker-compose -> cardservice
-        run: docker-compose up cardservice -d --build
+        run: docker compose up cardservice -d --build

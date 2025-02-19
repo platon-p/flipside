@@ -2,55 +2,78 @@ package route
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/platon-p/flipside/cardservice/api/controller"
-	"github.com/platon-p/flipside/cardservice/api/helper"
+	"github.com/platon-p/flipside/cardservice/api/middleware"
+	"github.com/platon-p/flipside/cardservice/api/transfer"
+	"github.com/platon-p/flipside/cardservice/model"
 	"github.com/platon-p/flipside/cardservice/service"
 )
 
 type UserRouter struct {
-    controller *controller.UserController
+	userService *service.UserService
 }
 
-func NewUserRouter(userController *controller.UserController) *UserRouter {
-    return &UserRouter{
-    	controller: userController,
-    }
+func NewUserRouter(userService *service.UserService) *UserRouter {
+	return &UserRouter{
+		userService: userService,
+	}
 }
 
 func (r *UserRouter) Setup(group *gin.RouterGroup) {
-    group.Group("/users").
-        GET("/:nickname/profile", r.GetProfileHandler).
-        GET("/:nickname/sets", r.GetSetsHandler)
+	mw := middleware.NewErrorMiddleware(profileErrorMapper)
+	group.Group("/users").
+		Use(mw.Handler).
+		GET("/:nickname/profile", r.GetProfileHandler).
+		GET("/:nickname/sets", r.GetSetsHandler)
 }
 
 func (r *UserRouter) GetProfileHandler(ctx *gin.Context) {
-    nickname := ctx.Param("nickname")
-    res, err := r.controller.GetProfile(nickname)
-    switch {
-    case errors.Is(err, service.ErrProfileNotFound):
-        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
-    case err != nil:
-        fmt.Println("GetProfile:", err)
-        helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
-    default:
-        ctx.JSON(http.StatusOK, res)
-    }
+	nickname := ctx.Param("nickname")
+	res, err := r.userService.GetProfile(nickname)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	resp := profileResponseFromModel(res)
+	ctx.JSON(http.StatusOK, resp)
 }
 
 func (r *UserRouter) GetSetsHandler(ctx *gin.Context) {
-    nickname := ctx.Param("nickname")
-    res, err := r.controller.GetSets(nickname)
-    switch {
-    case errors.Is(err, service.ErrProfileNotFound):
-        helper.ErrorMessage(ctx, http.StatusNotFound, err.Error())
-    case err != nil:
-        fmt.Println("GetSets:", err)
-        helper.ErrorMessage(ctx, http.StatusInternalServerError, "Internal server error")
-    default:
-        ctx.JSON(http.StatusOK, res)
-    }
+	nickname := ctx.Param("nickname")
+	models, err := r.userService.GetCardSets(nickname)
+	if err != nil {
+		ctx.Error(err)
+		return
+	}
+	res := make([]transfer.CardSetResponse, len(models))
+	for i := range models {
+		res[i] = cardSetModelToResponse(&models[i])
+	}
+	ctx.JSON(http.StatusOK, res)
+}
+
+func profileErrorMapper(err error) int {
+	switch {
+	case errors.Is(err, service.ErrProfileNotFound):
+		return http.StatusNotFound
+	default:
+		return -1
+	}
+}
+func profileResponseFromModel(model *model.Profile) transfer.ProfileResponse {
+	return transfer.ProfileResponse{
+		Id:       model.Id,
+		Name:     model.Name,
+		Nickname: model.Nickname,
+	}
+}
+
+func cardSetModelToResponse(cardSet *model.CardSet) transfer.CardSetResponse {
+	return transfer.CardSetResponse{
+		Title:   cardSet.Title,
+		Slug:    cardSet.Slug,
+		OwnerId: cardSet.OwnerId,
+	}
 }

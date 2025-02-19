@@ -8,9 +8,9 @@ import (
 )
 
 var (
-	ErrCardNotFound         = errors.New("Card not found")
-	ErrNotCardSetOwner      = errors.New("You are not owner of this card set")
-	ErrCardNegativePosition = errors.New("Card's position should be positive")
+	ErrCardNotFound         = errors.New("card not found")
+	ErrNotCardSetOwner      = errors.New("you are not owner of this card set")
+	ErrCardNegativePosition = errors.New("card's position should be positive")
 )
 
 type CardService struct {
@@ -47,9 +47,9 @@ func (s *CardService) CreateCards(userId int, slug string, cards []model.Card) (
 
 func (s *CardService) UpdateCards(userId int, slug string, cards []model.Card) ([]model.Card, error) {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
-    if errors.Is(err, repository.ErrCardSetNotFound) {
-        return nil, ErrCardSetNotFound
-    }
+	if errors.Is(err, repository.ErrCardSetNotFound) {
+		return nil, ErrCardSetNotFound
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -59,14 +59,14 @@ func (s *CardService) UpdateCards(userId int, slug string, cards []model.Card) (
 	for i := range cards {
 		cards[i].CardSetId = cardSet.Id
 	}
-    res, err := s.cardRepository.UpdateCards(cards)
-    if errors.Is(err, repository.ErrCardNotFound) {
-        return nil, ErrCardNotFound
-    }
-    if err != nil {
-        return nil, err
-    }
-    return res, nil
+	res, err := s.cardRepository.UpdateCards(cards)
+	if errors.Is(err, repository.ErrCardNotFound) {
+		return nil, ErrCardNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (s *CardService) GetCards(slug string) ([]model.Card, error) {
@@ -82,9 +82,9 @@ func (s *CardService) GetCards(slug string) ([]model.Card, error) {
 
 func (s *CardService) DeleteCards(userId int, slug string, positions []int) error {
 	cardSet, err := s.cardSetRepository.GetCardSet(slug)
-    if errors.Is(err, repository.ErrCardSetNotFound) {
-        return ErrCardSetNotFound
-    }
+	if errors.Is(err, repository.ErrCardSetNotFound) {
+		return ErrCardSetNotFound
+	}
 	if err != nil {
 		return err
 	}

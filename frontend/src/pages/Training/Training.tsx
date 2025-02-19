@@ -4,7 +4,7 @@ import { TrainingService } from "@/service/TrainingService";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-export function TrainingPage() {
+export default function Training() {
   const navigate = useNavigate();
   const { id: trainingId } = useParams();
   const [task, setTask] = useState<TrainingTask | undefined>();

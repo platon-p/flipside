@@ -10,7 +10,7 @@ import {
 import { CardSetControls, TrainingsWidget, CardListWidget } from "@/widgets";
 import { Block } from "@/shared";
 
-export function ViewSetPage() {
+export default function ViewSet() {
   const { userId } = useAuth();
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -85,19 +85,25 @@ export function ViewSetPage() {
     return <h2>CardSet not found</h2>;
   }
   return (
-    <div className="flex flex-col gap-2 p-2 max-w-md m-auto">
+    <div className="max-w-[70%] m-auto">
       <p onClick={goHome}>{"<"} home</p>
-      <Block className="flex flex-col gap-2">
-        <div className="flex items-center justify-between">
-          <h2 className="text-2xl font-semibold">{cardSet.title}</h2>
-          <p className="text-gray-600">/{cardSet.slug}</p>
+      <div className="flex flex-row justify-between gap-12">
+        <div className="flex flex-col gap-2 w-3/5">
+          <Block className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-semibold">{cardSet.title}</h2>
+              <p className="text-gray-600">/{cardSet.slug}</p>
+            </div>
+            {cardSet.ownerId === userId && (
+              <CardSetControls edit={edit} remove={remove} />
+            )}
+          </Block>
+          <CardListWidget cards={cards} />
         </div>
-        {cardSet.ownerId === userId && (
-          <CardSetControls edit={edit} remove={remove} />
-        )}
-      </Block>
-      <TrainingsWidget trainings={trainings} />
-      <CardListWidget cards={cards} />
+        <div className="flex flex-col w-2/5">
+          <TrainingsWidget trainings={trainings} />
+        </div>
+      </div>
     </div>
   );
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/ilyakaznacheev/cleanenv"
-	"github.com/platon-p/flipside/cardservice/api/controller"
 	"github.com/platon-p/flipside/cardservice/api/middleware"
 	"github.com/platon-p/flipside/cardservice/api/route"
 	"github.com/platon-p/flipside/cardservice/repository"
@@ -60,15 +59,10 @@ func NewCore() *Core {
 
 	authMiddleware := middleware.NewAuthMiddleware(cfg.SignKey)
 
-	cardSetController := controller.NewCardSetController(cardSetService)
-	cardController := controller.NewCardController(cardService)
-	userController := controller.NewUserController(userService)
-	trainingController := controller.NewTrainingController(trainingService)
-
-	cardSetRouter := route.NewCardSetRouter(cardSetController, authMiddleware)
-	cardRouter := route.NewCardRouter(cardController, authMiddleware)
-	userRouter := route.NewUserRouter(userController)
-	trainingRouter := route.NewTrainingRouter(trainingController, authMiddleware)
+	cardSetRouter := route.NewCardSetRouter(cardSetService, authMiddleware)
+	cardRouter := route.NewCardRouter(cardService, authMiddleware)
+	userRouter := route.NewUserRouter(userService)
+	trainingRouter := route.NewTrainingRouter(trainingService, authMiddleware)
 
 	router := route.NewRouter(cardSetRouter, cardRouter, userRouter, trainingRouter)
 	engine := gin.Default()

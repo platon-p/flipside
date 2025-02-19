@@ -57,7 +57,7 @@ export const CardSetRepository = {
         return {
           title: cardSet.title,
           slug: cardSet.slug,
-          ownerId: cardSet.owner_id,
+          ownerId: cardSet.ownerId,
         };
       },
     );

@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/Auth";
 import { EditableCard } from "./EditableCard";
 import { useCardSet } from "@/store/cardset";
 
-export default function EditSetPage() {
+export default function EditSet() {
   const { isAuth } = useAuth();
   const { slug } = useParams();
   const { error, state, addCard } = useCardSet();
