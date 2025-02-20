@@ -10,45 +10,51 @@ import (
 )
 
 var (
-	InvalidRefreshToken = errors.New("Invalid refresh token")
-	ExpiredRefreshToken = errors.New("Expired refresh token")
+	InvalidRefreshToken = errors.New("invalid refresh token")
+	ExpiredRefreshToken = errors.New("expired refresh token")
 )
 
 type RefreshTokenService struct {
-	Repository repository.RefreshTokenRepository
-	ExpiresIn  time.Duration
+	repository repository.RefreshTokenRepository
+	expiresIn  time.Duration
 }
 
 func NewRefreshTokenService(repository repository.RefreshTokenRepository, expiresIn time.Duration) *RefreshTokenService {
 	return &RefreshTokenService{
-		Repository: repository,
-		ExpiresIn:  expiresIn,
+		repository: repository,
+		expiresIn:  expiresIn,
 	}
 }
 
-// Deletes old and returns new
+// CreateToken creates a new refresh token for the user
+// If there is an existing token, it will be deleted
+// Assumes that the user exists and not nil
 func (s *RefreshTokenService) CreateToken(user *model.User) (*model.RefreshToken, error) {
-	current, err := s.Repository.FindByUser(user.Id)
+	oldToken, err := s.repository.FindByUser(user.Id)
 	if err != nil {
 		return nil, err
 	}
-	if current != nil {
-		s.Repository.Delete(current.Token)
+	if oldToken != nil {
+		s.repository.Delete(oldToken.Token)
 	}
 	tokenStr, err := s.generateToken()
 	if err != nil {
 		return nil, err
 	}
-	exp := time.Now().Add(s.ExpiresIn)
-	token, err := s.Repository.Create(user.Id, *tokenStr, exp)
+	exp := time.Now().Add(s.expiresIn)
+	token, err := s.repository.Create(user.Id, *tokenStr, exp)
 	if err != nil {
 		return nil, err
 	}
 	return token, nil
 }
 
+// CheckToken checks if the refresh token is valid
+// if the token is invalid, it returns InvalidRefreshToken
+// if the token is expired, it returns ExpiredRefreshToken
+// if the token is valid, it returns the user associated with the token
 func (s *RefreshTokenService) CheckToken(refreshToken string) (*model.User, error) {
-	token, err := s.Repository.FindByToken(refreshToken)
+	token, err := s.repository.FindByToken(refreshToken)
 	if err != nil {
 		return nil, err
 	}

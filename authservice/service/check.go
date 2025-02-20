@@ -7,11 +7,11 @@ import (
 )
 
 var (
-	EmailIncorrectFormatError = errors.New("Incorrect format of email")
-	EmailExistsError          = errors.New("Email already exists")
+	EmailIncorrectFormatError = errors.New("incorrect format of email")
+	EmailExistsError          = errors.New("email already exists")
 
-	NicknameIncorrectFormatError = errors.New("Incorect format of nickname")
-	NicknameExistsError          = errors.New("Nickname already exists")
+	NicknameIncorrectFormatError = errors.New("incorrect format of nickname")
+	NicknameExistsError          = errors.New("nickname already exists")
 )
 
 type CheckService struct {
@@ -24,6 +24,8 @@ func NewCheckService(userRepository repository.UserRepository) *CheckService {
 	}
 }
 
+// CheckEmail checks if the email exist for a user
+// TODO: check for correctness
 func (s *CheckService) CheckEmail(email string) error {
 	found, err := s.userRepository.FindByEmail(email)
 	if err != nil {
@@ -35,6 +37,7 @@ func (s *CheckService) CheckEmail(email string) error {
 	return EmailExistsError
 }
 
+// CheckNickname checks if the nickname exist for a user
 func (s *CheckService) CheckNickname(nickname string) error {
 	found, err := s.userRepository.FindByNickname(nickname)
 	if err != nil {

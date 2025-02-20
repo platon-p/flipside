@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	BadCredentialsError = errors.New("Bad credentials")
+	BadCredentialsError = errors.New("bad credentials")
 )
 
 type AuthService struct {
