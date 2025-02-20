@@ -15,9 +15,20 @@ var (
 )
 
 type RefreshTokenRepository interface {
+	// Create creates new refresh token
+	// Assumes that user exists
 	Create(userId int, token string, expiresAt time.Time) (*model.RefreshToken, error)
+
+	// FindByToken returns refresh token by content
 	FindByToken(token string) (*model.RefreshToken, error)
+
+	// FindByUser returns refresh token by user id
+	// returns (nil, nil) if no entry found (includes non-existing user)
 	FindByUser(userId int) (*model.RefreshToken, error)
+
+	// Delete deletes refresh token by token
+	// returns error only if something went wrong
+	// returns nil if no entry found
 	Delete(token string) error
 }
 

@@ -1,7 +1,7 @@
 services:
   db:
-    image: postgres:alpine
     restart: unless-stopped
+    image: postgres:16-alpine
     ports:
       - "5432:5432"
     env_file: './.env'
@@ -55,6 +55,6 @@ services:
   frontend:
     build:
       dockerfile: Dockerfile
-      context: ./frontend_COMMAND
+      context: ./frontend
 volumes:
   db-data:
