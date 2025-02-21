@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Set up node
         uses: actions/setup-node@v4
+        with:
+          node-version: '22.2.0'
       - name: Check out code
         uses: actions/checkout@v2
       - name: Install dependencies
