@@ -7,8 +7,25 @@ on:
       - cardservice
   workflow_dispatch:
 jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Set up go 1.21.3
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.21.3
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: change directory
+        run: cd cardservice
+      - name: Build
+        run: go build
+      - name: Test
+        run: go test
   deploy:
     runs-on: self-hosted
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
       - name: Rebuild docker-compose -> cardservice
         run: docker compose up cardservice -d --build
