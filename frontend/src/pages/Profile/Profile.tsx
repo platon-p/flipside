@@ -1,6 +1,6 @@
 import { ApiService } from "@/service/ApiService";
 import { useMemo } from "react";
-import { useNavigate, useNavigation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { create, useStore } from "zustand";
 import { CardSetList } from "../MainPage/UserPage/CardSetList";
 import { CardSet } from "@/repository/CardSetRepository";

@@ -27,8 +27,8 @@ export function LoginForm({ active }: { active: boolean }) {
 
   return (
     <div
-      className="w-full absolute flex flex-col gap-1 duration-200"
-      style={{ left: active ? 0 : "-100%" }}
+      className="w-full absolute flex flex-col gap-1 duration-300" 
+      style={{ left: active ? 0 : "-130%" }}
     >
       <Input
         onInput={(e) => setEmail(e.currentTarget.value)}
