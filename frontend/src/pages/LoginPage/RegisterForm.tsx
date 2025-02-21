@@ -1,7 +1,8 @@
-import { useReducer, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/Auth";
 import { Button, Input } from "@/shared";
+import { create, useStore } from "zustand";
 
 interface FormState {
   name: string;
@@ -11,25 +12,34 @@ interface FormState {
   repeatPassword: string;
 }
 
+const store = create<{
+  formValues: FormState;
+  setFormValues: (formValues: FormState) => void;
+}>((set) => ({
+  formValues: {
+    name: "",
+    nickname: "",
+    email: "",
+    password: "",
+    repeatPassword: "",
+  } as FormState,
+  setFormValues: (formValues: FormState) => set({ formValues }),
+}));
+
 export function RegisterForm({ active }: { active: boolean }) {
   const navigate = useNavigate();
   const { register } = useAuth();
 
-  const [formValues, handleInput] = useReducer(
-    (
-      state: FormState,
-      action: [React.FormEvent<HTMLInputElement>, keyof FormState]
-    ) => {
-      return { ...state, [action[1]]: action[0].currentTarget.value };
-    },
-    {
-      name: "",
-      nickname: "",
-      email: "",
-      password: "",
-      repeatPassword: "",
-    }
-  );
+  const { formValues, setFormValues } = useStore(store);
+  const handleInput = ([e, key]: [
+    React.FormEvent<HTMLInputElement>,
+    keyof FormState
+  ]) => {
+    setFormValues({
+      ...formValues,
+      [key]: e.currentTarget.value,
+    });
+  };
   const [errorRegMessage, setErrorMessage] = useState("");
 
   function goToMain() {
@@ -54,10 +64,13 @@ export function RegisterForm({ active }: { active: boolean }) {
 
   return (
     <div
-      className="w-full absolute flex flex-col gap-1 duration-200"
-      style={{ left: active ? 0 : "100%" }}
+      className="w-full absolute flex flex-col gap-1 duration-300"
+      style={{ left: active ? 0 : "130%" }}
     >
-      <Input placeholder="имя" onInput={(e) => handleInput([e, "name"])} />
+      <Input
+        placeholder="имя"
+        onInput={(e) => handleInput([e, "name"])}
+      />
       <Input
         placeholder="никнейм"
         onInput={(e) => handleInput([e, "nickname"])}

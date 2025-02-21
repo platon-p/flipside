@@ -24,7 +24,7 @@ export function ButtonBox({ view, onChange }: ButtonBoxProps) {
           регистрация
         </button>
       </div>
-      <div className="relative w-full h-1">
+      <div className="relative w-full h-[3px]">
         <div className="absolute w-full h-full bg-[#D9D9D9] duration-150" />
         <div
           className="absolute h-full bg-orange-500 duration-150 w-1/2"
