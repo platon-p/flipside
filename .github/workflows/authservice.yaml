@@ -1,10 +1,10 @@
-name: Cardset Workflow
+name: Authservice Workflow
 on:
   push:
     branches:
       - master
     paths:
-      - cardservice
+      - authservice
   workflow_dispatch:
 jobs:
   build:
@@ -17,8 +17,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v2
       - name: Build
-        working-directory: cardservice
+        working-directory: authservice
         run: go build
       - name: Test
-        working-directory: cardservice
+        working-directory: authservice
         run: go test -v ./...
