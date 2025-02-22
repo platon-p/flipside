@@ -1,8 +1,8 @@
 # Flipside
 
-![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white) ![Gin](https://img.shields.io/badge/gin-%23008ECF.svg?style=for-the-badge&logo=gin&logoColor=white) ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
+![Go](https://img.shields.io/badge/go-%2300ADD8.svg?style=for-the-badge&logo=go&logoColor=white) ![Gin](https://img.shields.io/badge/gin-%23008ECF.svg?style=for-the-badge&logo=gin&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white) ![Nginx](https://img.shields.io/badge/nginx-%23009639.svg?style=for-the-badge&logo=nginx&logoColor=white)
 
-![Postgresql](https://img.shields.io/badge/postgresql-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Postgresql](https://img.shields.io/badge/postgresql-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![Liquibase](https://img.shields.io/badge/liquibase-%230076D6.svg?style=for-the-badge&logo=liquibase&logoColor=white)
 
 ![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white) ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB) ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
 
@@ -10,12 +10,10 @@
 
 ## Описание решения
 
-Нашим решением является веб-сервис, в котором пользователи могу создавать наборы флеш-карточек для запоминания учебного
-материала и проверять полученные знания с помощью тренировок
+Нашим решением является веб-сервис, в котором пользователи могут создавать наборы флеш-карточек для запоминания учебного
+материала и проверять полученные знания с помощью тренировок.
 
 ## Инструкция по запуску
-
-[Демонстрация работы](https://disk.yandex.ru/i/uAEgzfBEKEAVuw)
 
 ### Публичный доступ
 
@@ -23,9 +21,11 @@
 
 ### Локальный запуск
 
-Для развертывания локально необходимы docker и docker-compose
-Склонируйте репозиторий
-Создайте файл `.env` в папке проекта, содержащий настройки
+Для развертывания локально необходимы docker и docker-compose.
+
+Склонируйте репозиторий.
+
+Создайте файл `.env`, содержащий настройки:
 
 ```bash
 POSTGRES_USER=admin  # имя пользователя базы данных
@@ -37,23 +37,24 @@ JWT_EXPIRES_IN=60m  # срок действия jwt токена
 REFRESH_TOKEN_EXPIRES_IN=24h  # срок действия refresh-токена
 ```
 
-Формат записи сроков действий
-
-> Продолжительность задается положительным последовательностью чисел с временным интервалом. Допустимые значения
-> интервалов: "ns", "us" (или"µs"), "ms", "s", "m", "h". Например, 24h, 1h30m, 720h (30 дней)
-
-Запустите с помощью команды
+Запустите с помощью команды:
 
 ```bash
 docker-compose up -d
 ```
 
+Формат записи сроков действий (_timedelta_):
+
+> Продолжительность задается положительным последовательностью чисел с временным интервалом. Допустимые значения
+> интервалов: "ns", "us" (или"µs"), "ms", "s", "m", "h". Например, 24h, 1h30m, 720h (30 дней)
+
+
 Теперь веб-интерфейс доступен по `localhost:80`, а запросы к api доступны по `localhost:80/api`
 
 ## Архитектура
 
-В проекте использована микросервисная архитектура. Приложение разделено на сервис аутентификации и авторизации и сервис
-работы с карточками, которые в свою очередь взаимодействуют с базой данных
+Приложение разделено два сервиса: на сервис аутентификации и авторизации и сервис
+работы с карточками, которые в свою очередь взаимодействуют с базой данных.
 
 ```mermaid
 flowchart LR
@@ -86,24 +87,27 @@ end
 
 ### Авторизация
 
-В проекте авторизация происходит с помощью JWT access-токена, который обновляется с помощью одноразового refresh-токена.
+В проекте авторизация происходит с помощью **JWT** access-токена, который обновляется с помощью одноразового **refresh-токена**.
 Оба токена выдаются сервисом авторизации. Этот подход позволяет проводить проверку доступа на разных уровнях приложения,
 в том числе без обращения к сервису авторизации, например на уровне nginx-сервера или самих сервисов.
 
 ### Сборка
+
 Контейнеры микросервисов собираются с помощью Dockerfile в несколько этапов:
 
 Сначала создается образ, который устанвливает зависимости.
 Затем происходит сборка приложения и копирование исполняемого файла в другой легковесный образ.
 Второй образ используется для запуска контейнера.
 
+Такой подход позволяет уменьшить размер образа и ускорить сборку.
+
 ### Фронтенд
 
-Фронтенд реализован на языке TypeScript с использованием библиотек React и ReactRouter
+Фронтенд реализован на языке **TypeScript** с использованием библиотек **React** и ReactRouter, а также сборщика **Vite**.
 
 ### Бэкенд
 
-Сервисы авторизации и карточек реализованы на языке Go с использованием фреймворка Gin
+Сервисы авторизации и карточек реализованы на языке **Go** с использованием фреймворка **Gin**.
 
 ### База данных
 
@@ -166,4 +170,4 @@ erDiagram
 
 ## Контакты
 
-В случае возникновения ошибок, создайте issue в репозитории или обращайтесь в telegram (@bibbob)
+В случае возникновения ошибок, создайте issue в репозитории или обращайтесь в telegram (@bibbob_pp)
