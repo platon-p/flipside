@@ -25,4 +25,20 @@ jobs:
       - name: Lint
         working-directory: frontend
         run: npm run lint -- --max-warnings 50
-      # todo: prettier
+  # todo: prettier
+  lint:
+    runs-on: self-hosted
+    steps:
+      - name: Set up node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.2.0'
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm install
+      - name: Lint
+        working-directory: frontend
+        run: npm run lint -- --max-warnings 50
+  # todo: prettier
