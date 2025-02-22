@@ -22,10 +22,6 @@ jobs:
       - name: Build
         working-directory: frontend
         run: npm run build
-      - name: Lint
-        working-directory: frontend
-        run: npm run lint -- --max-warnings 50
-  # todo: prettier
   lint:
     runs-on: self-hosted
     steps:
