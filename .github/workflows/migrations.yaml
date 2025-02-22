@@ -1,0 +1,16 @@
+name: Migrations Workflow
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - database
+  workflow_dispatch:
+jobs:
+  migrate:
+    runs-on: self-hosted
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+      - name: Migrate
+        run: docker compose up migrations
